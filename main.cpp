@@ -2,14 +2,11 @@
 #include "sdltemplate.h"
 
 int main(int argc, char* argv[]) {
-
-    // Set image dimensions
     const int imgWidth = 256;
     const int imgHeight = 256;
 
-    // Render loop (output to .ppm file)
-    std::cout << "P3\n" << imgWidth << ' ' << imgHeight << "\n255\n";
-    sdltemplate::sdl("Ray tracer", imgWidth, imgHeight);
+    // Establish sdl window
+    sdltemplate::sdl("Raytracer", imgWidth, imgHeight);
     sdltemplate::loop();
 
     // Bottom to top (img is reversed), left to right
@@ -24,11 +21,13 @@ int main(int argc, char* argv[]) {
             int ig = static_cast<int>(255.999 * g);
             int ib = static_cast<int>(255.999 * b);
 
-            // Out
+            // Output
             sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));
             sdltemplate::drawPoint(x, imgHeight-y);
         }
     }
+    
+    // Keep window active
     while (sdltemplate::running) {
         sdltemplate::loop();
     }
