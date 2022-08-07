@@ -1,5 +1,6 @@
 #include <iostream>
 #include "sdltemplate.h"
+#include "vec3.h"
 
 int main(int argc, char* argv[]) {
     const int imgWidth = 256;
@@ -12,14 +13,12 @@ int main(int argc, char* argv[]) {
     // Bottom to top (img is reversed), left to right
     for (int y = imgHeight - 1; y >= 0; y--) {
         for (int x = 0; x < imgWidth; x++) {
-            float r = float(x) / (imgWidth - 1);
-            float g = float(y) / (imgHeight - 1);
-            float b = 0.25;
+            vec3 col(float(x) / (imgWidth - 1), float(y) / (imgHeight - 1), 0.25);
 
             // Normalize values
-            int ir = static_cast<int>(255.999 * r);
-            int ig = static_cast<int>(255.999 * g);
-            int ib = static_cast<int>(255.999 * b);
+            int ir = static_cast<int>(255.999 * col.getX());
+            int ig = static_cast<int>(255.999 * col.getY());
+            int ib = static_cast<int>(255.999 * col.getZ());
 
             // Output
             sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));

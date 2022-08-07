@@ -148,6 +148,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ray.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="vec3.h" />
   </ItemGroup>
