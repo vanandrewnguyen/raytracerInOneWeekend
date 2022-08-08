@@ -9,9 +9,9 @@ public:
 	ray();
 	ray(const vec3& a, const vec3 b);
 
-	vec3 origin() const;
-	vec3 direction() const;
-	vec3 pointParam(float t) const;
+	vec3 getOrigin() const;
+	vec3 getDirection() const;
+	vec3 getPointParam(float t) const;
 };
 
 ray::ray() {
@@ -23,14 +23,14 @@ ray::ray(const vec3& a, const vec3 b) {
 	B = b;
 }
 
-vec3 ray::origin() const {
+vec3 ray::getOrigin() const {
 	return A;
 }
 
-vec3 ray::direction() const {
+vec3 ray::getDirection() const {
 	return B;
 }
 
-vec3 ray::pointParam(float t) const {
+vec3 ray::getPointParam(float t) const {
 	return A + t * B;
 }
