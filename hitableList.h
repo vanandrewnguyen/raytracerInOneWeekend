@@ -3,8 +3,8 @@
 
 #include "hitable.h"
 
-class HitableList : public Hitable {
-private:
+class HitableList: public Hitable {
+public:
 	Hitable **thisList;
 	int thisListSize;
 public:
@@ -14,10 +14,7 @@ public:
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 };
 
-HitableList::HitableList() {
-	thisList = NULL;
-	thisListSize = 0;
-}
+HitableList::HitableList() {}
 
 HitableList::HitableList(Hitable** list, int n) {
 	thisList = list;

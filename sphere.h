@@ -4,7 +4,7 @@
 #include "hitable.h"
 
 class Sphere: public Hitable {
-private:
+public:
 	float radius;
 	vec3 center;
 	vec3 colour;
@@ -42,9 +42,9 @@ vec3 Sphere::getColour() {
 bool Sphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 	vec3 originVec = r.getOrigin() - center;
 	float a = dot(r.getDirection(), r.getDirection());
-	float b = 2.0 * dot(originVec, r.getDirection());
+	float b = dot(originVec, r.getDirection());
 	float c = dot(originVec, originVec) - radius * radius;
-	float discriminant = b * b - 4 * a * c;
+	float discriminant = b * b - a * c;
 
 	if (discriminant > 0) {
 		// Two solutions, isn't elegant at all 

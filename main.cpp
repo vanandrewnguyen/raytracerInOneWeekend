@@ -77,6 +77,7 @@ int main(int argc, char* argv[]) {
 
             // Get sky colour
             Ray rayDir(origin, lowerLeftCorner + u * horizonatalVec + v * verticalVec);
+            vec3 pos = rayDir.getPointParam(2.0);
             vec3 col = scene(rayDir, world);
 
             // Normalize values
