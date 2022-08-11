@@ -148,6 +148,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hitable.h" />
+    <ClInclude Include="hitableList.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="sphere.h" />

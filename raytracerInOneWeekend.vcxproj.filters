@@ -32,5 +32,11 @@
     <ClInclude Include="sphere.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="hitable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hitableList.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
