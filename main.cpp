@@ -2,30 +2,9 @@
 #include "sdltemplate.h"
 #include "hitableList.h"
 #include "sphere.h"
+#include "camera.h"
 
 float MAXFLOAT = 999.0;
-
-/*
-float sphereIntersection(Sphere s, const Ray& r) {
-    float radius = s.getRadius();
-    vec3 center = s.getCenter();
-
-    // Remember the discriminant trick?? This is it
-    vec3 originVec = r.getOrigin() - center;
-    float a = dot(r.getDirection(), r.getDirection());
-    float b = 2.0 * dot(originVec, r.getDirection());
-    float c = dot(originVec, originVec) - radius * radius;
-    float discriminant = b * b - 4 * a * c;
-
-    // If discriminant is smaller than 0 no light hits the pixel
-    if (discriminant < 0.0) {
-        return -1.0;
-    } else {
-        return (-b - sqrt(discriminant)) / (2.0 * a);
-    }
-
-    return 0.0;
-}*/
 
 vec3 getSkyColour(const Ray& r) {
     vec3 unitDir = unitVector(r.getDirection());
@@ -42,7 +21,11 @@ vec3 scene(const Ray& r, Hitable *world) {
     // Make new list of world items
     hitRecord rec;
     if (world->hit(r, 0.001, MAXFLOAT, rec)) {
-        return 0.5 * vec3(rec.normal.getX() + 1, rec.normal.getY() + 1, rec.normal.getZ() + 1);
+        // Push off the surface normal a little bit (no collision error)
+        vec3 target = rec.pos + rec.normal + randInUnitSphere();
+        // Recursion for shadows
+        return 0.5 * scene(Ray(rec.pos, target - rec.pos), world);
+        //return 0.5 * vec3(rec.normal.getX() + 1, rec.normal.getY() + 1, rec.normal.getZ() + 1);
     }
     
     // If no collision, return sky colour
@@ -52,17 +35,17 @@ vec3 scene(const Ray& r, Hitable *world) {
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
+    const int ns = 9; //9
+    srand((unsigned)time(NULL));
 
     // Establish SDL Window
     sdltemplate::sdl("Raytracer", imgWidth, imgHeight);
     sdltemplate::loop();
 
-    // Set coordinate system (based on the width and height in ratio)
-    vec3 lowerLeftCorner(-2.0, -1.0, -1.0);
-    vec3 horizonatalVec(4.0, 0.0, 0.0);
-    vec3 verticalVec(0.0, 2.0, 0.0);
-    vec3 origin(0.0, 0.0, 0.0);
+    // Make camera
+    Camera cam;
 
+    // Establish list of world items (can push into seperate function)
     Hitable* worldList[2];
     worldList[0] = new Sphere(0.5, vec3(0, 0, -1), vec3(1, 0, 0));
     worldList[1] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0));
@@ -72,13 +55,22 @@ int main(int argc, char* argv[]) {
     for (int y = imgHeight - 1; y >= 0; y--) {
         for (int x = 0; x < imgWidth; x++) {
             // Set UV's
-            float u = float(x) / float(imgWidth);
-            float v = float(y) / float(imgHeight);
+            // We can offset randomly to anti alias cheaply, moving the cam
+            vec3 col(0, 0, 0);
+            for (int s = 0; s < ns; s++) {
+                float u = float(x + (float)rand() / RAND_MAX) / float(imgWidth);
+                float v = float(y + (float)rand() / RAND_MAX) / float(imgHeight);
 
-            // Get sky colour
-            Ray rayDir(origin, lowerLeftCorner + u * horizonatalVec + v * verticalVec);
-            vec3 pos = rayDir.getPointParam(2.0);
-            vec3 col = scene(rayDir, world);
+                // Get sky colour
+                Ray rayDir = cam.getRay(u, v);
+                vec3 pos = rayDir.getPointParam(2.0);
+                col += scene(rayDir, world);
+            }
+            // Offset
+            col /= float(ns);
+
+            // Colour correction
+            col = vec3(sqrt(col.getX()), sqrt(col.getY()), sqrt(col.getZ()));
 
             // Normalize values
             int ir = static_cast<int>(255.999 * col.getX());
@@ -88,6 +80,7 @@ int main(int argc, char* argv[]) {
             // Output
             sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));
             sdltemplate::drawPoint(x, imgHeight-y);
+            //std::cout << int(x+y) << int(imgWidth * imgHeight) << "\n";
         }
     }
     

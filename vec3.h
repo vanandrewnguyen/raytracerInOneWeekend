@@ -31,7 +31,8 @@ public:
 	inline vec3& operator*=(const vec3& v2);
 	inline vec3& operator/=(const vec3& v2);
 	inline vec3& operator*=(const float t);
-	inline vec3& operator/=(const float t);
+	//inline vec3& operator/=(const float t);
+	inline vec3& operator/=(const double t) { return *this *= 1 / t; }
 
 	// Basic math operations
 	inline float length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
@@ -123,13 +124,15 @@ inline vec3& vec3::operator*=(const float t) {
 	e[2] *= t;
 	return *this;
 }
+
+/*
 inline vec3& vec3::operator/=(const float t) {
 	float k = 1.0 / t;
 	e[0] /= k;
 	e[1] /= k;
 	e[2] /= k;
 	return *this;
-}
+}*/
 
 // Dot and Cross products
 inline float dot(const vec3 & v1, const vec3 & v2) {
@@ -145,6 +148,15 @@ inline vec3 cross(const vec3 & v1, const vec3 & v2) {
 // Get unit vector
 inline vec3 unitVector(vec3 v) {
 	return v / v.length();
+}
+
+// Random vector of 0->1 length
+vec3 randInUnitSphere() {
+	vec3 p;
+	do {
+		p = 2.9 * vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX) - vec3(1, 1, 1);
+	} while (p.lengthSquared() >= 1.0);
+	return p;
 }
 
 #endif
