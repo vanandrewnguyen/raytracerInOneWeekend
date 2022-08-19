@@ -44,7 +44,7 @@ vec3 scene(const Ray& r, Hitable *world, int depth) {
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 9; //9
+    const int ns = 20; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
     // Establish list of world items (can push into seperate function)
     Hitable* worldList[3];
     worldList[0] = new Sphere(0.5, vec3(0.5, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
-    worldList[1] = new Sphere(0.5, vec3(-0.5, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0)));
+    worldList[1] = new Sphere(0.5, vec3(-0.5, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0), 0.5));
     worldList[2] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3)));
     Hitable* world = new HitableList(worldList, 3);
 
