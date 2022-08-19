@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Materials">
+      <UniqueIdentifier>{528713df-542d-4e53-908d-1a7550b54ed4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -40,6 +43,15 @@
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\lambertian.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\metal.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\material.h">
+      <Filter>Source Files\Materials</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

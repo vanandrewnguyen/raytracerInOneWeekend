@@ -3,15 +3,18 @@
 
 #include "hitable.h"
 
+class Material;
+
 class Sphere: public Hitable {
 public:
 	float radius;
 	vec3 center;
 	vec3 colour;
+	Material* matPtr;
 
 public:
 	// Constructor
-	Sphere(float rad, vec3 origin, vec3 col);
+	Sphere(float rad, vec3 origin, vec3 col, Material* mat);
 
 	// Getters
 	float getRadius();
@@ -21,10 +24,11 @@ public:
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 };
 
-Sphere::Sphere(float rad, vec3 origin, vec3 col) {
+Sphere::Sphere(float rad, vec3 origin, vec3 col, Material* mat) {
 	radius = rad;
 	center = origin;
 	colour = col;
+	matPtr = mat;
 }
 
 float Sphere::getRadius() {
@@ -53,6 +57,7 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 			rec.t = quadratic;
 			rec.pos = r.getPointParam(rec.t);
 			rec.normal = (rec.pos - center) / radius;
+			rec.matPtr = matPtr;
 			return true;
 		}
 		quadratic = (-b + sqrt(b * b - a * c)) / a;
@@ -60,6 +65,7 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 			rec.t = quadratic;
 			rec.pos = r.getPointParam(rec.t);
 			rec.normal = (rec.pos - center) / radius;
+			rec.matPtr = matPtr;
 			return true;
 		}
 	}

@@ -159,4 +159,9 @@ vec3 randInUnitSphere() {
 	return p;
 }
 
+// Reflect and refract functions for vector
+vec3 reflect(const vec3& vector, const vec3& normal) {
+	return vector - 2 * dot(vector, normal) * normal;
+}
+
 #endif
