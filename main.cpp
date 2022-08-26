@@ -45,7 +45,7 @@ vec3 scene(const Ray& r, Hitable *world, int depth) {
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 1; //9
+    const int ns = 100; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -53,7 +53,11 @@ int main(int argc, char* argv[]) {
     sdltemplate::loop();
 
     // Make camera
-    Camera cam(vec3(0,0,0.5), vec3(0, 0, -1), vec3(0,1,0), 90, float(imgWidth)/float(imgHeight));
+    vec3 lookFrom(3, 3, 2); // 0,0,0.5
+    vec3 lookAt(0, 0, -1);
+    float distFocus = (lookFrom - lookAt).length();
+    float aperture = 1.0; // 1.5, fov should be 90 not 20 (20 is zoomed in)
+    Camera cam(lookFrom, lookAt, vec3(0,1,0), 20, float(imgWidth)/float(imgHeight), aperture, distFocus);
 
     // Establish list of world items (can push into seperate function)
     Hitable* worldList[4];

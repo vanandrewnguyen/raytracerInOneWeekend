@@ -9,13 +9,24 @@ private:
     vec3 horizonatalVec;
     vec3 verticalVec;
     vec3 origin;
+    float lensRadius;
+    vec3 u, v, w;
 public:
-	Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio);
+	Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio, float aperture, float focusDist);
     Ray getRay(float u, float v);
 };
 
-Camera::Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio) {
-    vec3 u, v, w;
+vec3 randomInUnitDisk() {
+    vec3 p;
+    do {
+        // Z axis stays same, it's a disk
+        p = 2.0 * vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, 0) - vec3(1, 1, 0);
+    } while (dot(p, p) >= 1.0);
+    return p;
+}
+
+Camera::Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio, float aperture, float focusDist) {
+    lensRadius = aperture / 2;
     float theta = vfov * M_PI / 180;
     float heightMid = tan(theta / 2);
     float widthMid = aspectRatio * heightMid;
@@ -25,15 +36,19 @@ Camera::Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRati
     v = cross(w, u);
 
     // Dis camera to scene is on z axis
-    lowerLeftCorner = vec3(-widthMid, -heightMid, -1.0);
-    lowerLeftCorner = origin - widthMid * u - heightMid * v - w;
-    horizonatalVec = 2 * widthMid * u;
-    verticalVec = 2 * heightMid * v;
+    lowerLeftCorner = origin - widthMid * focusDist * u - heightMid * focusDist * v - focusDist * w;
+    horizonatalVec = 2 * widthMid * u * focusDist;
+    verticalVec = 2 * heightMid * v * focusDist;
 }
 
 Ray Camera::getRay(float s, float t) {
-    Ray rayDir(origin, lowerLeftCorner + s * horizonatalVec + t * verticalVec - origin);
+    vec3 rd = lensRadius * randomInUnitDisk();
+    vec3 offset = u * rd.getX() + v * rd.getY();
+    Ray rayDir((origin + offset), lowerLeftCorner + s * horizonatalVec + t * verticalVec - (origin + offset));
     return rayDir;
 }
+
+
+
 
 #endif
