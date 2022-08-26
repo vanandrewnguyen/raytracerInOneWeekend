@@ -10,19 +10,29 @@ private:
     vec3 verticalVec;
     vec3 origin;
 public:
-	Camera();
+	Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio);
     Ray getRay(float u, float v);
 };
 
-Camera::Camera() {
-    lowerLeftCorner = vec3(-2.0, -1.0, -1.0);
-    horizonatalVec = vec3(4.0, 0.0, 0.0);
-    verticalVec = vec3(0.0, 2.0, 0.0);
-    origin = vec3(0.0, 0.0, 0.0);
+Camera::Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio) {
+    vec3 u, v, w;
+    float theta = vfov * M_PI / 180;
+    float heightMid = tan(theta / 2);
+    float widthMid = aspectRatio * heightMid;
+    origin = lookFrom;
+    w = unitVector(lookFrom - lookAt);
+    u = unitVector(cross(up, w));
+    v = cross(w, u);
+
+    // Dis camera to scene is on z axis
+    lowerLeftCorner = vec3(-widthMid, -heightMid, -1.0);
+    lowerLeftCorner = origin - widthMid * u - heightMid * v - w;
+    horizonatalVec = 2 * widthMid * u;
+    verticalVec = 2 * heightMid * v;
 }
 
-Ray Camera::getRay(float u, float v) {
-    Ray rayDir(origin, lowerLeftCorner + u * horizonatalVec + v * verticalVec - origin);
+Ray Camera::getRay(float s, float t) {
+    Ray rayDir(origin, lowerLeftCorner + s * horizonatalVec + t * verticalVec - origin);
     return rayDir;
 }
 

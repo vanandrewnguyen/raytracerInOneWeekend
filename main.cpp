@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
     sdltemplate::loop();
 
     // Make camera
-    Camera cam;
+    Camera cam(vec3(0,0,0.5), vec3(0, 0, -1), vec3(0,1,0), 90, float(imgWidth)/float(imgHeight));
 
     // Establish list of world items (can push into seperate function)
     Hitable* worldList[4];
