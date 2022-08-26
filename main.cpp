@@ -7,6 +7,7 @@
 #include "Materials/material.h"
 #include "Materials/lambertian.h"
 #include "Materials/metal.h"
+#include "Materials/dielectric.h"
 
 float MAXFLOAT = 999.0;
 int MAXDEPTH = 50;
@@ -44,7 +45,7 @@ vec3 scene(const Ray& r, Hitable *world, int depth) {
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 20; //9
+    const int ns = 1; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -55,11 +56,12 @@ int main(int argc, char* argv[]) {
     Camera cam;
 
     // Establish list of world items (can push into seperate function)
-    Hitable* worldList[3];
-    worldList[0] = new Sphere(0.5, vec3(0.5, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
-    worldList[1] = new Sphere(0.5, vec3(-0.5, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0), 0.5));
-    worldList[2] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3)));
-    Hitable* world = new HitableList(worldList, 3);
+    Hitable* worldList[4];
+    worldList[0] = new Sphere(0.55, vec3(1.0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
+    worldList[1] = new Sphere(0.55, vec3(-1.0, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0), 0.5));
+    worldList[2] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(1, 0, 0), new MatDielectric(1.33));
+    worldList[3] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3)));
+    Hitable* world = new HitableList(worldList, 4);
 
     // Bottom to top (img is reversed), left to right
     for (int y = imgHeight - 1; y >= 0; y--) {

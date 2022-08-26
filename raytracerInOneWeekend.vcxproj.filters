@@ -53,5 +53,8 @@
     <ClInclude Include="Materials\material.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Materials\dielectric.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

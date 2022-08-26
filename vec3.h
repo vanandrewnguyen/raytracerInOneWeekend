@@ -86,6 +86,9 @@ inline vec3 operator/(const vec3& v1, const vec3& v2) {
 inline vec3 operator*(float t, const vec3& v) {
 	return vec3(t * v.e[0], t * v.e[1], t * v.e[2]);
 }
+inline vec3 operator*(const vec3& v, float t) {
+	return vec3(t * v.e[0], t * v.e[1], t * v.e[2]);
+}
 inline vec3 operator/(float t, const vec3& v) {
 	return vec3(t / v.e[0], t / v.e[1], t / v.e[2]);
 }
@@ -162,6 +165,25 @@ vec3 randInUnitSphere() {
 // Reflect and refract functions for vector
 vec3 reflect(const vec3& vector, const vec3& normal) {
 	return vector - 2 * dot(vector, normal) * normal;
+}
+
+bool refract(const vec3& vector, const vec3& normal, float ior, vec3& refractedVector) {
+	vec3 uv = unitVector(vector);
+	float dt = dot(uv, normal);
+	float discriminant = 1.0 - ior * ior * (1 - dt * dt);
+	if (discriminant > 0) {
+		refractedVector = ior * (uv - normal * dt) - normal * sqrt(discriminant);
+		return true;
+	}
+
+	return false;
+}
+
+// Shlick approx
+float shlick(float cosine, float ior) {
+	float r0 = (1 - ior) / (1 + ior);
+	r0 = r0 * r0;
+	return r0 + (1 - r0) * (pow((1 - cosine), 5));
 }
 
 #endif

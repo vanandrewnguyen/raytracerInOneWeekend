@@ -151,6 +151,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="hitable.h" />
     <ClInclude Include="hitableList.h" />
+    <ClInclude Include="Materials\dielectric.h" />
     <ClInclude Include="Materials\lambertian.h" />
     <ClInclude Include="Materials\material.h" />
     <ClInclude Include="Materials\metal.h" />
