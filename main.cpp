@@ -42,10 +42,40 @@ vec3 scene(const Ray& r, Hitable *world, int depth) {
     return getSkyColour(r);
 }
 
+Hitable* getRandomScene() {
+    int n = 500;
+    Hitable** list = new Hitable * [n + 1];
+    list[0] = new Sphere(1000, vec3(0, -1000, 0), vec3(0,0,0), new MatLambertian(vec3(0.5, 0.5, 0.5)));
+    
+    // Generate random spheres
+    int size = 11;
+    int len = 1;
+    for (int a = -size; a < size; a++) {
+        for (int b = -size; b < size; b++) {
+            float randMat = ((float)rand() / RAND_MAX);
+            float randRadius = 0.1 + 0.1 * ((float)rand() / RAND_MAX);
+            vec3 centre(a + 0.9 * (float)rand() / RAND_MAX, randRadius, b + 0.9 * (float)rand() / RAND_MAX);
+            if (randMat < 0.33) {
+                list[len++] = new Sphere(randRadius, centre, vec3(0,0,0), new MatLambertian(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX)));
+            } else if (randMat < 0.66) {
+                list[len++] = new Sphere(randRadius, centre, vec3(0, 0, 0), new MatMetal(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX), ((float)rand() / RAND_MAX) * 0.5));
+            } else {
+                list[len++] = new Sphere(randRadius, centre, vec3(0, 0, 0), new MatDielectric(((float)rand() / RAND_MAX) + 0.5));
+            }
+
+        }
+    }
+    list[len++] = new Sphere(1, vec3(0,1,0), vec3(0,0,0), new MatDielectric(1.5));
+    list[len++] = new Sphere(1, vec3(-4, 1, 0), vec3(0, 0, 0), new MatLambertian(vec3(0.4, 0.2, 0.1)));
+    list[len++] = new Sphere(1, vec3(4, 1, 0), vec3(0, 0, 0), new MatMetal(vec3(0.7, 0.6, 0.5), 0.5));
+
+    return new HitableList(list, len);
+}
+
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 100; //9
+    const int ns = 25; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -53,19 +83,22 @@ int main(int argc, char* argv[]) {
     sdltemplate::loop();
 
     // Make camera
-    vec3 lookFrom(3, 3, 2); // 0,0,0.5
-    vec3 lookAt(0, 0, -1);
+    vec3 lookFrom(13, 2, 3); //(3, 3, 2); // 0,0,0.5
+    vec3 lookAt(0,0,0); //(0, 0, -1);
     float distFocus = (lookFrom - lookAt).length();
-    float aperture = 1.0; // 1.5, fov should be 90 not 20 (20 is zoomed in)
+    float aperture = 0.2; // 1.5, fov should be 90 not 20 (20 is zoomed in)
     Camera cam(lookFrom, lookAt, vec3(0,1,0), 20, float(imgWidth)/float(imgHeight), aperture, distFocus);
 
     // Establish list of world items (can push into seperate function)
+    /*
     Hitable* worldList[4];
     worldList[0] = new Sphere(0.55, vec3(1.0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
     worldList[1] = new Sphere(0.55, vec3(-1.0, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0), 0.5));
     worldList[2] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(1, 0, 0), new MatDielectric(1.33));
     worldList[3] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3)));
     Hitable* world = new HitableList(worldList, 4);
+    */
+    Hitable* world = getRandomScene();
 
     // Bottom to top (img is reversed), left to right
     for (int y = imgHeight - 1; y >= 0; y--) {
