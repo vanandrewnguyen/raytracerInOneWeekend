@@ -27,7 +27,7 @@ vec3 randomInUnitDisk() {
 
 Camera::Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRatio, float aperture, float focusDist) {
     lensRadius = aperture / 2;
-    float theta = vfov * M_PI / 180;
+    float theta = vfov * Utility::pi / 180;
     float heightMid = tan(theta / 2);
     float widthMid = aspectRatio * heightMid;
     origin = lookFrom;

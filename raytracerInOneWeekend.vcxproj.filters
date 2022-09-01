@@ -56,5 +56,8 @@
     <ClInclude Include="Materials\dielectric.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

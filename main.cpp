@@ -4,6 +4,8 @@
 #include "sphere.h"
 #include "camera.h"
 
+#include "utility.h"
+
 #include "Materials/material.h"
 #include "Materials/lambertian.h"
 #include "Materials/metal.h"
@@ -75,7 +77,7 @@ Hitable* getRandomScene() {
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 25; //9
+    const int ns = 1; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
