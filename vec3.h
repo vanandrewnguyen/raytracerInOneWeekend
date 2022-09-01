@@ -38,12 +38,11 @@ public:
 	inline float length() const { return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]); }
 	inline float lengthSquared() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
 	void makeUnitVec();
+	bool nearZero() const;
 };
 
 // Constructor
-vec3::vec3() {
-
-}
+vec3::vec3() {}
 
 vec3::vec3(float x, float y, float z) {
 	e[0] = x;
@@ -184,6 +183,12 @@ float shlick(float cosine, float ior) {
 	float r0 = (1 - ior) / (1 + ior);
 	r0 = r0 * r0;
 	return r0 + (1 - r0) * (pow((1 - cosine), 5));
+}
+
+bool vec3::nearZero() const {
+	// Return true if the vector is close to zero in all dimensions.
+	const auto s = 1e-8;
+	return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
 }
 
 #endif

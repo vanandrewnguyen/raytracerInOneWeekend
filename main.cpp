@@ -88,7 +88,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
     // Divide by sample count
     col /= float(sampleCount);
 
-    // Colour correction
+    // Colour gamma correction
     col = vec3(sqrt(col.getX()), sqrt(col.getY()), sqrt(col.getZ()));
 
     // Normalize values
@@ -104,7 +104,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 1; //9
+    const int ns = 10; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
