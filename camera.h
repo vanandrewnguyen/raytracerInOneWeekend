@@ -2,6 +2,7 @@
 #define CAMERA
 
 #include "ray.h"
+#include "utility.h"
 
 class Camera {
 private:
