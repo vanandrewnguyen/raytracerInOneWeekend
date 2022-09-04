@@ -20,7 +20,7 @@ public:
 			target = rec.normal;
 		}
 		
-		scatteredRay = Ray(rec.pos, target - rec.pos);
+		scatteredRay = Ray(rec.pos, target - rec.pos, rayIn.getTime());
 		attenuation = albedo;
 		return true;
 	}

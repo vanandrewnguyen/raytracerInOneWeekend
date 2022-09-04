@@ -17,6 +17,14 @@ namespace Utility {
 		return x;
 	}
 
+	double randomDouble() {
+		return (double)rand() / (RAND_MAX + 1.0);
+	}
+
+	double randomDouble(double min, double max) {
+		return min + (max - min) * randomDouble();
+	}
+
 	vec3 getSkyColour(const Ray& r) {
 		vec3 unitDir = unitVector(r.getDirection());
 		// Shift from -1->1 to 0->1

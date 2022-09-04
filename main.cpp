@@ -2,6 +2,7 @@
 #include "sdltemplate.h"
 #include "hitableList.h"
 #include "sphere.h"
+#include "movingSphere.h"
 #include "camera.h"
 
 #include "utility.h"
@@ -46,9 +47,12 @@ Hitable* getRandomScene() {
             float randMat = ((float)rand() / RAND_MAX);
             float randRadius = 0.1 + 0.1 * ((float)rand() / RAND_MAX);
             vec3 centre(a + 0.9 * (float)rand() / RAND_MAX, randRadius, b + 0.9 * (float)rand() / RAND_MAX);
-            if (randMat < 0.33) {
-                list[len++] = new Sphere(randRadius, centre, vec3(0,0,0), new MatLambertian(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX)));
-            } else if (randMat < 0.66) {
+            if (randMat < 0.7) {
+                // Lambertian spheres have a random centre
+                vec3 centre2 = centre + vec3(0, Utility::randomDouble(0, 0.5), 0);
+                //list[len++] = new Sphere(randRadius, centre, vec3(0,0,0), new MatLambertian(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX)));
+                list[len++] = new MovingSphere(centre, centre2, 0.0, 1.0, randRadius, vec3(0, 0, 0), new MatLambertian(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX)));
+            } else if (randMat < 0.85) {
                 list[len++] = new Sphere(randRadius, centre, vec3(0, 0, 0), new MatMetal(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX), ((float)rand() / RAND_MAX) * 0.5));
             } else {
                 list[len++] = new Sphere(randRadius, centre, vec3(0, 0, 0), new MatDielectric(((float)rand() / RAND_MAX) + 0.5));
@@ -116,11 +120,11 @@ int main(int argc, char* argv[]) {
     vec3 lookAt(0,0,0); //(0, 0, -1);
     float distFocus = (lookFrom - lookAt).length();
     float aperture = 0.2; // 1.5, fov should be 90 not 20 (20 is zoomed in)
-    Camera cam(lookFrom, lookAt, vec3(0,1,0), 20, float(imgWidth)/float(imgHeight), aperture, distFocus);
+    Camera cam(lookFrom, lookAt, vec3(0,1,0), 20, float(imgWidth)/float(imgHeight), aperture, distFocus, 0.0, 1.0);
 
     // Establish list of world items (can push into seperate function)
-    Hitable* world = getBaseThreeSphereScene();
-    //Hitable* world = getRandomScene();
+    //Hitable* world = getBaseThreeSphereScene();
+    Hitable* world = getRandomScene();
 
     // Bottom to top (img is reversed), left to right
     for (int y = imgHeight - 1; y >= 0; y--) {

@@ -43,9 +43,9 @@ public:
 		}
 
 		if (((float)rand() / RAND_MAX) < reflectProb) {
-			scatteredRay = Ray(rec.pos, reflected);
+			scatteredRay = Ray(rec.pos, reflected, rayIn.getTime());
 		} else {
-			scatteredRay = Ray(rec.pos, refracted);
+			scatteredRay = Ray(rec.pos, refracted, rayIn.getTime());
 		}
 
 		return true;

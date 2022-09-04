@@ -5,37 +5,44 @@
 
 class Ray {
 private:
-	vec3 A, B;
+	vec3 orig, dir;
+	double tm;
 
 public:
 	// Constructors
 	Ray();
-	Ray(const vec3& a, const vec3 b);
+	Ray(const vec3& a, const vec3& b, double time = 0.0);
 
 	vec3 getOrigin() const;
 	vec3 getDirection() const;
 	vec3 getPointParam(float t) const;
+	double getTime() const;
 };
 
 Ray::Ray() {
 
 }
 
-Ray::Ray(const vec3& a, const vec3 b) {
-	A = a;
-	B = b;
+Ray::Ray(const vec3& a, const vec3& b, double time) {
+	orig = a;
+	dir = b;
+	tm = time;
 }
 
 vec3 Ray::getOrigin() const {
-	return A;
+	return orig;
 }
 
 vec3 Ray::getDirection() const {
-	return B;
+	return dir;
+}
+
+double Ray::getTime() const {
+	return tm;
 }
 
 vec3 Ray::getPointParam(float t) const {
-	return A + t * B;
+	return orig + t * dir;
 }
 
 #endif

@@ -59,5 +59,8 @@
     <ClInclude Include="utility.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="movingSphere.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
