@@ -2,12 +2,17 @@
 #define LAMBERTIAN
 
 #include "material.h"
+#include "../Textures/texture.h"
 
 class MatLambertian : public Material {
 public:
+	vec3 albedo;
+	Texture* texPtr;
+public:
 	// Constructor
-	MatLambertian(const vec3& a) {
+	MatLambertian(const vec3& a, Texture* t = NULL) {
 		albedo = a;
+		texPtr = t;
 	}
 
 	// Change our scattering
@@ -21,11 +26,13 @@ public:
 		}
 		
 		scatteredRay = Ray(rec.pos, target - rec.pos, rayIn.getTime());
-		attenuation = albedo;
+		if (texPtr != NULL) {
+			attenuation = texPtr->getColourVal(rec.u, rec.v, rec.pos);
+		} else {
+			attenuation = albedo;
+		}
 		return true;
 	}
-public:
-	vec3 albedo; 
 };
 
 #endif

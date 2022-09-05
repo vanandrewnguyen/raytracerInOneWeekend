@@ -2,6 +2,7 @@
 #define SPHERE
 
 #include "hitable.h"
+#include "utility.h"
 
 class Material;
 
@@ -20,6 +21,7 @@ public:
 	float getRadius();
 	vec3 getCenter();
 	vec3 getColour();
+	static void getUV(const vec3& p, float& u, float& v);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 };
@@ -58,6 +60,7 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 			rec.pos = r.getPointParam(rec.t);
 			rec.normal = (rec.pos - center) / radius;
 			rec.matPtr = matPtr;
+			getUV(rec.normal, rec.u, rec.v);
 			return true;
 		}
 		quadratic = (-b + sqrt(b * b - a * c)) / a;
@@ -66,11 +69,21 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 			rec.pos = r.getPointParam(rec.t);
 			rec.normal = (rec.pos - center) / radius;
 			rec.matPtr = matPtr;
+			getUV(rec.normal, rec.u, rec.v);
 			return true;
 		}
 	}
 
 	return false;
+}
+
+void Sphere::getUV(const vec3& p, float& u, float& v) {
+	// p = point on sphere, u, v [0, 1] of angle from: Y axis from x = -1 and Y = -1 -> Y = 1
+	float theta = acos(-p.getY());
+	float phi = atan2(-p.getZ(), p.getX()) + Utility::pi;
+
+	u = phi / (2 * Utility::pi);
+	v = theta / phi;
 }
 
 #endif

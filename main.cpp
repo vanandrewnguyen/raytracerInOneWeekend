@@ -1,17 +1,25 @@
 #include <iostream>
 #include "sdltemplate.h"
+
+// Objects
 #include "hitableList.h"
 #include "sphere.h"
 #include "movingSphere.h"
-#include "camera.h"
 
+#include "camera.h"
 #include "utility.h"
 
+// Materials
 #include "Materials/material.h"
 #include "Materials/lambertian.h"
 #include "Materials/metal.h"
 #include "Materials/dielectric.h"
 
+// Textures
+#include "Textures/texture.h"
+#include "Textures/texSolidColour.h"
+
+// Const
 float MAXFLOAT = 999.0;
 int MAXDEPTH = 50;
 
@@ -72,7 +80,7 @@ Hitable* getBaseThreeSphereScene() {
     worldList[0] = new Sphere(0.55, vec3(1.0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
     worldList[1] = new Sphere(0.55, vec3(-1.0, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0), 0.5));
     worldList[2] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(1, 0, 0), new MatDielectric(1.33));
-    worldList[3] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3)));
+    worldList[3] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexSolidColour(vec3(0.8, 0.3, 0.3))));
     return new HitableList(worldList, 4);
 }
 

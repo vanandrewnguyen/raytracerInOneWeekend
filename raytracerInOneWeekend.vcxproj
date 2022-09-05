@@ -159,6 +159,9 @@
     <ClInclude Include="ray.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="Textures\texChecker.h" />
+    <ClInclude Include="Textures\texSolidColour.h" />
+    <ClInclude Include="Textures\texture.h" />
     <ClInclude Include="utility.h" />
     <ClInclude Include="vec3.h" />
   </ItemGroup>

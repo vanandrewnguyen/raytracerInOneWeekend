@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Materials">
       <UniqueIdentifier>{528713df-542d-4e53-908d-1a7550b54ed4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Textures">
+      <UniqueIdentifier>{6384e32a-654b-4863-b523-43c2d6a21d5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,6 +64,15 @@
     </ClInclude>
     <ClInclude Include="movingSphere.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\texture.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\texSolidColour.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\texChecker.h">
+      <Filter>Source Files\Textures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
