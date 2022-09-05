@@ -108,23 +108,37 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 10; //9
+    const int ns = 1; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
     sdltemplate::sdl("Raytracer", imgWidth, imgHeight);
     sdltemplate::loop();
 
-    // Make camera
-    vec3 lookFrom(13, 2, 3); //(3, 3, 2); // 0,0,0.5
-    vec3 lookAt(0,0,0); //(0, 0, -1);
-    float distFocus = (lookFrom - lookAt).length();
-    float aperture = 0.2; // 1.5, fov should be 90 not 20 (20 is zoomed in)
-    Camera cam(lookFrom, lookAt, vec3(0,1,0), 20, float(imgWidth)/float(imgHeight), aperture, distFocus, 0.0, 1.0);
+    // Switch Scenes
+    vec3 lookFrom, lookAt;
+    float distFocus, aperture;
+    Hitable* world;
+    int index = 0;
 
-    // Establish list of world items (can push into seperate function)
-    //Hitable* world = getBaseThreeSphereScene();
-    Hitable* world = getRandomScene();
+    switch (index) {
+        case 1:
+            lookFrom = vec3(13, 2, 3);
+            lookAt = vec3(0, 0, 0);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.2;
+            world = getRandomScene();
+        break;
+        default:
+            lookFrom = vec3(3, 3, 2); 
+            lookAt = vec3(0, 0, -1);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.1;
+            world = getBaseThreeSphereScene();
+    }
+    Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
+
+
 
     // Bottom to top (img is reversed), left to right
     for (int y = imgHeight - 1; y >= 0; y--) {
