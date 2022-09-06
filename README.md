@@ -9,5 +9,7 @@ I wanted to follow along Peter Shirley's "Raytracer In One Weekend" book and bui
 **Book One Final Output:**
 ![finalfinal](https://user-images.githubusercontent.com/53636492/187140226-46c210da-7f93-43b7-9f24-94c5fc589007.PNG)
 
+**Book Two Progress Shot:**
+![checker1](https://user-images.githubusercontent.com/53636492/188525654-1ff67580-76cf-4e47-b223-250cefb69f3f.PNG)
 
 
