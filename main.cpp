@@ -18,6 +18,7 @@
 // Textures
 #include "Textures/texture.h"
 #include "Textures/texSolidColour.h"
+#include "Textures/texChecker.h"
 
 // Const
 float MAXFLOAT = 999.0;
@@ -45,8 +46,9 @@ vec3 scene(const Ray& r, Hitable *world, int depth) {
 Hitable* getRandomScene() {
     int n = 500;
     Hitable** list = new Hitable * [n + 1];
-    list[0] = new Sphere(1000, vec3(0, -1000, 0), vec3(0,0,0), new MatLambertian(vec3(0.5, 0.5, 0.5)));
-    
+    //list[0] = new Sphere(1000, vec3(0, -1000, 0), vec3(0,0,0), new MatLambertian(vec3(0.5, 0.5, 0.5)));
+    list[0] = new Sphere(1000, vec3(0, -1000, 0), vec3(0, 0, 0), new MatLambertian(vec3(0.5, 0.5, 0.5), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
+
     // Generate random spheres
     int size = 11;
     int len = 1;
@@ -55,12 +57,12 @@ Hitable* getRandomScene() {
             float randMat = ((float)rand() / RAND_MAX);
             float randRadius = 0.1 + 0.1 * ((float)rand() / RAND_MAX);
             vec3 centre(a + 0.9 * (float)rand() / RAND_MAX, randRadius, b + 0.9 * (float)rand() / RAND_MAX);
-            if (randMat < 0.7) {
+            if (randMat < 0.8) {
                 // Lambertian spheres have a random centre
-                vec3 centre2 = centre + vec3(0, Utility::randomDouble(0, 0.5), 0);
+                vec3 centre2 = centre + vec3(0, Utility::randomDouble(0, 0.4), 0);
                 //list[len++] = new Sphere(randRadius, centre, vec3(0,0,0), new MatLambertian(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX)));
                 list[len++] = new MovingSphere(centre, centre2, 0.0, 1.0, randRadius, vec3(0, 0, 0), new MatLambertian(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX)));
-            } else if (randMat < 0.85) {
+            } else if (randMat < 0.9) {
                 list[len++] = new Sphere(randRadius, centre, vec3(0, 0, 0), new MatMetal(vec3((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX), ((float)rand() / RAND_MAX) * 0.5));
             } else {
                 list[len++] = new Sphere(randRadius, centre, vec3(0, 0, 0), new MatDielectric(((float)rand() / RAND_MAX) + 0.5));
@@ -80,7 +82,7 @@ Hitable* getBaseThreeSphereScene() {
     worldList[0] = new Sphere(0.55, vec3(1.0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
     worldList[1] = new Sphere(0.55, vec3(-1.0, 0, -1), vec3(1, 0, 0), new MatMetal(vec3(1.0, 1.0, 1.0), 0.5));
     worldList[2] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(1, 0, 0), new MatDielectric(1.33));
-    worldList[3] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexSolidColour(vec3(0.8, 0.3, 0.3))));
+    worldList[3] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
     return new HitableList(worldList, 4);
 }
 
@@ -108,6 +110,9 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
     int ig = static_cast<int>(255.999 * col.getY());
     int ib = static_cast<int>(255.999 * col.getZ());
 
+    // Write in real time
+    if (x % imgWidth == 1) sdltemplate::loop();
+
     // Output
     sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));
     sdltemplate::drawPoint(x, imgHeight - y);
@@ -116,7 +121,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 1; //9
+    const int ns = 20; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -127,7 +132,7 @@ int main(int argc, char* argv[]) {
     vec3 lookFrom, lookAt;
     float distFocus, aperture;
     Hitable* world;
-    int index = 0;
+    int index = 1;
 
     switch (index) {
         case 1:
