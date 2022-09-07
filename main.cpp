@@ -89,8 +89,8 @@ Hitable* getBaseThreeSphereScene() {
 
 Hitable* getMinimalOneSphereScene() {
     Hitable** worldList = new Hitable * [2];
-    worldList[0] = new Sphere(1.0, vec3(0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin(4.0)));
-    worldList[1] = new Sphere(100.0, vec3(0, -101, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexPerlin(2.0)));
+    worldList[0] = new Sphere(1.0, vec3(0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin(4.0, 4)));
+    worldList[1] = new Sphere(100.0, vec3(0, -101, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
     return new HitableList(worldList, 2);
 }
 

@@ -30,6 +30,12 @@ namespace Utility {
 		return randNum;
 	}
 
+	float smoothStep(float e1, float e2, float val) {
+		val = clamp((val - e1) / (e2 - e1), 0.0, 1.0);
+		// Hermite curve
+		return val * val * (3 - 2 * val);
+	}
+
 	vec3 getSkyColour(const Ray& r) {
 		vec3 unitDir = unitVector(r.getDirection());
 		// Shift from -1->1 to 0->1
