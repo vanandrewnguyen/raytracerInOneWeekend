@@ -19,13 +19,13 @@
     <Filter Include="Source Files\Textures">
       <UniqueIdentifier>{6384e32a-654b-4863-b523-43c2d6a21d5b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Assets">
+      <UniqueIdentifier>{5676655f-dacf-449d-b7e0-99893e72abb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Textures\imageTexture.cpp">
-      <Filter>Source Files\Textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,8 +86,16 @@
     <ClInclude Include="stb_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="package_stb_image.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Textures\texImage.h">
+      <Filter>Source Files\Textures</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\earthmap.jpg">
+      <Filter>Source Files\Assets</Filter>
+    </Image>
+    <Image Include="Assets\texBrickWall.jpg">
+      <Filter>Source Files\Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

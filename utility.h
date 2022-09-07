@@ -5,6 +5,7 @@
 #include <limits>
 #include <memory>
 #include "vec3.h"
+#include "ray.h"
 
 namespace Utility {
 	// Constants

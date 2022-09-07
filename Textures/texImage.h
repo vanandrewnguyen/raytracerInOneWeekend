@@ -1,35 +1,37 @@
-#ifndef IMAGETEXTURE
-#define IMAGETEXTURE
+#ifndef TEXIMAGE
+#define TEXIMAGE
 
-#include "../package_stb_image.h"
-#include "../perlin.h"
 #include "texture.h"
+#include "../utility.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../stb_image.h"
+
 #include <iostream>
 
-class ImageTexture : public Texture {
+class TexImage : public Texture {
 private:
 	unsigned char* data;
 	int width, height;
 	int bytesPerLine;
 public:
 	const static int bytePerPixel = 3;
-	
+
 public:
-	ImageTexture();
-	ImageTexture(const char* filename);
-	~ImageTexture();
+	TexImage();
+	TexImage(const char* filename);
+	~TexImage();
 
 	virtual vec3 getColourVal(float u, float v, const vec3& p) const;
 };
 
-ImageTexture::ImageTexture() {
+TexImage::TexImage() {
 	data = nullptr;
 	width = 0;
 	height = 0;
 	bytesPerLine = 0;
 }
 
-ImageTexture::ImageTexture(const char* filename) {
+TexImage::TexImage(const char* filename) {
 	int componentsPerPixel = bytePerPixel;
 
 	data = stbi_load(filename, &width, &height, &componentsPerPixel, componentsPerPixel);
@@ -43,11 +45,11 @@ ImageTexture::ImageTexture(const char* filename) {
 	bytesPerLine = bytePerPixel * width;
 }
 
-ImageTexture::~ImageTexture() {
+TexImage::~TexImage() {
 	delete data;
 }
 
-vec3 ImageTexture::getColourVal(float u, float v, const vec3& p) const {
+vec3 TexImage::getColourVal(float u, float v, const vec3& p) const {
 	if (data == nullptr) {
 		// If error, return bright red
 		return vec3(1, 0, 0);

@@ -20,6 +20,7 @@
 #include "Textures/texSolidColour.h"
 #include "Textures/texChecker.h"
 #include "Textures/texPerlin.h"
+#include "Textures/texImage.h"
 
 // Const
 float MAXFLOAT = 999.0;
