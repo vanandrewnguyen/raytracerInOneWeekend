@@ -129,7 +129,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 20; //9
+    const int ns = 1; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window

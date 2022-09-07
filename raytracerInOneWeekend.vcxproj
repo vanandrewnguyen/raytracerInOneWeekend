@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Textures\imageTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -156,10 +157,12 @@
     <ClInclude Include="Materials\material.h" />
     <ClInclude Include="Materials\metal.h" />
     <ClInclude Include="movingSphere.h" />
+    <ClInclude Include="package_stb_image.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Textures\texChecker.h" />
     <ClInclude Include="Textures\texPerlin.h" />
     <ClInclude Include="Textures\texSolidColour.h" />

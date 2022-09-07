@@ -79,6 +79,15 @@ Perlin::~Perlin() {
 }
 
 float Perlin::noise3D(const vec3& p) const {
+	auto i = static_cast<int>(4 * p.getX()) & 255;
+	auto j = static_cast<int>(4 * p.getY()) & 255;
+	auto k = static_cast<int>(4 * p.getZ()) & 255;
+	auto v = randVector[permX[i] ^ permY[j] ^ permZ[k]];
+
+	return (v.getX() + v.getY() + v.getZ()) / 3;
+}
+
+float Perlin::smoothNoise3D(const vec3& p) const {
 	// Same in shdtoy as fract()
 	float u = p.getX() - floor(p.getX());
 	float v = p.getY() - floor(p.getY());
@@ -110,7 +119,7 @@ float Perlin::fbm(const vec3& p, int depth) const {
 	float amplitude = 1.0;
 
 	for (int i = 0; i < depth; i++) {
-		accum += amplitude * noise3D(tempPos);
+		accum += amplitude * smoothNoise3D(tempPos);
 
 		// Decay
 		amplitude *= 0.5;
