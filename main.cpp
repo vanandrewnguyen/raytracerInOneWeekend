@@ -19,6 +19,7 @@
 #include "Textures/texture.h"
 #include "Textures/texSolidColour.h"
 #include "Textures/texChecker.h"
+#include "Textures/texPerlin.h"
 
 // Const
 float MAXFLOAT = 999.0;
@@ -86,6 +87,13 @@ Hitable* getBaseThreeSphereScene() {
     return new HitableList(worldList, 4);
 }
 
+Hitable* getMinimalOneSphereScene() {
+    Hitable** worldList = new Hitable * [2];
+    worldList[0] = new Sphere(1.0, vec3(0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin()));
+    worldList[1] = new Sphere(100.0, vec3(0, -101, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexPerlin()));
+    return new HitableList(worldList, 2);
+}
+
 void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable* world, int sampleCount) {
     // Set UV's
     // We can offset randomly to anti alias cheaply, moving the cam
@@ -121,7 +129,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 20; //9
+    const int ns = 1; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -132,7 +140,7 @@ int main(int argc, char* argv[]) {
     vec3 lookFrom, lookAt;
     float distFocus, aperture;
     Hitable* world;
-    int index = 1;
+    int index = 2;
 
     switch (index) {
         case 1:
@@ -141,6 +149,13 @@ int main(int argc, char* argv[]) {
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.2;
             world = getRandomScene();
+        break;
+        case 2:
+            lookFrom = vec3(6, 2, 4);
+            lookAt = vec3(0, 0, -1);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.1;
+            world = getMinimalOneSphereScene();
         break;
         default:
             lookFrom = vec3(3, 3, 2); 

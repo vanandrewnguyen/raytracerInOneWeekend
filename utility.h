@@ -25,6 +25,11 @@ namespace Utility {
 		return min + (max - min) * randomDouble();
 	}
 
+	int randomInt(int min, int max) {
+		int randNum = rand() % (max - min + 1) + min;
+		return randNum;
+	}
+
 	vec3 getSkyColour(const Ray& r) {
 		vec3 unitDir = unitVector(r.getDirection());
 		// Shift from -1->1 to 0->1

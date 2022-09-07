@@ -74,5 +74,11 @@
     <ClInclude Include="Textures\texChecker.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="perlin.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\texPerlin.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
