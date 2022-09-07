@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include "vec3.h"
 
 namespace Utility {
 	// Constants
@@ -34,6 +35,19 @@ namespace Utility {
 		val = clamp((val - e1) / (e2 - e1), 0.0, 1.0);
 		// Hermite curve
 		return val * val * (3 - 2 * val);
+	}
+
+	vec3 smoothStepVector(vec3 e1, vec3 e2, float val) {
+		float valX = clamp((val - e1.getX()) / (e2.getX() - e1.getX()), 0.0, 1.0);
+		float valY = clamp((val - e1.getY()) / (e2.getY() - e1.getY()), 0.0, 1.0);
+		float valZ = clamp((val - e1.getZ()) / (e2.getZ() - e1.getZ()), 0.0, 1.0);
+		valX = valX * valX * (3 - 2 * valX);
+		valY = valY * valY * (3 - 2 * valY);
+		valZ = valZ * valZ * (3 - 2 * valZ);
+		vec3 out(valX, valY, valZ);
+
+		// Hermite curve
+		return out;
 	}
 
 	vec3 getSkyColour(const Ray& r) {

@@ -18,6 +18,7 @@ public:
 	inline float getX() const { return e[0]; }
 	inline float getY() const { return e[1]; }
 	inline float getZ() const { return e[2]; }
+	void setX(float val) const;
 
 	// Def vector operators
 	inline const vec3& operator+() const { return *this; }

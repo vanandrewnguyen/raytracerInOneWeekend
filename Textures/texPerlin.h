@@ -9,19 +9,24 @@ public:
 	TexPerlin() {
 		freq = 1.0;
 	}
-	TexPerlin(float sc, int deg) {
+	TexPerlin(float sc, int deg, vec3 col0, vec3 col1) {
 		freq = sc;
 		interval = deg;
+		c0 = col0;
+		c1 = col1;
 	}
 
 	virtual vec3 getColourVal(float u, float v, const vec3& p) const override {
 		float n = noise.fbm(freq * p, interval);
-		return vec3(1, 1, 1) * Utility::smoothStep(-0.1, 0.5, n);
+		vec3 col = Utility::smoothStepVector(c0, c1, n);
+		return col * Utility::smoothStep(-0.4, 0.7, n);
 	}
 public:
 	Perlin noise;
 	float freq;
 	int interval;
+	vec3 c0;
+	vec3 c1;
 };
 
 #endif
