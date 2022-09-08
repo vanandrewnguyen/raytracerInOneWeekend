@@ -16,7 +16,7 @@ public:
 	}
 
 	// Change our scattering
-	virtual bool scatter(const Ray& rayIn, const hitRecord rec, vec3& attenuation, Ray& scatteredRay) const {
+	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scatteredRay) const {
 		// Scatter our ray in random unit sphere
 		vec3 target = rec.pos + rec.normal + randInUnitSphere();
 		

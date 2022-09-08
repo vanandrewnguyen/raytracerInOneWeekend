@@ -14,6 +14,7 @@
 #include "Materials/lambertian.h"
 #include "Materials/metal.h"
 #include "Materials/dielectric.h"
+#include "Materials/diffuseLight.h"
 
 // Textures
 #include "Textures/texture.h"
@@ -26,23 +27,36 @@
 float MAXFLOAT = 999.0;
 int MAXDEPTH = 50;
 
-vec3 scene(const Ray& r, Hitable *world, int depth) {
+vec3 scene(const Ray& r, vec3& bgCol, Hitable *world, int depth) {
     // Make new list of world items
     hitRecord rec;
-    if (world->hit(r, 0.001, MAXFLOAT, rec)) {
-        Ray scatteredRay;
-        vec3 attenuation;
-        // Push off the surface normal a little bit (no collision error)
-        // Recursion for shadows
-        if (depth < MAXDEPTH && rec.matPtr->scatter(r, rec, attenuation, scatteredRay)) {
-            return attenuation * scene(scatteredRay, world, depth + 1);
-        } else {
-            return vec3(0, 0, 0);
-        }
+    if (depth >= MAXDEPTH) {
+        return vec3(0, 0, 0);
+    }
+
+    if (!(world->hit(r, 0.001, MAXFLOAT, rec))) {
+        // If no collision, return sky colour
+        // return Utility::getSkyColour(r);
+        return bgCol;
     }
     
-    // If no collision, return sky colour
-    return Utility::getSkyColour(r);
+    // Else, do our recursive calls
+    Ray scatteredRay;
+    vec3 attenuation;
+    vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.pos);
+    // Push off the surface normal a little bit (no collision error)
+    if (!(rec.matPtr->scatter(r, rec, attenuation, scatteredRay))) {
+        return emitted;
+    }
+
+    return emitted + attenuation * scene(scatteredRay, bgCol, world, depth + 1);
+    
+    /*
+    if (depth < MAXDEPTH && rec.matPtr->scatter(r, rec, attenuation, scatteredRay)) {
+        return attenuation * scene(scatteredRay, world, depth + 1);
+    } else {
+        return vec3(0, 0, 0);
+    }*/
 }
 
 Hitable* getRandomScene() {
@@ -89,13 +103,15 @@ Hitable* getBaseThreeSphereScene() {
 }
 
 Hitable* getMinimalOneSphereScene() {
-    Hitable** worldList = new Hitable * [2];
-    worldList[0] = new Sphere(1.0, vec3(0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin(2.0, 4, vec3(0,0,0), vec3(0.7,0.6,0.5))));
-    worldList[1] = new Sphere(100.0, vec3(0, -101, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
-    return new HitableList(worldList, 2);
+    Hitable** worldList = new Hitable * [4];
+    worldList[0] = new Sphere(0.5, vec3(0, 0, -0.5), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin(2.0, 4, vec3(0,0,0), vec3(0.7,0.6,0.5))));
+    worldList[1] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
+    worldList[2] = new Sphere(1.0, vec3(0, 3.0, -0.5), vec3(1, 0, 0), new DiffuseLight(new TexSolidColour(vec3(1, 1, 1))));
+    worldList[3] = new Sphere(0.25, vec3(0, 0.5, 0.5), vec3(1, 0, 0), new DiffuseLight(new TexSolidColour(vec3(4, 4, 4))));
+    return new HitableList(worldList, 4);
 }
 
-void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable* world, int sampleCount) {
+void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable* world, int sampleCount, vec3& bgCol) {
     // Set UV's
     // We can offset randomly to anti alias cheaply, moving the cam
     vec3 col(0, 0, 0);
@@ -106,7 +122,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
         // Get sky colour
         Ray rayDir = cam.getRay(u, v);
         vec3 pos = rayDir.getPointParam(2.0);
-        col += scene(rayDir, world, 0);
+        col += scene(rayDir, bgCol, world, 0);
     }
     // Divide by sample count
     col /= float(sampleCount);
@@ -130,7 +146,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 1; //9
+    const int ns = 50; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -142,6 +158,7 @@ int main(int argc, char* argv[]) {
     float distFocus, aperture;
     Hitable* world;
     int index = 2;
+    vec3 bgCol = vec3(0,0,0);
 
     switch (index) {
         case 1:
@@ -173,7 +190,7 @@ int main(int argc, char* argv[]) {
     for (int y = imgHeight - 1; y >= 0; y--) {
         for (int x = 0; x < imgWidth; x++) {
             // Output
-            writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns);
+            writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns, bgCol);
             // Debugging
             //std::cout << int(x+y) << int(imgWidth * imgHeight) << "\n";
         }

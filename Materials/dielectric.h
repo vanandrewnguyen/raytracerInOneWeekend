@@ -13,7 +13,7 @@ public:
 	}
 
 	// Change our scattering
-	virtual bool scatter(const Ray& rayIn, const hitRecord rec, vec3& attenuation, Ray& scatteredRay) const {
+	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scatteredRay) const {
 		vec3 outwardNormal;
 		vec3 reflected = reflect(rayIn.getDirection(), rec.normal);
 		float ior;

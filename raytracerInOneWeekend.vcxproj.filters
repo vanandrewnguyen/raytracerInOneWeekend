@@ -89,6 +89,9 @@
     <ClInclude Include="Textures\texImage.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="Materials\diffuseLight.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
