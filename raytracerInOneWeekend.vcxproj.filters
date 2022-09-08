@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Assets">
       <UniqueIdentifier>{5676655f-dacf-449d-b7e0-99893e72abb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Hitables">
+      <UniqueIdentifier>{c4bf9da1-9b55-498b-a958-976161e52118}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -36,15 +39,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="ray.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hitable.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hitableList.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
@@ -63,9 +57,6 @@
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
     <ClInclude Include="utility.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="movingSphere.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Textures\texture.h">
@@ -91,6 +82,21 @@
     </ClInclude>
     <ClInclude Include="Materials\diffuseLight.h">
       <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\hitable.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\hitableList.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\sphere.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\movingSphere.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\xyRect.h">
+      <Filter>Source Files\Hitables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

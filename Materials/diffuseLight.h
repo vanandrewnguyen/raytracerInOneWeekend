@@ -4,7 +4,7 @@
 #include "material.h"
 #include "../Textures/texture.h"
 #include "../ray.h"
-#include "../hitable.h"
+#include "../Hitables/hitable.h"
 
 class DiffuseLight : public Material {
 public:

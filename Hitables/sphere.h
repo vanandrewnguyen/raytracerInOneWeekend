@@ -2,7 +2,7 @@
 #define SPHERE
 
 #include "hitable.h"
-#include "utility.h"
+#include "../utility.h"
 
 class Material;
 

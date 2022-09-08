@@ -3,7 +3,7 @@
 
 #include "material.h"
 #include "../ray.h"
-#include "../hitable.h"
+#include "../Hitables/hitable.h"
 
 class MatMetal : public Material {
 public:
