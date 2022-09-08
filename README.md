@@ -1,7 +1,7 @@
 # raytracerInOneWeekend
 I'm writing (another) raytracer!
 
-I wanted to follow along Peter Shirley's "Raytracer In One Weekend" book and build one for fun.
+I wanted to improve my C++ and write another ray-tracer from the ground up. Following along Peter Shirley's book series "Ray-tracing in One Weekend".
 
 **Randomly generated spheres with defocus blur.**
 ![checker2 (2)](https://user-images.githubusercontent.com/53636492/189015882-25888ada-3437-4f5e-b545-652d299769a9.PNG)
