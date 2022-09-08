@@ -1,15 +1,13 @@
 # raytracerInOneWeekend
 I'm writing (another) raytracer!
 
-I wanted to follow along Peter Shirley's "Raytracer In One Weekend" book and build one for fun.
+I wanted to improve my C++ and write another ray-tracer from the ground up. Following along Peter Shirley's book series "Ray-tracing in One Weekend".
 
-**Book One Progress Shot:**
-![camera defocus blur](https://user-images.githubusercontent.com/53636492/187817644-ef2bfec8-1390-4031-aa27-51b1632d0896.PNG)
+**Randomly generated spheres with defocus blur.**
+![checker2 (2)](https://user-images.githubusercontent.com/53636492/189015882-25888ada-3437-4f5e-b545-652d299769a9.PNG)
 
-**Book One Final Output:**
-![finalfinal](https://user-images.githubusercontent.com/53636492/187140226-46c210da-7f93-43b7-9f24-94c5fc589007.PNG)
+**Basic diffuse lighting.**
+![noise2](https://user-images.githubusercontent.com/53636492/189015814-a0b92e84-e3c3-4351-9985-f6e0b03e6e54.PNG)
 
-**Book Two Progress Shot:**
-![checker1](https://user-images.githubusercontent.com/53636492/188525654-1ff67580-76cf-4e47-b223-250cefb69f3f.PNG)
 
 
