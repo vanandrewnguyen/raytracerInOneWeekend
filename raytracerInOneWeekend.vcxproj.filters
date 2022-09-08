@@ -98,6 +98,12 @@
     <ClInclude Include="Hitables\xyRect.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
+    <ClInclude Include="Hitables\xzRect.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\yzRect.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
