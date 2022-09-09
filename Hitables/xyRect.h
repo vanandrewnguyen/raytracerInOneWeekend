@@ -47,7 +47,7 @@ bool XYRect::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
     rec.t = t;
     rec.matPtr = matPtr;
     rec.pos = r.getPointParam(t);
-    rec.normal = vec3(0, 0, 1);
+    rec.setSurfNormal(r, vec3(0, 0, 1));
     
     return true;
 }

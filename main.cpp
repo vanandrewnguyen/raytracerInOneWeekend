@@ -6,6 +6,8 @@
 #include "Hitables/sphere.h"
 #include "Hitables/movingSphere.h"
 #include "Hitables/xyRect.h"
+#include "Hitables/yzRect.h"
+#include "Hitables/xzRect.h"
 
 #include "camera.h"
 #include "utility.h"
@@ -111,6 +113,24 @@ Hitable* getMinimalOneSphereScene() {
     return new HitableList(worldList, 4);
 }
 
+Hitable* getCornellBoxScene() {
+    Hitable** worldList = new Hitable * [6];
+    
+    auto redMat = new MatLambertian(vec3(0.8, 0.1, 0.1));
+    auto greenMat = new MatLambertian(vec3(0.2, 0.8, 0.2));
+    auto whiteMat = new MatLambertian(vec3(0.8, 0.8, 0.8));
+    auto lightMat = new DiffuseLight(new TexSolidColour(vec3(4, 4, 4)));
+
+    worldList[0] = new YZRect(0, 555, 0, 555, 555, greenMat);
+    worldList[1] = new YZRect(0, 555, 0, 555, 0, redMat);
+    worldList[2] = new XZRect(213-96, 343+94, 227-64, 332+64, 554, lightMat);
+    worldList[3] = new XZRect(0, 555, 0, 555, 0, whiteMat);
+    worldList[4] = new XZRect(0, 555, 0, 555, 555, whiteMat);
+    worldList[5] = new XYRect(0, 555, 0, 555, 555, whiteMat);
+
+    return new HitableList(worldList, 6);
+}
+
 void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable* world, int sampleCount, vec3& bgCol, bool useSkyCol) {
     // Set UV's
     // We can offset randomly to anti alias cheaply, moving the cam
@@ -146,7 +166,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 1; //9
+    const int ns = 10; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -157,7 +177,7 @@ int main(int argc, char* argv[]) {
     vec3 lookFrom, lookAt;
     float distFocus, aperture;
     Hitable* world;
-    int index = 2;
+    int index = 3;
     vec3 bgCol = vec3(0,0,0);
     bool useSkyCol = true;
 
@@ -177,6 +197,14 @@ int main(int argc, char* argv[]) {
             world = getMinimalOneSphereScene();
             useSkyCol = false;
         break;
+        case 3:
+            lookFrom = vec3(278, 278, -1800);
+            lookAt = vec3(278, 278, 0);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 2.0;
+            world = getCornellBoxScene();
+            useSkyCol = false;
+        break;
         default:
             lookFrom = vec3(3, 3, 2); 
             lookAt = vec3(0, 0, -1);
@@ -185,8 +213,6 @@ int main(int argc, char* argv[]) {
             world = getBaseThreeSphereScene();
     }
     Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
-
-
 
     // Bottom to top (img is reversed), left to right
     for (int y = imgHeight - 1; y >= 0; y--) {
