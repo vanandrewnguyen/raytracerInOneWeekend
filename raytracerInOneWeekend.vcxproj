@@ -149,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Hitables\box.h" />
     <ClInclude Include="Hitables\hitable.h" />
     <ClInclude Include="Hitables\hitableList.h" />
     <ClInclude Include="Hitables\movingSphere.h" />

@@ -5,9 +5,10 @@
 #include "Hitables/hitableList.h"
 #include "Hitables/sphere.h"
 #include "Hitables/movingSphere.h"
-#include "Hitables/xyRect.h"
-#include "Hitables/yzRect.h"
-#include "Hitables/xzRect.h"
+//#include "Hitables/xyRect.h"
+//#include "Hitables/yzRect.h"
+//#include "Hitables/xzRect.h"
+#include "Hitables/box.h"
 
 #include "camera.h"
 #include "utility.h"
@@ -114,7 +115,7 @@ Hitable* getMinimalOneSphereScene() {
 }
 
 Hitable* getCornellBoxScene() {
-    Hitable** worldList = new Hitable * [6];
+    Hitable** worldList = new Hitable * [8];
     
     auto redMat = new MatLambertian(vec3(0.8, 0.1, 0.1));
     auto greenMat = new MatLambertian(vec3(0.2, 0.8, 0.2));
@@ -128,7 +129,10 @@ Hitable* getCornellBoxScene() {
     worldList[4] = new XZRect(0, 555, 0, 555, 555, whiteMat);
     worldList[5] = new XYRect(0, 555, 0, 555, 555, whiteMat);
 
-    return new HitableList(worldList, 6);
+    worldList[6] = new Box(vec3(130, 0, 65), vec3(295, 165, 230), whiteMat);
+    worldList[7] = new Box(vec3(265, 0, 295), vec3(430, 330, 460), whiteMat);
+
+    return new HitableList(worldList, 8);
 }
 
 void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable* world, int sampleCount, vec3& bgCol, bool useSkyCol) {
@@ -166,7 +170,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 10; //9
+    const int ns = 200; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window

@@ -104,6 +104,9 @@
     <ClInclude Include="Hitables\yzRect.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
+    <ClInclude Include="Hitables\box.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
