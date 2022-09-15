@@ -5,10 +5,9 @@
 #include "Hitables/hitableList.h"
 #include "Hitables/sphere.h"
 #include "Hitables/movingSphere.h"
-//#include "Hitables/xyRect.h"
-//#include "Hitables/yzRect.h"
-//#include "Hitables/xzRect.h"
 #include "Hitables/box.h"
+
+#include "translate.h"
 
 #include "camera.h"
 #include "utility.h"
@@ -170,7 +169,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 200; //9
+    const int ns = 1; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window

@@ -171,6 +171,7 @@
     <ClInclude Include="Textures\texPerlin.h" />
     <ClInclude Include="Textures\texSolidColour.h" />
     <ClInclude Include="Textures\texture.h" />
+    <ClInclude Include="translate.h" />
     <ClInclude Include="utility.h" />
     <ClInclude Include="vec3.h" />
   </ItemGroup>
