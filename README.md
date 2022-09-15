@@ -9,5 +9,7 @@ I wanted to improve my C++ and write another ray-tracer from the ground up. Foll
 **Basic diffuse lighting.**
 ![noise2](https://user-images.githubusercontent.com/53636492/189015814-a0b92e84-e3c3-4351-9985-f6e0b03e6e54.PNG)
 
+**The classic cornell box.**
+![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
 
 
