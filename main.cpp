@@ -8,6 +8,7 @@
 #include "Hitables/box.h"
 
 #include "translate.h"
+#include "rotate.h"
 
 #include "camera.h"
 #include "utility.h"
@@ -128,8 +129,10 @@ Hitable* getCornellBoxScene() {
     worldList[4] = new XZRect(0, 555, 0, 555, 555, whiteMat);
     worldList[5] = new XYRect(0, 555, 0, 555, 555, whiteMat);
 
-    worldList[6] = new Box(vec3(130, 0, 65), vec3(295, 165, 230), whiteMat);
-    worldList[7] = new Box(vec3(265, 0, 295), vec3(430, 330, 460), whiteMat);
+    Hitable* box1 = new Box(vec3(130, 0, 65), vec3(295, 165, 230), whiteMat);
+    Hitable* box2 = new Box(vec3(265, 0, 295), vec3(430, 330, 460), whiteMat);
+    worldList[6] = box1;
+    worldList[7] = box2;
 
     return new HitableList(worldList, 8);
 }
@@ -169,7 +172,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 1; //9
+    const int ns = 10; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window

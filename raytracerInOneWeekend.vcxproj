@@ -164,6 +164,7 @@
     <ClInclude Include="Materials\metal.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
+    <ClInclude Include="rotate.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Textures\texChecker.h" />

@@ -19,6 +19,14 @@ namespace Utility {
 		return x;
 	}
 
+	float degToRad(float deg) {
+		return deg * (pi / 180);
+	}
+
+	float radToDeg(float rad) {
+		return rad * (180 / pi);
+	}
+
 	double randomDouble() {
 		return (double)rand() / (RAND_MAX + 1.0);
 	}

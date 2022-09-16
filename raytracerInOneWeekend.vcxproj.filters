@@ -110,6 +110,9 @@
     <ClInclude Include="translate.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="rotate.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
