@@ -6,6 +6,7 @@
 #include "Hitables/sphere.h"
 #include "Hitables/movingSphere.h"
 #include "Hitables/box.h"
+#include "Hitables/constantVolume.h"
 
 #include "translate.h"
 #include "rotate.h"
@@ -19,6 +20,7 @@
 #include "Materials/metal.h"
 #include "Materials/dielectric.h"
 #include "Materials/diffuseLight.h"
+#include "Materials/isotropic.h"
 
 // Textures
 #include "Textures/texture.h"
@@ -131,8 +133,8 @@ Hitable* getCornellBoxScene() {
 
     Hitable* box1 = new Box(vec3(130, 0, 65), vec3(295, 165, 230), whiteMat);
     Hitable* box2 = new Box(vec3(265, 0, 295), vec3(430, 330, 460), whiteMat);
-    worldList[6] = box1;
-    worldList[7] = box2;
+    worldList[6] = new ConstantVolume(box1, 0.01, new TexSolidColour(vec3(1,1,1)));
+    worldList[7] = new ConstantVolume(box2, 0.01, new TexSolidColour(vec3(0, 0, 0)));;
 
     return new HitableList(worldList, 8);
 }
@@ -172,7 +174,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 800;
     const int imgHeight = 400;
-    const int ns = 10; //9
+    const int ns = 500; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window

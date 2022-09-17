@@ -113,6 +113,12 @@
     <ClInclude Include="rotate.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Hitables\constantVolume.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Materials\isotropic.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
