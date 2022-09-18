@@ -139,6 +139,33 @@ Hitable* getCornellBoxScene() {
     return new HitableList(worldList, 8);
 }
 
+Hitable* getLargeRandomScene() {
+    int n = 500;
+    Hitable** list = new Hitable * [n + 1];
+    int len = 0;
+
+    // Random box floor
+    Material* groundMat = new MatLambertian(vec3(0.48, 0.83, 0.53));
+    const int boxesPerSide = 10;
+    for (int i = 0; i < boxesPerSide; i++) {
+        for (int j = 0; j < boxesPerSide; j++) {
+            float size = 100.0;
+            float x0 = -size * (boxesPerSide / 2) + i * size;
+            float z0 = -size * (boxesPerSide / 2) + j * size;
+            float y0 = 0.0;
+            float x1 = x0 + size;
+            float y1 = Utility::randomDouble(1, 101);
+            float z1 = z0 + size;
+            list[len++] = new Box(vec3(x0, y0, z0), vec3(x1, y1, z1), groundMat);
+        }
+    }
+
+    // Light
+    list[len++] = new XYRect(123, 423, 147, 412, 554, new DiffuseLight(new TexSolidColour(10, 10, 10)));
+
+    return new HitableList(list, len);
+}
+
 void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable* world, int sampleCount, vec3& bgCol, bool useSkyCol) {
     // Set UV's
     // We can offset randomly to anti alias cheaply, moving the cam
@@ -172,9 +199,9 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 }
 
 int main(int argc, char* argv[]) {
-    const int imgWidth = 800;
-    const int imgHeight = 400;
-    const int ns = 500; //9
+    const int imgWidth = 400;//800;
+    const int imgHeight = 200;//400;
+    const int ns = 3; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -185,7 +212,7 @@ int main(int argc, char* argv[]) {
     vec3 lookFrom, lookAt;
     float distFocus, aperture;
     Hitable* world;
-    int index = 3;
+    int index = 4;
     vec3 bgCol = vec3(0,0,0);
     bool useSkyCol = true;
 
@@ -206,11 +233,19 @@ int main(int argc, char* argv[]) {
             useSkyCol = false;
         break;
         case 3:
-            lookFrom = vec3(278, 278, -1800);
-            lookAt = vec3(278, 278, 0);
+            lookFrom = vec3(278, 278, -600);
+            lookAt = vec3(0, 0, 0);
             distFocus = (lookFrom - lookAt).length();
-            aperture = 2.0;
+            aperture = 40.0;
             world = getCornellBoxScene();
+            useSkyCol = false;
+        break;
+        case 4:
+            lookFrom = vec3(478, 278, -600);
+            lookAt = vec3(0, 100, 0);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 40.0;
+            world = getLargeRandomScene();
             useSkyCol = false;
         break;
         default:
@@ -229,9 +264,11 @@ int main(int argc, char* argv[]) {
             writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns, bgCol, useSkyCol);
             // Debugging
             //std::cout << int(x+y) << int(imgWidth * imgHeight) << "\n";
+
         }
     }
-    
+    std::cout << "Done!" << std::endl;
+
     // Keep window active
     while (sdltemplate::running) {
         sdltemplate::loop();
