@@ -161,7 +161,24 @@ Hitable* getLargeRandomScene() {
     }
 
     // Light
-    list[len++] = new XYRect(123, 423, 147, 412, 554, new DiffuseLight(new TexSolidColour(10, 10, 10)));
+    list[len++] = new XYRect(123, 423, 147, 412, 554, new DiffuseLight(new TexSolidColour(4, 4, 4)));
+    list[len++] = new Sphere(80, vec3(60, 280, 0), vec3(1, 0, 0), new DiffuseLight(new TexSolidColour(vec3(4, 4, 4))));
+
+    // Volumetric Fog
+    auto volumeBoundaryFog = new Sphere(5000, vec3(60, 280, 0), vec3(0, 0, 0), new MatDielectric(1.5));
+    list[len++] = new ConstantVolume(volumeBoundaryFog, 0.0001, new TexSolidColour(1, 1, 1));
+
+
+    // 5 Spheres
+    list[len++] = new Sphere(30, vec3(0, 130, 0), vec3(0, 0, 0), new MatDielectric(1.5));
+    auto volumeBoundarySphere1 = new Sphere(30, vec3(-80, 150, 0), vec3(0, 0, 0), new MatDielectric(1.5));
+    list[len++] = volumeBoundarySphere1;
+    list[len++] = new ConstantVolume(volumeBoundarySphere1, 0.2, new TexSolidColour(0.2, 0.4, 0.7));
+    list[len++] = new Sphere(30, vec3(80, 150, 0), vec3(0, 0, 0), new MatMetal(vec3(0.7, 0.6, 0.5), 0.5));
+    list[len++] = new Sphere(30, vec3(-160, 130, 0), vec3(0, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin(0.04, 4, vec3(0, 0, 0), vec3(0.7, 0.6, 0.5))));
+    auto volumeBoundarySphere2 = new Sphere(30, vec3(160, 130, 0), vec3(0, 0, 0), new MatDielectric(1.5));
+    list[len++] = new ConstantVolume(volumeBoundarySphere2, 0.01, new TexSolidColour(0.8, 0.3, 0.3));
+    // Replace lambertian with dielectric constant volume
 
     return new HitableList(list, len);
 }
@@ -199,9 +216,9 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 }
 
 int main(int argc, char* argv[]) {
-    const int imgWidth = 400;//800;
-    const int imgHeight = 200;//400;
-    const int ns = 3; //9
+    const int imgWidth = 800;
+    const int imgHeight = 400;
+    const int ns = 500; //9
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -263,7 +280,7 @@ int main(int argc, char* argv[]) {
             // Output
             writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns, bgCol, useSkyCol);
             // Debugging
-            //std::cout << int(x+y) << int(imgWidth * imgHeight) << "\n";
+            std::cout << int(x+y) << int(imgWidth * imgHeight) << "\n";
 
         }
     }
