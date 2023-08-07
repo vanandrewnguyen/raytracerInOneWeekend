@@ -83,17 +83,17 @@ TexImage::~TexImage() {
 
 vec3 TexImage::getColourVal(float u, float v, const vec3& p) const {
 	if (data == nullptr || height == 0) {
-		// If error, return bright red
-		return vec3(1, 0, 0);
+		// If error, return null
+		return vec3(0, 0, 0);
 	}
 
 	// Clamp given coords
 	u = Utility::clamp(u, 0.0, 1.0);
 	v = 1.0 - Utility::clamp(v, 0.0, 1.0);
-
 	int i = static_cast<int>(u * width);
 	int j = static_cast<int>(v * height);
 
+	// Colour correct pixel data
 	const float colourScale = 1.0 / 255.0;
 	const unsigned char* pixel = getPixelData(i, j);
 

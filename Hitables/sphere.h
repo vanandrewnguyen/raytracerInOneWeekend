@@ -83,7 +83,7 @@ void Sphere::getUV(const vec3& p, float& u, float& v) {
 	float phi = atan2(-p.getZ(), p.getX()) + Utility::pi;
 
 	u = phi / (2 * Utility::pi);
-	v = theta / phi;
+	v = theta / Utility::pi;
 }
 
 #endif
