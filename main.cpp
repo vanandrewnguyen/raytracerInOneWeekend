@@ -30,6 +30,7 @@
 #include "Textures/texImage.h"
 
 // Const
+// Max depth is the maximum number of bounces a ray can have before destroying itself
 float MAXFLOAT = 999.0;
 int MAXDEPTH = 50;
 
@@ -64,7 +65,8 @@ vec3 scene(const Ray& r, vec3& bgCol, Hitable *world, int depth, bool useSkyCol)
     }*/
 }
 
-Hitable* getRandomScene() {
+// Get identical scene from RayTracingInOneWeekend Book 1 final image
+Hitable* getLargeRandomisedSphereScene() {
     int n = 500;
     Hitable** list = new Hitable * [n + 1];
     //list[0] = new Sphere(1000, vec3(0, -1000, 0), vec3(0,0,0), new MatLambertian(vec3(0.5, 0.5, 0.5)));
@@ -98,6 +100,15 @@ Hitable* getRandomScene() {
     return new HitableList(list, len);
 }
 
+// Get super basic scene with one scene
+Hitable* getMinimalTestScene() {
+    Hitable** worldList = new Hitable * [2];
+    worldList[0] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(0, 0, 0), new MatLambertian(vec3(0.3, 0.3, 0.7)));
+    worldList[1] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
+    return new HitableList(worldList, 2);
+}
+
+// Get scene with three test spheres of different materials
 Hitable* getBaseThreeSphereScene() {
     Hitable** worldList = new Hitable * [4];
     worldList[0] = new Sphere(0.55, vec3(1.0, 0, -1), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9)));
@@ -107,7 +118,8 @@ Hitable* getBaseThreeSphereScene() {
     return new HitableList(worldList, 4);
 }
 
-Hitable* getMinimalOneSphereScene() {
+// Get scene with minimal lighting and two lights, and one sphere with a marble texture
+Hitable* getMinimalLightsTestScene() {
     Hitable** worldList = new Hitable * [4];
     worldList[0] = new Sphere(0.5, vec3(0, 0, -0.5), vec3(1, 0, 0), new MatLambertian(vec3(0.9, 0.8, 0.9), new TexPerlin(2.0, 4, vec3(0,0,0), vec3(0.7,0.6,0.5))));
     worldList[1] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
@@ -116,6 +128,7 @@ Hitable* getMinimalOneSphereScene() {
     return new HitableList(worldList, 4);
 }
 
+// Get scene identical of the Cornell Box layout
 Hitable* getCornellBoxScene() {
     Hitable** worldList = new Hitable * [8];
     
@@ -139,7 +152,8 @@ Hitable* getCornellBoxScene() {
     return new HitableList(worldList, 8);
 }
 
-Hitable* getLargeRandomScene() {
+// Get identical scene from RayTracingInOneWeekend Book 2 final image
+Hitable* getLargeMaterialShowcaseScene() {
     int n = 500;
     Hitable** list = new Hitable * [n + 1];
     int len = 0;
@@ -167,7 +181,6 @@ Hitable* getLargeRandomScene() {
     // Volumetric Fog
     auto volumeBoundaryFog = new Sphere(5000, vec3(60, 280, 0), vec3(0, 0, 0), new MatDielectric(1.5));
     list[len++] = new ConstantVolume(volumeBoundaryFog, 0.0001, new TexSolidColour(1, 1, 1));
-
 
     // 5 Spheres
     list[len++] = new Sphere(30, vec3(0, 130, 0), vec3(0, 0, 0), new MatDielectric(1.5));
@@ -216,9 +229,9 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 }
 
 int main(int argc, char* argv[]) {
-    const int imgWidth = 800;
-    const int imgHeight = 400;
-    const int ns = 500; //9
+    const int imgWidth = 200; // 800;
+    const int imgHeight = 100; // 400;
+    const int ns = 10; // 500;
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -229,24 +242,30 @@ int main(int argc, char* argv[]) {
     vec3 lookFrom, lookAt;
     float distFocus, aperture;
     Hitable* world;
-    int index = 4;
+    int index = -1;
     vec3 bgCol = vec3(0,0,0);
     bool useSkyCol = true;
 
     switch (index) {
+        case 0:
+            lookFrom = vec3(3, 3, 2);
+            lookAt = vec3(0, 0, -1);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.1;
+            world = getBaseThreeSphereScene();
         case 1:
             lookFrom = vec3(13, 2, 3);
             lookAt = vec3(0, 0, 0);
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.2;
-            world = getRandomScene();
+            world = getLargeRandomisedSphereScene();
         break;
         case 2:
             lookFrom = vec3(6, 2, 4);
             lookAt = vec3(0, 0, -1);
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.1;
-            world = getMinimalOneSphereScene();
+            world = getMinimalLightsTestScene();
             useSkyCol = false;
         break;
         case 3:
@@ -262,7 +281,7 @@ int main(int argc, char* argv[]) {
             lookAt = vec3(0, 100, 0);
             distFocus = (lookFrom - lookAt).length();
             aperture = 40.0;
-            world = getLargeRandomScene();
+            world = getLargeMaterialShowcaseScene();
             useSkyCol = false;
         break;
         default:
@@ -270,7 +289,7 @@ int main(int argc, char* argv[]) {
             lookAt = vec3(0, 0, -1);
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.1;
-            world = getBaseThreeSphereScene();
+            world = getMinimalTestScene();
     }
     Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
 
