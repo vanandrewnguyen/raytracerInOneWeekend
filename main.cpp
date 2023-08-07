@@ -103,7 +103,7 @@ Hitable* getLargeRandomisedSphereScene() {
 // Get super basic scene with one scene
 Hitable* getMinimalTestScene() {
     Hitable** worldList = new Hitable * [2];
-    worldList[0] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(0, 0, 0), new MatLambertian(vec3(0.3, 0.3, 0.7)));
+    worldList[0] = new Sphere(0.55, vec3(0.0, 0, -1), vec3(0, 0, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexImage("earthmap.jpg")));
     worldList[1] = new Sphere(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), new MatLambertian(vec3(0.8, 0.3, 0.3), new TexChecker(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0)));
     return new HitableList(worldList, 2);
 }
@@ -231,7 +231,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     const int imgWidth = 200; // 800;
     const int imgHeight = 100; // 400;
-    const int ns = 10; // 500;
+    const int ns = 1; // 500;
     srand((unsigned)time(NULL));
 
     // Establish SDL Window
@@ -285,12 +285,13 @@ int main(int argc, char* argv[]) {
             useSkyCol = false;
         break;
         default:
-            lookFrom = vec3(3, 3, 2); 
-            lookAt = vec3(0, 0, -1);
+            lookFrom = vec3(-3, 3, -2); 
+            lookAt = vec3(0, -0.1, -1);
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.1;
             world = getMinimalTestScene();
     }
+
     Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
 
     // Bottom to top (img is reversed), left to right
@@ -299,7 +300,7 @@ int main(int argc, char* argv[]) {
             // Output
             writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns, bgCol, useSkyCol);
             // Debugging
-            std::cout << int(x+y) << int(imgWidth * imgHeight) << "\n";
+            std::cout << "Rendered pixel " << int(x + y) << " of " << int(imgWidth * imgHeight) << "\n";
 
         }
     }
