@@ -71,8 +71,8 @@ const unsigned char* TexImage::getPixelData(int x, int y) const {
 		return debug_col;
 	}
 
-	x = Utility::clamp(x, 0, width);
-	y = Utility::clamp(y, 0, height);
+	x = static_cast<int>(Utility::clamp(x, 0, width));
+	y = static_cast<int>(Utility::clamp(y, 0, height));
 
 	return data + y * bytesPerLine + x * bytesPerPixel;
 }
