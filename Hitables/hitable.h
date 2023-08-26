@@ -23,7 +23,6 @@ struct hitRecord {
 class Hitable {
 public:
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const = 0;
-	// virtual AABB boundingBox() const = 0;
 };
 
 #endif

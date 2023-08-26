@@ -31,6 +31,8 @@ Sphere::Sphere(float rad, vec3 origin, vec3 col, Material* mat) {
 	center = origin;
 	colour = col;
 	matPtr = mat;
+
+	vec3 radVec = vec3(radius, radius, radius);
 }
 
 float Sphere::getRadius() {

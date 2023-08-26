@@ -3,10 +3,11 @@
 
 #include "hitable.h"
 
-class HitableList: public Hitable {
+class HitableList : public Hitable {
 public:
 	Hitable **thisList;
 	int thisListSize;
+
 public:
 	HitableList();
 	HitableList(Hitable **list, int n);

@@ -11,6 +11,7 @@ public:
 	AABB();
 	AABB(const Interval& ix, const Interval& iu, const Interval& iz);
 	AABB(const vec3& a, const vec3& b);
+	AABB(const AABB& box0, const AABB& box1);
 	const Interval& axis(int num) const;
 	bool hit(const Ray& r, Interval rayT) const;
 
@@ -31,6 +32,12 @@ AABB::AABB(const vec3& a, const vec3& b) {
 	x = Interval(std::fmin(a[0], b[0]), std::fmax(a[0], b[0]));
 	y = Interval(std::fmin(a[1], b[1]), std::fmax(a[1], b[1]));
 	z = Interval(std::fmin(a[2], b[2]), std::fmax(a[2], b[2]));
+}
+
+AABB::AABB(const AABB& box0, const AABB& box1) {
+	x = Interval(box0.x, box1.x);
+	y = Interval(box0.y, box1.y);
+	z = Interval(box0.z, box1.z);
 }
 
 const Interval& AABB::axis(int num) const {
