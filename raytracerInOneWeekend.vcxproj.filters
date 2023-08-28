@@ -119,9 +119,6 @@
     <ClInclude Include="Materials\isotropic.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="interval.h">
-      <Filter>Source Files\Hitables</Filter>
-    </ClInclude>
     <ClInclude Include="aabb.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>

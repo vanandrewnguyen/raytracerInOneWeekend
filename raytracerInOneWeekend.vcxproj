@@ -159,7 +159,6 @@
     <ClInclude Include="Hitables\xyRect.h" />
     <ClInclude Include="Hitables\xzRect.h" />
     <ClInclude Include="Hitables\yzRect.h" />
-    <ClInclude Include="interval.h" />
     <ClInclude Include="Materials\dielectric.h" />
     <ClInclude Include="Materials\diffuseLight.h" />
     <ClInclude Include="Materials\isotropic.h" />

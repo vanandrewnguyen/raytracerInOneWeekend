@@ -2,95 +2,61 @@
 #define AABBHEADER
 
 #include <cmath>
-#include "interval.h"
 #include "vec3.h"
 #include "ray.h"
 
 class AABB {
 public:
 	AABB();
-	AABB(const Interval& ix, const Interval& iu, const Interval& iz);
 	AABB(const vec3& a, const vec3& b);
 	AABB(const AABB& box0, const AABB& box1);
-	const Interval& axis(int num) const;
-	bool hit(const Ray& r, Interval rayT) const;
+
+    vec3 min() const;
+    vec3 max() const;
+	bool hit(const Ray& r, double tMin, double tMax) const;
 
 public:
-	Interval x, y, z;
+	vec3 minimum, maximum;
 };
 
 AABB::AABB() {}
 
-AABB::AABB(const Interval& ix, const Interval& iy, const Interval& iz) {
-	x = ix;
-	y = iy;
-	z = iz;
-}
-
 AABB::AABB(const vec3& a, const vec3& b) {
-	// a and b are extremes on the bounding box
-	x = Interval(std::fmin(a[0], b[0]), std::fmax(a[0], b[0]));
-	y = Interval(std::fmin(a[1], b[1]), std::fmax(a[1], b[1]));
-	z = Interval(std::fmin(a[2], b[2]), std::fmax(a[2], b[2]));
+    minimum = a;
+    maximum = b;
 }
 
 AABB::AABB(const AABB& box0, const AABB& box1) {
-	x = Interval(box0.x, box1.x);
-	y = Interval(box0.y, box1.y);
-	z = Interval(box0.z, box1.z);
+	
 }
 
-const Interval& AABB::axis(int num) const {
-	// Return corresponding axis
-	if (num == 1) return y;
-	if (num == 2) return z;
-	return x;
+vec3 AABB::min() const {
+    return minimum;
 }
 
-bool AABB::hit(const Ray& r, Interval rayT) const {
+vec3 AABB::max() const {
+    return maximum;
+}
+
+bool AABB::hit(const Ray& r, double tMin, double tMax) const {
 	// Updated Intersection method by Andrew Kensler
-	for (int a = 0; a < 3; a++) {
-		auto invD = 1 / r.getDirection()[a];
-		auto orig = r.getOrigin()[a];
+	// For each of 3 axis, calculate bounds
+    for (int a = 0; a < 3; a++) {
+        auto invD = 1.0f / r.getDirection()[a];
+        auto t0 = (min()[a] - r.getOrigin()[a]) * invD;
+        auto t1 = (max()[a] - r.getOrigin()[a]) * invD;
+        if (invD < 0.0f) {
+            std::swap(t0, t1);
+        }
 
-		auto t0 = (axis(a).min - orig) * invD;
-		auto t1 = (axis(a).max - orig) * invD;
+        tMin = t0 > tMin ? t0 : tMin;
+        tMax = t1 < tMax ? t1 : tMax;
 
-		if (invD < 0) {
-			std::swap(t0, t1);
-		}
-
-		if (t0 > rayT.min) {
-			rayT.min = t0;
-		}
-		if (t1 < rayT.max) {
-			rayT.max = t1;
-		}
-
-		if (rayT.max <= rayT.min) {
-			return false;
-		}
-	}
-	return true;
-
-
-	/*
-	// For three axis... calculate ray intersection
-	for (int a = 0; a < 3; a++) {
-		double t0 = std::fmin((axis(a).min - r.getOrigin()[a]) / r.getDirection()[a],
-							  (axis(a).max - r.getOrigin()[a]) / r.getDirection()[a]);
-		double t1 = std::fmax((axis(a).min - r.getOrigin()[a]) / r.getDirection()[a],
-							  (axis(a).max - r.getOrigin()[a]) / r.getDirection()[a]);
-		
-		rayT.min = std::fmax(t0, rayT.min);
-		rayT.max = std::fmin(t1, rayT.max);
-
-		if (rayT.max <= rayT.min) {
-			return false;
-		}
-	}
-	return true;
-	*/
+        if (tMax <= tMin) {
+            return false;
+        }
+    }
+    return true;
 }
 
 
