@@ -5,14 +5,15 @@
 
 class HitableList : public Hitable {
 public:
-	Hitable **thisList;
+	Hitable** thisList;
 	int thisListSize;
 
 public:
 	HitableList();
-	HitableList(Hitable **list, int n);
+	HitableList(Hitable** list, int n);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
+	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 HitableList::HitableList() {}
@@ -40,6 +41,27 @@ bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) cons
 	}
 
 	return hitAny;
+}
+
+bool HitableList::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+	if (thisListSize == 0) {
+		return false;
+	}
+
+	AABB tempBox;
+	bool firstBox = true;
+
+	for (int i = 0; i < thisListSize; i++) {
+		if (thisList[i] != nullptr) {
+			if (!(thisList[i]->boundingBox(_time0, _time1, tempBox))) {
+				return false;
+			}
+			outputBox = firstBox ? tempBox : AABB::surroundingBox(outputBox, tempBox);
+			firstBox = false;
+		}
+	}
+
+	return true;
 }
 
 #endif

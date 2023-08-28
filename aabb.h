@@ -14,6 +14,7 @@ public:
     vec3 min() const;
     vec3 max() const;
 	bool hit(const Ray& r, double tMin, double tMax) const;
+    static AABB surroundingBox(AABB box0, AABB box1);
 
 public:
 	vec3 minimum, maximum;
@@ -59,5 +60,16 @@ bool AABB::hit(const Ray& r, double tMin, double tMax) const {
     return true;
 }
 
+AABB AABB::surroundingBox(AABB box0, AABB box1) {
+    vec3 smallPoint(std::fmin(box0.min().getX(), box1.min().getX()),
+                    std::fmin(box0.min().getY(), box1.min().getY()),
+                    std::fmin(box0.min().getZ(), box1.min().getZ()));
+
+    vec3 bigPoint(std::fmax(box0.max().getX(), box1.max().getX()),
+                  std::fmax(box0.max().getY(), box1.max().getY()),
+                  std::fmax(box0.max().getZ(), box1.max().getZ()));
+
+    return AABB(smallPoint, bigPoint);
+}
 
 #endif

@@ -6,7 +6,7 @@
 
 class Material;
 
-class Sphere: public Hitable {
+class Sphere : public Hitable {
 public:
 	float radius;
 	vec3 center;
@@ -24,6 +24,7 @@ public:
 	static void getUV(const vec3& p, float& u, float& v);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
+	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 Sphere::Sphere(float rad, vec3 origin, vec3 col, Material* mat) {
@@ -86,6 +87,12 @@ void Sphere::getUV(const vec3& p, float& u, float& v) {
 
 	u = phi / (2 * Utility::pi);
 	v = theta / Utility::pi;
+}
+
+bool Sphere::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+	vec3 radVec = vec3(radius, radius, radius);
+	outputBox = AABB(center - radVec, center + radVec);
+	return true;
 }
 
 #endif

@@ -16,6 +16,7 @@ public:
     YZRect(float _y0, float _y1, float _z0, float _z1, float k, Material* mat);
 
     virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
+    virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 YZRect::YZRect() {}
@@ -52,4 +53,12 @@ bool YZRect::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 
     return true;
 }
+
+bool YZRect::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+    float epsilon = 0.0001;
+    // Bounding box needs non-zero width (give epsilon as small number)
+    outputBox = AABB(vec3(k - epsilon, y0, z0), vec3(k + epsilon, y1, z1));
+    return true;
+}
+
 #endif

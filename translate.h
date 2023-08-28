@@ -13,6 +13,7 @@ public:
 	Translate(Hitable* p, const vec3& displacement);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
+	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 Translate::Translate(Hitable* p, const vec3& displacement) {
@@ -29,6 +30,15 @@ bool Translate::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const 
 	rec.pos += offset;
 	rec.setSurfNormal(movedRay, rec.normal);
 
+	return true;
+}
+
+bool Translate::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+	if (!(hitPtr->boundingBox(_time0, _time1, outputBox))) {
+		return false;
+	}
+
+	outputBox = AABB(outputBox.min() + offset, outputBox.max() + offset);
 	return true;
 }
 

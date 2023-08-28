@@ -17,6 +17,7 @@ public:
 	Box(const vec3& p0, const vec3& p1, Material* matPtr);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
+	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 Box::Box() {}
@@ -43,5 +44,9 @@ bool Box::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 	return sides->hit(r, tMin, tMax, rec);
 }
 
+bool Box::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+	outputBox = AABB(boxMin, boxMax);
+	return true;
+}
 
 #endif

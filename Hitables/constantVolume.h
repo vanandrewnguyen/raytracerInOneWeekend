@@ -15,6 +15,7 @@ public:
 public:
 	ConstantVolume(Hitable* hit, double density, Texture* tex);
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
+	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 ConstantVolume::ConstantVolume(Hitable* hit, double density, Texture* tex) {
@@ -65,6 +66,10 @@ bool ConstantVolume::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) c
 	rec.matPtr = phaseFunc;
 
 	return true;
+}
+
+bool ConstantVolume::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+	return boundary->boundingBox(_time0, _time1, outputBox);
 }
 
 #endif

@@ -23,6 +23,7 @@ public:
 	vec3 getColour();
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
+	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 MovingSphere::MovingSphere(vec3 origin, vec3 target, double _time0, double _time1, float rad, vec3 col, Material* mat) {
@@ -77,6 +78,14 @@ bool MovingSphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) con
 	}
 
 	return false;
+}
+
+bool MovingSphere::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+	vec3 radVec = vec3(radius, radius, radius);
+	AABB box0(getCenter(_time0) - radVec, getCenter(_time0) + radVec);
+	AABB box1(getCenter(_time1) - radVec, getCenter(_time1) + radVec);
+	outputBox = AABB::surroundingBox(box0, box1);
+	return true;
 }
 
 #endif

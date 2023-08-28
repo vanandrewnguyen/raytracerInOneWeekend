@@ -16,6 +16,7 @@ public:
     XZRect(float _x0, float _x1, float _z0, float _z1, float k, Material* mat);
 
     virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
+    virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
 XZRect::XZRect() {}
@@ -50,6 +51,13 @@ bool XZRect::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
     rec.pos = r.getPointParam(t);
     rec.setSurfNormal(r, vec3(0, 1, 0));
 
+    return true;
+}
+
+bool XZRect::boundingBox(double _time0, double _time1, AABB& outputBox) const {
+    float epsilon = 0.0001;
+    // Bounding box needs non-zero width (give epsilon as small number)
+    outputBox = AABB(vec3(x0, k - epsilon, z0), vec3(x1, k + epsilon, z1));
     return true;
 }
 
