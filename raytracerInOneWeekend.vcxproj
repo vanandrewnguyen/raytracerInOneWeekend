@@ -148,9 +148,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aabb.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Hitables\aabb.h" />
     <ClInclude Include="Hitables\box.h" />
+    <ClInclude Include="Hitables\bvhNode.h" />
     <ClInclude Include="Hitables\constantVolume.h" />
     <ClInclude Include="Hitables\hitable.h" />
     <ClInclude Include="Hitables\hitableList.h" />

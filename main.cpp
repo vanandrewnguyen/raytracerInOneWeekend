@@ -2,6 +2,7 @@
 #include "sdltemplate.h"
 
 // Objects
+#include "Hitables/bvhNode.h"
 #include "Hitables/hitableList.h"
 #include "Hitables/sphere.h"
 #include "Hitables/movingSphere.h"

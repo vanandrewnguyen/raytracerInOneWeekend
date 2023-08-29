@@ -119,7 +119,10 @@
     <ClInclude Include="Materials\isotropic.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="aabb.h">
+    <ClInclude Include="Hitables\aabb.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Hitables\bvhNode.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
   </ItemGroup>
