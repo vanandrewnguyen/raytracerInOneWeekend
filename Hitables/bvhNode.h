@@ -3,6 +3,7 @@
 
 #include "hitable.h"
 #include "hitableList.h"
+#include "../utility.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -21,6 +22,28 @@ public:
 	Hitable* right;
 	AABB bbox;
 };
+
+inline bool boxCompare(Hitable* a, Hitable* b, int axis) {
+	AABB boxA;
+	AABB boxB;
+
+	if (!a->boundingBox(0, 0, boxA) || !b->boundingBox(0, 0, boxB))
+		std::cout << "No bounding box in bvh_node constructor." << std::endl;
+
+	return boxA.min().e[axis] < boxB.min().e[axis];
+}
+
+bool boxXCompare(Hitable* a, Hitable* b) {
+	return boxCompare(a, b, 0);
+}
+
+bool boxYCompare(Hitable* a, Hitable* b) {
+	return boxCompare(a, b, 1);
+}
+
+bool boxZCompare(Hitable* a, Hitable* b) {
+	return boxCompare(a, b, 2);
+}
 
 BVHNode::BVHNode() {}
 
@@ -82,28 +105,6 @@ bool BVHNode::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 bool BVHNode::boundingBox(double _time0, double _time1, AABB& outputBox) const {
 	outputBox = bbox;
 	return true;
-}
-
-inline bool boxCompare(Hitable* a, Hitable* b, int axis) {
-	AABB boxA;
-	AABB boxB;
-
-	if (!a->boundingBox(0, 0, boxA) || !b->boundingBox(0, 0, boxB))
-		std::cout << "No bounding box in bvh_node constructor." << std::endl;
-
-	return boxA.min().e[axis] < boxB.min().e[axis];
-}
-
-bool boxXCompare(Hitable* a, Hitable* b) {
-	return boxCompare(a, b, 0);
-}
-
-bool boxYCompare(Hitable* a, Hitable* b) {
-	return boxCompare(a, b, 1);
-}
-
-bool boxZCompare(Hitable* a, Hitable* b) {
-	return boxCompare(a, b, 2);
 }
 
 #endif

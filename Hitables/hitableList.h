@@ -1,4 +1,4 @@
-#ifndef HTIABLE_LIST
+#ifndef HITABLE_LIST
 #define HITABLE_LIST
 
 #include "hitable.h"
