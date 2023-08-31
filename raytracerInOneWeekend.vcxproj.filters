@@ -33,6 +33,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Libraries\jsoncpp\dist\jsoncpp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sdltemplate.h">
@@ -128,6 +131,15 @@
     <ClInclude Include="Hitables\bvhNode.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
+    <ClInclude Include="Scene\sceneParser.h">
+      <Filter>Source Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\jsoncpp\dist\json\json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Libraries\jsoncpp\dist\json\json-forwards.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
@@ -142,6 +154,9 @@
       <Filter>Source Files\Scene</Filter>
     </Text>
     <Text Include="Scene\reference.txt">
+      <Filter>Source Files\Scene</Filter>
+    </Text>
+    <Text Include="Scene\sceneTest.txt">
       <Filter>Source Files\Scene</Filter>
     </Text>
   </ItemGroup>

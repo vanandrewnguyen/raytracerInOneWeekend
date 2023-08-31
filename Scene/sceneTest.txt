@@ -1,0 +1,16 @@
+// GIBBERISH
+
+{
+    "Objects": [
+        {
+            "Sphere": {
+                "SphereData": "..."
+            }
+        },
+        {
+            "Box": {
+                "BoxData": "..."
+            }
+        }
+    ]
+}

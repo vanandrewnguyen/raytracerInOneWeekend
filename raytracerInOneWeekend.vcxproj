@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Libraries\jsoncpp\dist\jsoncpp.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +161,8 @@
     <ClInclude Include="Hitables\xyRect.h" />
     <ClInclude Include="Hitables\xzRect.h" />
     <ClInclude Include="Hitables\yzRect.h" />
+    <ClInclude Include="Libraries\jsoncpp\dist\json\json-forwards.h" />
+    <ClInclude Include="Libraries\jsoncpp\dist\json\json.h" />
     <ClInclude Include="Materials\dielectric.h" />
     <ClInclude Include="Materials\diffuseLight.h" />
     <ClInclude Include="Materials\isotropic.h" />
@@ -169,6 +172,7 @@
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="rotate.h" />
+    <ClInclude Include="Scene\sceneParser.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Textures\texChecker.h" />
@@ -187,6 +191,7 @@
   <ItemGroup>
     <Text Include="Scene\reference.txt" />
     <Text Include="Scene\sceneSingleSphere.txt" />
+    <Text Include="Scene\sceneTest.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
