@@ -1,6 +1,8 @@
 #ifndef MATERIAL
 #define MATERIAL
 
+#include <memory>
+
 class Material {
 public:
 	// How rays react upon hitting material type

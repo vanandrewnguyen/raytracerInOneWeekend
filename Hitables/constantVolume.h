@@ -8,20 +8,20 @@
 
 class ConstantVolume : public Hitable {
 public:
-	Hitable* boundary;
-	Material* phaseFunc;
+	std::shared_ptr<Hitable> boundary;
+	std::shared_ptr<Material> phaseFunc;
 	double negInverseDensity;
 
 public:
-	ConstantVolume(Hitable* hit, double density, Texture* tex);
+	ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<Texture> tex);
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
-ConstantVolume::ConstantVolume(Hitable* hit, double density, Texture* tex) {
+ConstantVolume::ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<Texture> tex) {
 	boundary = hit;
 	negInverseDensity = -1/density;
-	phaseFunc = new Isotropic(tex);
+	phaseFunc = std::make_shared<Isotropic>(tex);
 }
 
 bool ConstantVolume::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {

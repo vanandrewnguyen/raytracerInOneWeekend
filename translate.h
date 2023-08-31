@@ -6,17 +6,17 @@
 
 class Translate : public Hitable {
 public:
-	Hitable* hitPtr;
+	std::shared_ptr<Hitable> hitPtr;
 	vec3 offset;
 
 public:
-	Translate(Hitable* p, const vec3& displacement);
+	Translate(std::shared_ptr<Hitable> p, const vec3& displacement);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
-Translate::Translate(Hitable* p, const vec3& displacement) {
+Translate::Translate(std::shared_ptr<Hitable> p, const vec3& displacement) {
 	hitPtr = p;
 	offset = displacement;
 }

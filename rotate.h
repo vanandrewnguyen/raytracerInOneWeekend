@@ -8,20 +8,20 @@
 
 class RotateY : public Hitable {
 public:
-	Hitable* hitPtr;
+	std::shared_ptr<Hitable> hitPtr;
 	float sineTheta;
 	float cosineTheta;
 	bool hasBox;
 	AABB bbox;
 
 public:
-	RotateY(Hitable* hit, float angle);
+	RotateY(std::shared_ptr<Hitable> hit, float angle);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
-RotateY::RotateY(Hitable* hit, float angle) {
+RotateY::RotateY(std::shared_ptr<Hitable> hit, float angle) {
 	hitPtr = hit;
 
 	float rad = Utility::degToRad(angle);

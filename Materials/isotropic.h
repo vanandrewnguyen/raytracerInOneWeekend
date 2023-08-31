@@ -7,16 +7,16 @@
 
 class Isotropic : public Material {
 public:
-	Texture* albedo;
+	std::shared_ptr<Texture> albedo;
 
 public:
-	Isotropic(Texture* a);
+	Isotropic(std::shared_ptr<Texture> a);
 
 	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scattered) const override;
 
 };
 
-Isotropic::Isotropic(Texture* a) {
+Isotropic::Isotropic(std::shared_ptr<Texture> a) {
 	albedo = a;
 }
 

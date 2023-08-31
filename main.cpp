@@ -231,95 +231,94 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 }
 
 int main(int argc, char* argv[]) {
-    //const int imgWidth = 200; // 800;
-    //const int imgHeight = 100; // 400;
-    //const int ns = 1; // 500;
-    //srand((unsigned)time(NULL));
+    const int imgWidth = 200; // 800;
+    const int imgHeight = 100; // 400;
+    const int ns = 1; // 500;
+    srand((unsigned)time(NULL));
 
-    //// Establish SDL Window
-    //sdltemplate::sdl("Raytracer", imgWidth, imgHeight);
-    //sdltemplate::loop();
+    // Establish SDL Window
+    sdltemplate::sdl("Raytracer", imgWidth, imgHeight);
+    sdltemplate::loop();
 
-    //// Switch Scenes
-    //vec3 lookFrom, lookAt;
-    //float distFocus, aperture;
-    //HitableList world;
-    //int index = 0;
-    //vec3 bgCol = vec3(0,0,0);
-    //bool useSkyCol;
+    // Switch Scenes
+    vec3 lookFrom, lookAt;
+    float distFocus, aperture;
+    HitableList world;
+    int index = -1;
+    vec3 bgCol = vec3(0,0,0);
+    bool useSkyCol;
 
-    //switch (index) {
-    //    case 0:
-    //        lookFrom = vec3(3, 3, 2);
-    //        lookAt = vec3(0, 0, -1);
-    //        distFocus = (lookFrom - lookAt).length();
-    //        aperture = 0.1;
-    //        world = getBaseThreeSphereScene();
-    //        useSkyCol = true;
-    //    break;
-    //    case 1:
-    //        lookFrom = vec3(13, 2, 3);
-    //        lookAt = vec3(0, 0, 0);
-    //        distFocus = (lookFrom - lookAt).length();
-    //        aperture = 0.2;
-    //        world = getLargeRandomisedSphereScene();
-    //        useSkyCol = true;
-    //    break;
-    //    case 2:
-    //        lookFrom = vec3(6, 2, 4);
-    //        lookAt = vec3(0, 0, -1);
-    //        distFocus = (lookFrom - lookAt).length();
-    //        aperture = 0.1;
-    //        world = getMinimalLightsTestScene();
-    //        useSkyCol = false;
-    //    break;
-    //    case 3:
-    //        lookFrom = vec3(278, 278, -600);
-    //        lookAt = vec3(0, 0, 0);
-    //        distFocus = (lookFrom - lookAt).length();
-    //        aperture = 40.0;
-    //         world = getCornellBoxScene();
-    //        useSkyCol = false;
-    //    break;
-    //    case 4:
-    //        lookFrom = vec3(478, 278, -600);
-    //        lookAt = vec3(0, 100, 0);
-    //        distFocus = (lookFrom - lookAt).length();
-    //        aperture = 40.0;
-    //         world = getLargeMaterialShowcaseScene();
-    //        useSkyCol = false;
-    //    break;
-    //    default:
-    //        lookFrom = vec3(-3, 3, -2); 
-    //        lookAt = vec3(0, -0.1, -1);
-    //        distFocus = (lookFrom - lookAt).length();
-    //        aperture = 0.1;
-    //        world = getMinimalTestScene();
-    //        useSkyCol = true;
-    //}
+    switch (index) {
+        case 0:
+            lookFrom = vec3(3, 3, 2);
+            lookAt = vec3(0, 0, -1);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.1;
+            world = getBaseThreeSphereScene();
+            useSkyCol = true;
+        break;
+        case 1:
+            lookFrom = vec3(13, 2, 3);
+            lookAt = vec3(0, 0, 0);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.2;
+            world = getLargeRandomisedSphereScene();
+            useSkyCol = true;
+        break;
+        case 2:
+            lookFrom = vec3(6, 2, 4);
+            lookAt = vec3(0, 0, -1);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.1;
+            world = getMinimalLightsTestScene();
+            useSkyCol = false;
+        break;
+        case 3:
+            lookFrom = vec3(278, 278, -600);
+            lookAt = vec3(0, 0, 0);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 40.0;
+            world = getCornellBoxScene();
+            useSkyCol = false;
+        break;
+        case 4:
+            lookFrom = vec3(478, 278, -600);
+            lookAt = vec3(0, 100, 0);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 40.0;
+            world = getLargeMaterialShowcaseScene();
+            useSkyCol = false;
+        break;
+        default:
+            lookFrom = vec3(-3, 3, -2); 
+            lookAt = vec3(0, -0.1, -1);
+            distFocus = (lookFrom - lookAt).length();
+            aperture = 0.1;
+            world = getMinimalTestScene();
+            useSkyCol = true;
+    }
 
-    //Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
+    Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
 
-    //// Bottom to top (img is reversed), left to right
-    //for (int y = imgHeight - 1; y >= 0; y--) {
-    //    for (int x = 0; x < imgWidth; x++) {
-    //        // Output
-    //        writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns, bgCol, useSkyCol);
-    //        // Debugging
-    //        std::cout << "Rendered pixel " << int(x + y) << " of " << int(imgWidth * imgHeight) << "\n";
+    // Bottom to top (img is reversed), left to right
+    for (int y = imgHeight - 1; y >= 0; y--) {
+        for (int x = 0; x < imgWidth; x++) {
+            // Output
+            writeColourToScreen(imgWidth, imgHeight, cam, x, y, world, ns, bgCol, useSkyCol);
+            // Debugging
+            std::cout << "Rendered pixel " << int(x + y) << " of " << int(imgWidth * imgHeight) << "\n";
+        }
+    }
+    std::cout << "Done!" << std::endl;
 
-    //    }
-    //}
-    //std::cout << "Done!" << std::endl;
+    // Keep window active
+    while (sdltemplate::running) {
+        sdltemplate::loop();
+    }
 
-    //// Keep window active
-    //while (sdltemplate::running) {
-    //    sdltemplate::loop();
-    //}
-
-    SceneParser parser = SceneParser();
+    /*SceneParser parser = SceneParser();
     std::string pathname = "sceneTest.txt";
-    HitableList worldList = parser.getWorldList(pathname);
+    HitableList worldList = parser.getWorldList(pathname);*/
 
     return 0;
 }

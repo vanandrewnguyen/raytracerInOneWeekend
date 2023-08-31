@@ -1,8 +1,10 @@
 #ifndef HITABLE
 #define HITABLE
 
-#include "../ray.h"
+#include <memory>
+
 #include "aabb.h"
+#include "../ray.h"
 
 class Material;
 
@@ -12,7 +14,7 @@ struct hitRecord {
 	float v;
 	vec3 pos;
 	vec3 normal;
-	Material* matPtr;
+	std::shared_ptr<Material> matPtr;
 
 	inline void setSurfNormal(const Ray& r, const vec3& outwardNormal) {
 		float frontFace = dot(r.getDirection(), outwardNormal);

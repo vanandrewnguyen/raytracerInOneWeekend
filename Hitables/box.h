@@ -16,7 +16,7 @@ public:
 
 public:
 	Box();
-	Box(const vec3& p0, const vec3& p1, Material* matPtr);
+	Box(const vec3& p0, const vec3& p1, std::shared_ptr<Material> matPtr);
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
@@ -24,7 +24,7 @@ public:
 
 Box::Box() {}
 
-Box::Box(const vec3& p0, const vec3& p1, Material* matPtr) {
+Box::Box(const vec3& p0, const vec3& p1, std::shared_ptr<Material> matPtr) {
 	boxMin = p0;
 	boxMax = p1;
 

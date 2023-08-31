@@ -11,11 +11,11 @@ public:
 	double time0, time1;
 	vec3 center0, center1;
 	vec3 colour;
-	Material* matPtr;
+	std::shared_ptr<Material> matPtr;
 
 public:
 	// Constructor
-	MovingSphere(vec3 origin, vec3 target, double _time0, double _time1, float rad, vec3 col, Material* mat);
+	MovingSphere(vec3 origin, vec3 target, double _time0, double _time1, float rad, vec3 col, std::shared_ptr<Material> mat);
 
 	// Getters
 	float getRadius();
@@ -26,7 +26,7 @@ public:
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
-MovingSphere::MovingSphere(vec3 origin, vec3 target, double _time0, double _time1, float rad, vec3 col, Material* mat) {
+MovingSphere::MovingSphere(vec3 origin, vec3 target, double _time0, double _time1, float rad, vec3 col, std::shared_ptr<Material> mat) {
 	radius = rad;
 	center0 = origin;
 	center1 = target;

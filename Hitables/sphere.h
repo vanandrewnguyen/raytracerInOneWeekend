@@ -11,11 +11,11 @@ public:
 	float radius;
 	vec3 center;
 	vec3 colour;
-	Material* matPtr;
+	std::shared_ptr<Material> matPtr;
 
 public:
 	// Constructor
-	Sphere(float rad, vec3 origin, vec3 col, Material* mat);
+	Sphere(float rad, vec3 origin, vec3 col, std::shared_ptr<Material> mat);
 
 	// Getters
 	float getRadius();
@@ -27,7 +27,7 @@ public:
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
-Sphere::Sphere(float rad, vec3 origin, vec3 col, Material* mat) {
+Sphere::Sphere(float rad, vec3 origin, vec3 col, std::shared_ptr<Material> mat) {
 	radius = rad;
 	center = origin;
 	colour = col;

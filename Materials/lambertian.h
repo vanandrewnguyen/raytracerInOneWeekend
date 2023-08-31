@@ -7,10 +7,10 @@
 class MatLambertian : public Material {
 public:
 	vec3 albedo;
-	Texture* texPtr;
+	std::shared_ptr<Texture> texPtr;
 public:
 	// Constructor
-	MatLambertian(const vec3& a, Texture* t = NULL) {
+	MatLambertian(const vec3& a, std::shared_ptr<Texture> t = NULL) {
 		albedo = a;
 		texPtr = t;
 	}

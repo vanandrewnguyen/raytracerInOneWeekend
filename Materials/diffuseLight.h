@@ -8,15 +8,15 @@
 
 class DiffuseLight : public Material {
 public:
-	Texture* emit;
+	std::shared_ptr<Texture> emit;
 public:
-	DiffuseLight(Texture* tex);
+	DiffuseLight(std::shared_ptr<Texture> tex);
 
 	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scattered) const override;
 	virtual vec3 emitted(float u, float v, const vec3& p) const override;
 };
 
-DiffuseLight::DiffuseLight(Texture* tex) {
+DiffuseLight::DiffuseLight(std::shared_ptr<Texture> tex) {
 	emit = tex;
 }
 

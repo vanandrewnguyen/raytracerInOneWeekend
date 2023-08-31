@@ -7,13 +7,13 @@
 
 class XZRect : public Hitable {
 public:
-    Material* matPtr;
+    std::shared_ptr<Material> matPtr;
     // k = y axis
     float x0, x1, z0, z1, k;
 
 public:
     XZRect();
-    XZRect(float _x0, float _x1, float _z0, float _z1, float k, Material* mat);
+    XZRect(float _x0, float _x1, float _z0, float _z1, float k, std::shared_ptr<Material> mat);
 
     virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
     virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
@@ -21,7 +21,7 @@ public:
 
 XZRect::XZRect() {}
 
-XZRect::XZRect(float _x0, float _x1, float _z0, float _z1, float _k, Material* mat) {
+XZRect::XZRect(float _x0, float _x1, float _z0, float _z1, float _k, std::shared_ptr<Material> mat) {
     x0 = _x0;
     z0 = _z0;
     x1 = _x1;
