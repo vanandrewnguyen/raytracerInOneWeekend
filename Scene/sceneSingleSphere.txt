@@ -1,0 +1,61 @@
+// Basic Scene
+// A simple scene with a single sphere placed on a large sphere.
+// 31/08/23
+
+{
+	Objects: [
+	
+	Sphere: 
+	{
+		Radius: 0.55,
+		Origin: 0.0, 0.0, -1.0,
+		Colour: 0.0, 0.0, 0.0,
+		Material: 
+		{
+		
+		MatLambertian:
+		{
+			Albedo: 0.8, 0.3, 0.3,
+			Texture: 
+			{
+			
+			TexImage:
+			{
+				Path: "earthmap.jpg",
+			}
+
+			}
+		},
+		
+		}
+	},
+
+	Sphere: 
+	{
+		Radius: 100.0,
+		Origin: 0.0, -100.5, -1.0,
+		Colour: 0.0, 0.0, 0.0,
+		Material: 
+		{
+		
+		MatLambertian:
+		{
+			Albedo: 0.8, 0.3, 0.3,
+			Texture: 
+			{
+			
+			TexChecker:
+			{
+				AlbedoEven : 0.8, 0.3, 0.3,
+				AlbedoOdd : 1.0, 1.0, 1.0,
+				Space: 10.0,
+			}
+
+			}
+		},
+		
+		}
+	},
+
+	]
+}

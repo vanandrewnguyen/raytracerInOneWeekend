@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Hitables">
       <UniqueIdentifier>{c4bf9da1-9b55-498b-a958-976161e52118}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Scene">
+      <UniqueIdentifier>{28291b55-45aa-41b7-a463-81982d1bf4f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -133,5 +136,13 @@
     <Image Include="Assets\texBrickWall.jpg">
       <Filter>Source Files\Assets</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Scene\sceneSingleSphere.txt">
+      <Filter>Source Files\Scene</Filter>
+    </Text>
+    <Text Include="Scene\reference.txt">
+      <Filter>Source Files\Scene</Filter>
+    </Text>
   </ItemGroup>
 </Project>

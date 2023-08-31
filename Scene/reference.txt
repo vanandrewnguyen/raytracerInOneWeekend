@@ -1,0 +1,166 @@
+// Reference Page for all scene objects
+
+// Main //
+
+{
+	Objects: [
+		// Scene Objects go in here.
+	]
+}
+
+// Scene Objects //
+
+Box:
+{
+	BoxMinPoint: 0.0, 0.0, 0.0,
+	BoxMaxPoint: 1.0, 1.0, 1.0,
+	Material:
+	{
+	
+	},
+}
+
+Sphere:
+{
+	Radius: 0.0,
+	Origin: 0.0, 0.0, 0.0,
+	Colour: 0.0, 0.0, 0.0,
+	Material:
+	{
+	
+	},
+}
+
+MovingSphere:
+{
+	Radius: 0.0,
+	Origin: 0.0, 0.0, 0.0,
+	Target: 0.0, 0.0, 0.0,
+	TimeStart: 0.0,
+	TimeEnd: 1.0,
+	Colour: 0.0, 0.0, 0.0,
+	Material:
+	{
+	
+	}
+}
+
+XYRect:
+{
+	x0: 0.0,
+	x1: 0.0, 
+	y0: 0.0,
+	y1: 0.0,
+	Axis: 0.0,
+	Material:
+	{
+	
+	},
+}
+
+XZRect:
+{
+	x0: 0.0,
+	x1: 0.0, 
+	z0: 0.0,
+	z1: 0.0,
+	Axis: 0.0,
+	Material:
+	{
+	
+	},
+}
+
+YZRect:
+{
+	y0: 0.0,
+	y1: 0.0, 
+	z0: 0.0,
+	z1: 0.0,
+	Axis: 0.0,
+	Material:
+	{
+	
+	},
+}
+
+ConstantVolume:
+{
+	ObjectBoundary:
+	{
+		// Another scene object, like a box
+	},
+	Density: 0.0,
+	Texture:
+	{
+		
+	},
+
+}
+
+// Materials //
+
+MatLambertian:
+{
+	Albedo: 0.0, 0.0, 0.0,
+	Texture:
+	{
+	
+	}
+}
+
+// Use for light emitting scene objects
+DiffuseLight:
+{
+	Texture:
+	{
+	
+	}
+}
+
+// Use for constant volumes
+Isotropic:
+{
+	Texture:
+	{
+	
+	}
+}
+
+MatMetal:
+{
+	Albedo: 0.0, 0.0, 0.0,
+	Reflectance: 0.0,
+}
+
+MatDielectric:
+{
+	RefractionIndex: 1.0,
+}
+
+// Textures //
+
+TexSolidColour:
+{
+	Colour: 0.0, 0.0, 0.0,
+}
+
+TexPerlin:
+{
+	Frequency: 1.0,
+	Interval: 1.0,
+	Colour1: 0.0, 0.0, 0.0,
+	Colour2: 1.0, 1.0, 1.0,
+}
+
+TexImage:
+{
+	Pathname: "",
+}
+
+TexChecker:
+{
+	Colour1: 0.0, 0.0, 0.0,
+	Colour2: 1.0, 1.0, 1.0,
+	Size: 1.0,
+}

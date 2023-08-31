@@ -8,7 +8,7 @@
 class MatMetal : public Material {
 public:
 	// Constructor
-	MatMetal(const vec3& a, int r) {
+	MatMetal(const vec3& a, float r) {
 		albedo = a;
 
 		// Closer to 0 = more reflective
@@ -28,7 +28,7 @@ public:
 	}
 public:
 	vec3 albedo;
-	int reflectance;
+	float reflectance;
 };
 
 #endif

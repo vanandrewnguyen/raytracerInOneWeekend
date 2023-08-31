@@ -184,6 +184,10 @@
     <Image Include="Assets\earthmap.jpg" />
     <Image Include="Assets\texBrickWall.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Scene\reference.txt" />
+    <Text Include="Scene\sceneSingleSphere.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

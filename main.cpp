@@ -11,9 +11,11 @@
 #include "Hitables/box.h"
 #include "Hitables/constantVolume.h"
 
+// Manipulators
 #include "translate.h"
 #include "rotate.h"
 
+// Camera
 #include "camera.h"
 #include "utility.h"
 
@@ -239,9 +241,9 @@ int main(int argc, char* argv[]) {
     vec3 lookFrom, lookAt;
     float distFocus, aperture;
     HitableList world;
-    int index = 2;
+    int index = 0;
     vec3 bgCol = vec3(0,0,0);
-    bool useSkyCol = true;
+    bool useSkyCol;
 
     switch (index) {
         case 0:
@@ -250,6 +252,7 @@ int main(int argc, char* argv[]) {
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.1;
             world = getBaseThreeSphereScene();
+            useSkyCol = true;
         break;
         case 1:
             lookFrom = vec3(13, 2, 3);
@@ -257,13 +260,14 @@ int main(int argc, char* argv[]) {
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.2;
             world = getLargeRandomisedSphereScene();
+            useSkyCol = true;
         break;
         case 2:
             lookFrom = vec3(6, 2, 4);
             lookAt = vec3(0, 0, -1);
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.1;
-             world = getMinimalLightsTestScene();
+            world = getMinimalLightsTestScene();
             useSkyCol = false;
         break;
         case 3:
@@ -288,6 +292,7 @@ int main(int argc, char* argv[]) {
             distFocus = (lookFrom - lookAt).length();
             aperture = 0.1;
             world = getMinimalTestScene();
+            useSkyCol = true;
     }
 
     Camera cam(lookFrom, lookAt, vec3(0, 1, 0), 20, float(imgWidth) / float(imgHeight), aperture, distFocus, 0.0, 1.0);
