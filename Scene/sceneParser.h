@@ -65,7 +65,40 @@ void SceneParser::parseData(Json::Value& root, HitableList& worldList, std::stri
 		const Json::Value& objectData = object[objectType];
 
 		// Case by case for each scene object
-		std::cout << objectType << "\n" << objectData << std::endl;
+		if (objectType == "Sphere") {
+			const Json::Value& radius = objectData["Radius"];
+			const Json::Value& origin = objectData["Origin"];
+			const Json::Value& colour = objectData["Colour"];
+
+			std::cout << "Radius: " << radius << std::endl;
+
+			if (origin.isArray() && origin.size() == 3) {
+				double originX = origin[0].asDouble();
+				double originY = origin[1].asDouble();
+				double originZ = origin[2].asDouble();
+				std::cout << "Origin: (" << originX << ", " << originY << ", " << originZ << ")" << std::endl;
+			}
+
+			if (colour.isArray() && colour.size() == 3) {
+				double colourX = colour[0].asDouble();
+				double colourY = colour[1].asDouble();
+				double colourZ = colour[2].asDouble();
+				std::cout << "Colour: (" << colourX << ", " << colourY << ", " << colourZ << ")" << std::endl;
+			}
+
+			// Materials... go one layer deeper
+			const Json::Value& material = objectData["Material"];
+			for (const std::string& materialType : material.getMemberNames()) {
+				const Json::Value& materialData = material[materialType];
+
+				// Handle different material types
+				if (materialType == "MatLambertian") {
+					std::cout << "Lambertian found" << std::endl;
+				} else if (materialType == "MatDielectric") {
+					std::cout << "Dielectric found" << std::endl;
+				}
+			}
+		}
 	}
 
 }
