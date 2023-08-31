@@ -12,18 +12,18 @@
 class BVHNode : public Hitable {
 public:
 	BVHNode();
-	BVHNode(Hitable** srcObjects, int srcSize, int start, int end, double _time0, double _time1);
-	BVHNode(HitableList& list, double _time0, double _time1) : BVHNode(list.thisList, list.thisListSize, 0, list.thisListSize, _time0, _time1) {}
+	BVHNode(std::vector<std::shared_ptr<Hitable>>& srcObjects, int start, int end, double _time0, double _time1);
+	BVHNode(HitableList& list, double _time0, double _time1) : BVHNode(list.getList(), 0, list.getList().size(), _time0, _time1) {}
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 public:
-	Hitable* left;
-	Hitable* right;
+	std::shared_ptr<Hitable> left;
+	std::shared_ptr<Hitable> right;
 	AABB bbox;
 };
 
-inline bool boxCompare(Hitable* a, Hitable* b, int axis) {
+inline bool boxCompare(const std::shared_ptr<Hitable> a, const std::shared_ptr<Hitable> b, int axis) {
 	AABB boxA;
 	AABB boxB;
 
@@ -33,23 +33,23 @@ inline bool boxCompare(Hitable* a, Hitable* b, int axis) {
 	return boxA.min().e[axis] < boxB.min().e[axis];
 }
 
-bool boxXCompare(Hitable* a, Hitable* b) {
+bool boxXCompare(const std::shared_ptr<Hitable> a, const std::shared_ptr<Hitable> b) {
 	return boxCompare(a, b, 0);
 }
 
-bool boxYCompare(Hitable* a, Hitable* b) {
+bool boxYCompare(const std::shared_ptr<Hitable> a, const std::shared_ptr<Hitable> b) {
 	return boxCompare(a, b, 1);
 }
 
-bool boxZCompare(Hitable* a, Hitable* b) {
+bool boxZCompare(const std::shared_ptr<Hitable> a, const std::shared_ptr<Hitable> b) {
 	return boxCompare(a, b, 2);
 }
 
 BVHNode::BVHNode() {}
 
-BVHNode::BVHNode(Hitable** srcObjects, int srcSize, int start, int end, double _time0, double _time1) {
+BVHNode::BVHNode(std::vector<std::shared_ptr<Hitable>>& srcObjects, int start, int end, double _time0, double _time1) {
 	// Clone
-	Hitable** objects = srcObjects;
+	auto objects = srcObjects;
 	
 	// Use comparison function used by std::sort
 	int axis = Utility::randomInt(0, 2);

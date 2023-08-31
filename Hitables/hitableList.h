@@ -2,15 +2,19 @@
 #define HITABLE_LIST
 
 #include "hitable.h"
+#include <memory>
+#include <vector>
 
 class HitableList : public Hitable {
 public:
-	Hitable** thisList;
-	int thisListSize;
+	std::vector<std::shared_ptr<Hitable>> thisList;
 
 public:
 	HitableList();
-	HitableList(Hitable** list, int n);
+	HitableList(std::vector<std::shared_ptr<Hitable>>& list);
+
+	void append(std::shared_ptr<Hitable> hitObject);
+	std::vector<std::shared_ptr<Hitable>>& getList();
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
@@ -18,9 +22,16 @@ public:
 
 HitableList::HitableList() {}
 
-HitableList::HitableList(Hitable** list, int n) {
+HitableList::HitableList(std::vector<std::shared_ptr<Hitable>>& list) {
 	thisList = list;
-	thisListSize = n;
+}
+
+void HitableList::append(std::shared_ptr<Hitable> hitObject) {
+	thisList.push_back(hitObject);
+}
+
+std::vector<std::shared_ptr<Hitable>>& HitableList::getList() {
+	return thisList;
 }
 
 bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
@@ -32,8 +43,8 @@ bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) cons
 
 	// Loop through every hitable item in the scene, and return the closests distance 
 	// We don't care about things behind objects
-	for (int i = 0; i < thisListSize; i++) {
-		if (thisList[i]->hit(r, tMin, closestDis, tempRec)) {
+	for (const std::shared_ptr<Hitable>& hitObject : thisList) {
+		if (hitObject->hit(r, tMin, closestDis, tempRec)) {
 			hitAny = true;
 			closestDis = tempRec.t;
 			rec = tempRec;
@@ -44,21 +55,19 @@ bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) cons
 }
 
 bool HitableList::boundingBox(double _time0, double _time1, AABB& outputBox) const {
-	if (thisListSize == 0) {
+	if (thisList.size() == 0) {
 		return false;
 	}
 
 	AABB tempBox;
 	bool firstBox = true;
 
-	for (int i = 0; i < thisListSize; i++) {
-		if (thisList[i] != nullptr) {
-			if (!(thisList[i]->boundingBox(_time0, _time1, tempBox))) {
-				return false;
-			}
-			outputBox = firstBox ? tempBox : AABB::surroundingBox(outputBox, tempBox);
-			firstBox = false;
+	for (const std::shared_ptr<Hitable>& hitObject : thisList) {
+		if (!(hitObject->boundingBox(_time0, _time1, tempBox))) {
+			return false;
 		}
+		outputBox = firstBox ? tempBox : AABB::surroundingBox(outputBox, tempBox);
+		firstBox = false;
 	}
 
 	return true;
