@@ -83,21 +83,13 @@ void SceneParser::parseSphere(HitableList& worldList, const std::string objectTy
 	const Json::Value& origin = objectData["Origin"];
 	const Json::Value& colour = objectData["Colour"];
 
-	std::cout << "Radius: " << radius << std::endl;
+	double originX = origin[0].asDouble();
+	double originY = origin[1].asDouble();
+	double originZ = origin[2].asDouble();
 
-	if (origin.isArray() && origin.size() == 3) {
-		double originX = origin[0].asDouble();
-		double originY = origin[1].asDouble();
-		double originZ = origin[2].asDouble();
-		std::cout << "Origin: (" << originX << ", " << originY << ", " << originZ << ")" << std::endl;
-	}
-
-	if (colour.isArray() && colour.size() == 3) {
-		double colourX = colour[0].asDouble();
-		double colourY = colour[1].asDouble();
-		double colourZ = colour[2].asDouble();
-		std::cout << "Colour: (" << colourX << ", " << colourY << ", " << colourZ << ")" << std::endl;
-	}
+	double colourX = colour[0].asDouble();
+	double colourY = colour[1].asDouble();
+	double colourZ = colour[2].asDouble();
 
 	// Materials... go one layer deeper
 	const Json::Value& material = objectData["Material"];
@@ -105,6 +97,9 @@ void SceneParser::parseSphere(HitableList& worldList, const std::string objectTy
 		const Json::Value& materialData = material[materialType];
 
 		std::shared_ptr<Material> mat = createMaterial(materialType, materialData);
+		std::shared_ptr<Hitable> hit = std::make_shared<Sphere>(radius.asFloat(), vec3(originX, originY, originZ), vec3(colourX, colourY, colourZ), mat);
+		std::cout << "Added!" << std::endl;
+		worldList.append(hit);
 	}
 }
 
@@ -113,11 +108,16 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 	if (materialType == "MatLambertian") {
 		std::cout << "Lambertian found" << std::endl;
 
-		const Json::Value& radius = materialData["Albedo"];
+		const Json::Value& albedo = materialData["Albedo"];
+		double albedoR = albedo[0].asDouble();
+		double albedoG = albedo[1].asDouble();
+		double albedoB = albedo[2].asDouble();
+
 		const Json::Value& tex = materialData["Texture"];
 		for (const std::string& textureType : tex.getMemberNames()) {
 			const Json::Value& textureData = tex[textureType];
 			std::shared_ptr<Texture> tex = createTexture(textureType, textureData);
+			return std::make_shared<MatLambertian>(vec3(albedoR, albedoG, albedoB), tex);
 		}
 	} else if (materialType == "MatDielectric") {
 		std::cout << "Dielectric found" << std::endl;
@@ -132,8 +132,11 @@ std::shared_ptr<Texture> SceneParser::createTexture(const std::string textureTyp
 		std::cout << "TexImage found" << std::endl;
 
 		const Json::Value& path = textureData["Path"];
-		std::cout << path << std::endl;
-		const char* cPath = jsonToString(path).c_str();
+		// Lifetime of c_str() is tmp so need to split into two variables
+		std::string jsonStr = jsonToString(path);
+		// Cleanup ""
+		jsonStr = jsonStr.substr(1, jsonStr.size() - 2);
+		const char* cPath = jsonStr.c_str();
 		std::cout << "Path: " << cPath << std::endl;
 		return std::make_shared<TexImage>(cPath);
 	} else if (textureType == "TexChecker") {
@@ -147,14 +150,10 @@ std::shared_ptr<Texture> SceneParser::createTexture(const std::string textureTyp
 	return nullptr;
 }
 
-std::string SceneParser::jsonToString(const Json::Value& json)
-{
-	std::string result;
-	Json::StreamWriterBuilder wbuilder;
-
-	wbuilder["indentation"] = "";
-	result = Json::writeString(wbuilder, json);
-	return result;
+std::string SceneParser::jsonToString(const Json::Value& json) {
+	Json::StreamWriterBuilder builder;
+	builder.settings_["indentation"] = "";
+	return Json::writeString(builder, json);
 }
 
 #endif
