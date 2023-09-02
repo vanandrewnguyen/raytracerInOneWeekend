@@ -22,6 +22,12 @@ public:
 	std::string jsonToString(const Json::Value& json);
 	void parseData(Json::Value& root, HitableList& worldList, std::string rootName, bool debugPrint = false);
 	void parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseMovingSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseBox(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseXYRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseYZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseXZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseConstantVolume(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
 	std::shared_ptr<Material> createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint = false);
 	std::shared_ptr<Texture> createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint = false);
 };
@@ -74,6 +80,18 @@ void SceneParser::parseData(Json::Value& root, HitableList& worldList, std::stri
 		// Case by case for each scene object
 		if (objectType == "Sphere") {
 			parseSphere(worldList, objectType, objectData, debugPrint);
+		} else if (objectType == "MovingSphere") {
+			parseMovingSphere(worldList, objectType, objectData, debugPrint);
+		} else if (objectType == "Box") {
+			parseBox(worldList, objectType, objectData, debugPrint);
+		} else if (objectType == "ConstantVolume") {
+			// parseConstantVolume(worldList, objectType, objectData, debugPrint);
+		} else if (objectType == "XYRect") {
+			parseXYRect(worldList, objectType, objectData, debugPrint);
+		} else if (objectType == "YZRect") {
+			parseYZRect(worldList, objectType, objectData, debugPrint);
+		} else if (objectType == "XZRect") {
+			parseXZRect(worldList, objectType, objectData, debugPrint);
 		}
 	}
 }
@@ -109,6 +127,164 @@ void SceneParser::parseSphere(HitableList& worldList, const std::string objectTy
 
 		worldList.append(hit);
 	}
+}
+
+void SceneParser::parseMovingSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+	if (debugPrint) {
+		std::cout << "Found a Moving Sphere!" << std::endl;
+	}
+
+	const Json::Value& p1 = objectData["Origin"];
+	const Json::Value& p2 = objectData["Target"];
+	const Json::Value& albedo = objectData["Albedo"];
+	float time1 = objectData["Time1"].asFloat();
+	float time2 = objectData["Time2"].asFloat();
+	float rad = objectData["Radius"].asFloat();
+
+	float pX1 = p1[0].asFloat();
+	float pY1 = p1[1].asFloat();
+	float pZ1 = p1[2].asFloat();
+
+	float pX2 = p2[0].asFloat();
+	float pY2 = p2[1].asFloat();
+	float pZ2 = p2[2].asFloat();
+
+	float albedoR = albedo[0].asFloat();
+	float albedoG = albedo[1].asFloat();
+	float albedoB = albedo[2].asFloat();
+
+	const Json::Value& material = objectData["Material"];
+	for (const std::string& materialType : material.getMemberNames()) {
+		const Json::Value& materialData = material[materialType];
+
+		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
+		std::shared_ptr<Hitable> hit = std::make_shared<MovingSphere>(vec3(pX1, pY1, pZ1),
+																	  vec3(pX2, pY2, pZ2), 
+																	  time1, 
+																	  time2, 
+																	  rad, 
+																	  vec3(albedoR, albedoG, albedoB),
+																	  mat);
+
+		if (debugPrint) {
+			std::cout << "Added!" << std::endl;
+		}
+
+		worldList.append(hit);
+	}
+}
+
+void SceneParser::parseBox(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+	if (debugPrint) {
+		std::cout << "Found a Box!" << std::endl;
+	}
+
+	const Json::Value& p1 = objectData["Point1"];
+	const Json::Value& p2 = objectData["Point2"];
+
+	float pX1 = p1[0].asFloat();
+	float pY1 = p1[1].asFloat();
+	float pZ1 = p1[2].asFloat();
+
+	float pX2 = p2[0].asFloat();
+	float pY2 = p2[1].asFloat();
+	float pZ2 = p2[2].asFloat();
+
+	const Json::Value& material = objectData["Material"];
+	for (const std::string& materialType : material.getMemberNames()) {
+		const Json::Value& materialData = material[materialType];
+
+		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
+		std::shared_ptr<Hitable> hit = std::make_shared<Box>(vec3(pX1, pY1, pZ1), vec3(pX2, pY2, pZ2), mat);
+
+		if (debugPrint) {
+			std::cout << "Added!" << std::endl;
+		}
+
+		worldList.append(hit);
+	}
+}
+
+void SceneParser::parseXYRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+	if (debugPrint) {
+		std::cout << "Found a XYRect!" << std::endl;
+	}
+
+	float _x0 = objectData["x0"].asFloat();
+	float _x1 = objectData["x1"].asFloat();
+	float _y0 = objectData["y0"].asFloat();
+	float _y1 = objectData["y1"].asFloat();
+	float k = objectData["k"].asFloat();
+
+	const Json::Value& material = objectData["Material"];
+	for (const std::string& materialType : material.getMemberNames()) {
+		const Json::Value& materialData = material[materialType];
+
+		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
+		std::shared_ptr<Hitable> hit = std::make_shared<XYRect>(_x0, _x1, _y0, _y1, k, mat);
+
+		if (debugPrint) {
+			std::cout << "Added!" << std::endl;
+		}
+
+		worldList.append(hit);
+	}
+}
+
+void SceneParser::parseYZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+	if (debugPrint) {
+		std::cout << "Found a YZRect!" << std::endl;
+	}
+
+	float _y0 = objectData["y0"].asFloat();
+	float _y1 = objectData["y1"].asFloat();
+	float _z0 = objectData["z0"].asFloat();
+	float _z1 = objectData["z1"].asFloat();
+	float k = objectData["k"].asFloat();
+
+	const Json::Value& material = objectData["Material"];
+	for (const std::string& materialType : material.getMemberNames()) {
+		const Json::Value& materialData = material[materialType];
+
+		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
+		std::shared_ptr<Hitable> hit = std::make_shared<YZRect>(_y0, _y1, _z0, _z1, k, mat);
+
+		if (debugPrint) {
+			std::cout << "Added!" << std::endl;
+		}
+
+		worldList.append(hit);
+	}
+}
+
+void SceneParser::parseXZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+	if (debugPrint) {
+		std::cout << "Found a XZRect!" << std::endl;
+	}
+
+	float _x0 = objectData["x0"].asFloat();
+	float _x1 = objectData["x1"].asFloat();
+	float _z0 = objectData["z0"].asFloat();
+	float _z1 = objectData["z1"].asFloat();
+	float k = objectData["k"].asFloat();
+
+	const Json::Value& material = objectData["Material"];
+	for (const std::string& materialType : material.getMemberNames()) {
+		const Json::Value& materialData = material[materialType];
+
+		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
+		std::shared_ptr<Hitable> hit = std::make_shared<XZRect>(_x0, _x1, _z0, _z1, k, mat);
+
+		if (debugPrint) {
+			std::cout << "Added!" << std::endl;
+		}
+
+		worldList.append(hit);
+	}
+}
+
+void SceneParser::parseConstantVolume(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+
 }
 
 std::shared_ptr<Material> SceneParser::createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint) {
