@@ -47,6 +47,9 @@ Camera::Camera(vec3 lookFrom, vec3 lookAt, vec3 up, float vfov, float aspectRati
     time1 = _time1;
 
     // Dis camera to scene is on z axis
+    if (focusDist == -100.0) {
+        focusDist = (lookFrom - lookAt).length();
+    }
     lowerLeftCorner = origin - widthMid * focusDist * u - heightMid * focusDist * v - focusDist * w;
     horizonatalVec = 2 * widthMid * u * focusDist;
     verticalVec = 2 * heightMid * v * focusDist;

@@ -1,9 +1,27 @@
 // GIBBERISH
 
 {
+    "Camera": {
+        "LookFrom": [-3.0, 3.0, -2.0],
+		"LookAt": [0.0, -0.1, -1.0],
+		"UpVector": [0.0, 1.0, 0.0],
+		"ViewFOV": 20.0,
+		"Aperture": 0.1,
+		"FocusDist": -100.0,
+		"TimeStart": 0.0,
+		"TimeEnd": 1.0,
+	},
+	"Settings": {
+		"ImageWidth": 200,
+		"ImageHeight": 100,
+		"SampleCount": 1,
+		"BackgroundColour": [1.0, 1.0, 1.0],
+		"UseOutdoorLighting": 1,
+    }, 
     "Objects": [
         {
-            "Sphere": {
+			"Type": "Sphere",
+			"Data": {
                 "Radius": 0.55,
 		        "Origin": [0.0, 0.0, -1.0],
 		        "Colour": [0.0, 0.0, 0.0],
@@ -17,10 +35,27 @@
 			            }
 		            },
                 },
-            }
+            },
+		},
+		{
+			"Type": "Sphere",
+			"Data": {
+                "Radius": 100.0,
+				"Origin": [0.0, -100.5, -1.0],
+				"Colour": [0.0, 1.0, 0.0],
+				"Material": {
+					"Lambertian": {
+						"Albedo": [0.8, 0.3, 0.3],
+						"Texture": {
+							"TexChecker": {
+								"Albedo1": [0.8, 0.3, 0.3],
+								"Albedo2": [1.0, 1.0, 1.0],
+								"Size": 10.0,
+							}
+						}
+					},
+				},
+            },
         },
-        
-
-
     ]
 }

@@ -3,7 +3,24 @@
 // Main //
 
 {
-	Objects: [
+	"Camera": {
+        "LookFrom": [0.0, 0.0, 0.0],
+		"LookAt": [0.0, 0.0, 0.0],
+		"UpVector": [0.0, 1.0, 0.0],
+		"ViewFOV": 20.0,
+		"Aperture": 0.1,
+		"FocusDist": -100.0, // -100.0 for default calulations
+		"TimeStart": 0.0,
+		"TimeEnd": 1.0,
+	},
+	"Settings": {
+		"ImageWidth": 200,
+		"ImageHeight": 100,
+		"SampleCount": 1,
+		"BackgroundColour": [1.0, 1.0, 1.0], // Used if outdoor lighting not shown
+		"UseOutdoorLighting": 1,
+	},
+	"Objects": [
 		// Scene Objects go in here.
 	]
 }

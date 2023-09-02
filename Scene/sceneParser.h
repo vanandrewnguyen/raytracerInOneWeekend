@@ -17,19 +17,27 @@ public:
 	SceneParser();
 
 	std::string removeComments(const std::string& input);
-	HitableList getWorldList(std::string& pathname, bool debugPrint = false);
+	Camera generateScene(std::string& pathname, bool debugPrint = false);
+	Camera createCamera(Json::Value& root, std::string rootName, bool debugPrint = false);
+	void parseSettings(Json::Value& root, std::string rootName, bool debugPrint = false);
 
 	std::string jsonToString(const Json::Value& json);
-	void parseData(Json::Value& root, HitableList& worldList, std::string rootName, bool debugPrint = false);
-	void parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
-	void parseMovingSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
-	void parseBox(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
-	void parseXYRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
-	void parseYZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
-	void parseXZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
-	void parseConstantVolume(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseData(Json::Value& root, std::string rootName, bool debugPrint = false);
+	void parseSphere(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseMovingSphere(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseBox(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseXYRect(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseYZRect(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseXZRect(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	void parseConstantVolume(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
 	std::shared_ptr<Material> createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint = false);
 	std::shared_ptr<Texture> createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint = false);
+
+public:
+	HitableList worldList;
+	int imageWidth, imageHeight, sampleCount;
+	vec3 bgColour;
+	bool useSkyColour;
 };
 
 SceneParser::SceneParser() {}
@@ -48,9 +56,53 @@ std::string SceneParser::removeComments(const std::string& input) {
 	return result;
 }
 
-HitableList SceneParser::getWorldList(std::string& pathname, bool debugPrint) {
-	HitableList worldList;
-	
+Camera SceneParser::createCamera(Json::Value& root, std::string rootName, bool debugPrint) {
+	// Create camera object
+	const Json::Value& camera = root[rootName];
+
+	Json::Value lookFrom = camera["LookFrom"];
+	float lookFromX = lookFrom[0].asFloat();
+	float lookFromY = lookFrom[1].asFloat();
+	float lookFromZ = lookFrom[2].asFloat();
+	vec3 lookFromVec = vec3(lookFromX, lookFromY, lookFromZ);
+
+	Json::Value lookAt = camera["LookAt"];
+	float lookAtX = lookAt[0].asFloat();
+	float lookAtY = lookAt[1].asFloat();
+	float lookAtZ = lookAt[2].asFloat();
+	vec3 lookAtVec = vec3(lookAtX, lookAtY, lookAtZ);
+
+	Json::Value upVector = camera["UpVector"];
+	float upVectorX = upVector[0].asFloat();
+	float upVectorY = upVector[1].asFloat();
+	float upVectorZ = upVector[2].asFloat();
+	vec3 upVectorVec = vec3(upVectorX, upVectorY, upVectorZ);
+
+	float viewFOV = camera["ViewFOV"].asFloat();
+	float aperture = camera["Aperture"].asFloat();
+	float focusDist = camera["FocusDist"].asFloat();
+	float timeStart = camera["TimeStart"].asFloat();
+	float timeEnd = camera["TimeEnd"].asFloat();
+
+	return Camera(lookFromVec, lookAtVec, upVectorVec, viewFOV, float(imageWidth) / float(imageHeight), aperture, focusDist, timeStart, timeEnd);
+}
+
+void SceneParser::parseSettings(Json::Value& root, std::string rootName, bool debugPrint) {
+	// Set settings of scene
+	const Json::Value& settings = root[rootName];
+	imageWidth = settings["ImageWidth"].asInt();
+	imageHeight = settings["ImageHeight"].asInt();
+	sampleCount = settings["SampleCount"].asInt();;
+	const Json::Value& bgColourJson = settings["BackgroundColour"];
+	float bgColourR = bgColourJson[0].asFloat();
+	float bgColourG = bgColourJson[1].asFloat();
+	float bgColourB = bgColourJson[2].asFloat();
+	bgColour = vec3(bgColourR, bgColourG, bgColourB);
+	std::cout << settings["UseOutdoorLighting"] << std::endl;
+	useSkyColour = (settings["UseOutdoorLighting"].asInt() == 1) ? true : false;
+}
+
+Camera SceneParser::generateScene(std::string& pathname, bool debugPrint) {	
 	// Parse file and cleanup
 	std::string path = "Scene/" + pathname;
 	std::ifstream file(path);
@@ -66,37 +118,37 @@ HitableList SceneParser::getWorldList(std::string& pathname, bool debugPrint) {
 	Json::parseFromStream(reader, jsonStream, &root, &errs);
 	
 	// Bottom level scene objects
-	parseData(root, worldList, "Objects", debugPrint);
-
-	return worldList;
+	parseData(root, "Objects", debugPrint);
+	parseSettings(root, "Settings", debugPrint);
+	return createCamera(root, "Camera", debugPrint);
 }
 
-void SceneParser::parseData(Json::Value& root, HitableList& worldList, std::string rootName, bool debugPrint) {
+void SceneParser::parseData(Json::Value& root, std::string rootName, bool debugPrint) {
 	const Json::Value& objects = root[rootName];
 	for (const Json::Value& object : objects) {
-		const std::string objectType = object.getMemberNames()[0];
-		const Json::Value& objectData = object[objectType];
+		const std::string objectType = object["Type"].asString();
+		const Json::Value& objectData = object["Data"];
 
 		// Case by case for each scene object
 		if (objectType == "Sphere") {
-			parseSphere(worldList, objectType, objectData, debugPrint);
+			parseSphere(objectType, objectData, debugPrint);
 		} else if (objectType == "MovingSphere") {
-			parseMovingSphere(worldList, objectType, objectData, debugPrint);
+			parseMovingSphere(objectType, objectData, debugPrint);
 		} else if (objectType == "Box") {
-			parseBox(worldList, objectType, objectData, debugPrint);
+			parseBox(objectType, objectData, debugPrint);
 		} else if (objectType == "ConstantVolume") {
 			// parseConstantVolume(worldList, objectType, objectData, debugPrint);
 		} else if (objectType == "XYRect") {
-			parseXYRect(worldList, objectType, objectData, debugPrint);
+			parseXYRect(objectType, objectData, debugPrint);
 		} else if (objectType == "YZRect") {
-			parseYZRect(worldList, objectType, objectData, debugPrint);
+			parseYZRect(objectType, objectData, debugPrint);
 		} else if (objectType == "XZRect") {
-			parseXZRect(worldList, objectType, objectData, debugPrint);
+			parseXZRect(objectType, objectData, debugPrint);
 		}
 	}
 }
 
-void SceneParser::parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseSphere(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 	if (debugPrint) {
 		std::cout << "Found a Sphere!" << std::endl;
 	}
@@ -126,10 +178,11 @@ void SceneParser::parseSphere(HitableList& worldList, const std::string objectTy
 		}
 
 		worldList.append(hit);
+		return;
 	}
 }
 
-void SceneParser::parseMovingSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseMovingSphere(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 	if (debugPrint) {
 		std::cout << "Found a Moving Sphere!" << std::endl;
 	}
@@ -171,10 +224,11 @@ void SceneParser::parseMovingSphere(HitableList& worldList, const std::string ob
 		}
 
 		worldList.append(hit);
+		return;
 	}
 }
 
-void SceneParser::parseBox(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseBox(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 	if (debugPrint) {
 		std::cout << "Found a Box!" << std::endl;
 	}
@@ -202,10 +256,11 @@ void SceneParser::parseBox(HitableList& worldList, const std::string objectType,
 		}
 
 		worldList.append(hit);
+		return;
 	}
 }
 
-void SceneParser::parseXYRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseXYRect(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 	if (debugPrint) {
 		std::cout << "Found a XYRect!" << std::endl;
 	}
@@ -228,10 +283,11 @@ void SceneParser::parseXYRect(HitableList& worldList, const std::string objectTy
 		}
 
 		worldList.append(hit);
+		return;
 	}
 }
 
-void SceneParser::parseYZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseYZRect(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 	if (debugPrint) {
 		std::cout << "Found a YZRect!" << std::endl;
 	}
@@ -254,10 +310,11 @@ void SceneParser::parseYZRect(HitableList& worldList, const std::string objectTy
 		}
 
 		worldList.append(hit);
+		return;
 	}
 }
 
-void SceneParser::parseXZRect(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseXZRect(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 	if (debugPrint) {
 		std::cout << "Found a XZRect!" << std::endl;
 	}
@@ -280,10 +337,11 @@ void SceneParser::parseXZRect(HitableList& worldList, const std::string objectTy
 		}
 
 		worldList.append(hit);
+		return;
 	}
 }
 
-void SceneParser::parseConstantVolume(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+void SceneParser::parseConstantVolume(const std::string objectType, const Json::Value& objectData, bool debugPrint) {
 
 }
 

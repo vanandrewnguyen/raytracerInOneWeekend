@@ -233,15 +233,46 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
     sdltemplate::drawPoint(x, imgHeight - y);
 }
 
+void renderScene(SceneParser& parser, Camera& cam, HitableList& worldList, bool debugPrint = false) {
+    srand((unsigned)time(NULL));
+
+    // Establish SDL Window
+    sdltemplate::sdl("Raytracer", parser.imageWidth, parser.imageHeight);
+    sdltemplate::loop();
+
+    for (int y = parser.imageHeight - 1; y >= 0; y--) {
+        for (int x = 0; x < parser.imageWidth; x++) {
+            // Output
+            writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour);
+            // Debugging
+            if (debugPrint) {
+                std::cout << "Rendering pixel " << int(x + y) << std::endl;
+            }
+        }
+    }
+
+    if (debugPrint) {
+        std::cout << "Done!" << std::endl;
+    }
+
+    // Keep window active
+    while (sdltemplate::running) {
+        sdltemplate::loop();
+    }
+}
+
 int main(int argc, char* argv[]) {
     SceneParser parser = SceneParser();
     std::string pathname = "sceneTest.txt";
-    HitableList worldList = parser.getWorldList(pathname, true);
+    Camera cam = parser.generateScene(pathname, true);
+    HitableList worldList = parser.worldList;
+
+    renderScene(parser, cam, worldList);
 
     return 0;
 }
 
-int renderScene() {
+int renderSceneOld() {
     const int imgWidth = 200; // 800;
     const int imgHeight = 100; // 400;
     const int ns = 1; // 500;
