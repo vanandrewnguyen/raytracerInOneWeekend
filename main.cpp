@@ -236,7 +236,7 @@ void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y,
 int main(int argc, char* argv[]) {
     SceneParser parser = SceneParser();
     std::string pathname = "sceneTest.txt";
-    HitableList worldList = parser.getWorldList(pathname);
+    HitableList worldList = parser.getWorldList(pathname, true);
 
     return 0;
 }

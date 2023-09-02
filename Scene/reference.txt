@@ -140,27 +140,27 @@ MatDielectric:
 
 // Textures //
 
-TexSolidColour:
+"TexSolidColour":
 {
-	Colour: 0.0, 0.0, 0.0,
+	"Albedo": [0.0, 0.0, 0.0],
 }
 
-TexPerlin:
+"TexPerlin":
 {
-	Frequency: 1.0,
-	Interval: 1.0,
-	Colour1: 0.0, 0.0, 0.0,
-	Colour2: 1.0, 1.0, 1.0,
+	"Frequency": 1.0,
+	"Interval": 1.0,
+	"Albedo1": [0.0, 0.0, 0.0],
+	"Albedo2": [1.0, 1.0, 1.0],
 }
 
-TexImage:
+"TexImage":
 {
 	Pathname: "",
 }
 
-TexChecker:
+"TexChecker":
 {
-	Colour1: 0.0, 0.0, 0.0,
-	Colour2: 1.0, 1.0, 1.0,
-	Size: 1.0,
+	"Albedo1": [0.0, 0.0, 0.0],
+	"Albedo2": [1.0, 1.0, 1.0],
+	"Size: 1.0,
 }

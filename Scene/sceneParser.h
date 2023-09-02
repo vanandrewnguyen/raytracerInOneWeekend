@@ -17,13 +17,13 @@ public:
 	SceneParser();
 
 	std::string removeComments(const std::string& input);
-	HitableList getWorldList(std::string& pathname);
+	HitableList getWorldList(std::string& pathname, bool debugPrint = false);
 
 	std::string jsonToString(const Json::Value& json);
-	void parseData(Json::Value& root, HitableList& worldList, std::string rootName);
-	void parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData);
-	std::shared_ptr<Material> createMaterial(const std::string materialType, const Json::Value& materialData);
-	std::shared_ptr<Texture> createTexture(const std::string textureType, const Json::Value& textureData);
+	void parseData(Json::Value& root, HitableList& worldList, std::string rootName, bool debugPrint = false);
+	void parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
+	std::shared_ptr<Material> createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint = false);
+	std::shared_ptr<Texture> createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint = false);
 };
 
 SceneParser::SceneParser() {}
@@ -42,7 +42,7 @@ std::string SceneParser::removeComments(const std::string& input) {
 	return result;
 }
 
-HitableList SceneParser::getWorldList(std::string& pathname) {
+HitableList SceneParser::getWorldList(std::string& pathname, bool debugPrint) {
 	HitableList worldList;
 	
 	// Parse file and cleanup
@@ -60,12 +60,12 @@ HitableList SceneParser::getWorldList(std::string& pathname) {
 	Json::parseFromStream(reader, jsonStream, &root, &errs);
 	
 	// Bottom level scene objects
-	parseData(root, worldList, "Objects");
+	parseData(root, worldList, "Objects", debugPrint);
 
 	return worldList;
 }
 
-void SceneParser::parseData(Json::Value& root, HitableList& worldList, std::string rootName) {
+void SceneParser::parseData(Json::Value& root, HitableList& worldList, std::string rootName, bool debugPrint) {
 	const Json::Value& objects = root[rootName];
 	for (const Json::Value& object : objects) {
 		const std::string objectType = object.getMemberNames()[0];
@@ -73,12 +73,16 @@ void SceneParser::parseData(Json::Value& root, HitableList& worldList, std::stri
 
 		// Case by case for each scene object
 		if (objectType == "Sphere") {
-			parseSphere(worldList, objectType, objectData);
+			parseSphere(worldList, objectType, objectData, debugPrint);
 		}
 	}
 }
 
-void SceneParser::parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData) {
+void SceneParser::parseSphere(HitableList& worldList, const std::string objectType, const Json::Value& objectData, bool debugPrint) {
+	if (debugPrint) {
+		std::cout << "Found a Sphere!" << std::endl;
+	}
+
 	const Json::Value& radius = objectData["Radius"];
 	const Json::Value& origin = objectData["Origin"];
 	const Json::Value& colour = objectData["Colour"];
@@ -96,17 +100,23 @@ void SceneParser::parseSphere(HitableList& worldList, const std::string objectTy
 	for (const std::string& materialType : material.getMemberNames()) {
 		const Json::Value& materialData = material[materialType];
 
-		std::shared_ptr<Material> mat = createMaterial(materialType, materialData);
+		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
 		std::shared_ptr<Hitable> hit = std::make_shared<Sphere>(radius.asFloat(), vec3(originX, originY, originZ), vec3(colourX, colourY, colourZ), mat);
-		std::cout << "Added!" << std::endl;
+		
+		if (debugPrint) {
+			std::cout << "Added!" << std::endl;
+		}
+
 		worldList.append(hit);
 	}
 }
 
-std::shared_ptr<Material> SceneParser::createMaterial(const std::string materialType, const Json::Value& materialData) {
+std::shared_ptr<Material> SceneParser::createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint) {
 	// Handle different material types
 	if (materialType == "MatLambertian") {
-		std::cout << "Lambertian found" << std::endl;
+		if (debugPrint) {
+			std::cout << "Lambertian found" << std::endl;
+		}
 
 		const Json::Value& albedo = materialData["Albedo"];
 		double albedoR = albedo[0].asDouble();
@@ -116,20 +126,24 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 		const Json::Value& tex = materialData["Texture"];
 		for (const std::string& textureType : tex.getMemberNames()) {
 			const Json::Value& textureData = tex[textureType];
-			std::shared_ptr<Texture> tex = createTexture(textureType, textureData);
+			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
 			return std::make_shared<MatLambertian>(vec3(albedoR, albedoG, albedoB), tex);
 		}
 	} else if (materialType == "MatDielectric") {
-		std::cout << "Dielectric found" << std::endl;
+		if (debugPrint) {
+			std::cout << "Dielectric found" << std::endl;
+		}
 	}
 
 	return nullptr;
 }
 
-std::shared_ptr<Texture> SceneParser::createTexture(const std::string textureType, const Json::Value& textureData) {
+std::shared_ptr<Texture> SceneParser::createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint) {
 	// Handle different texture types
 	if (textureType == "TexImage") {
-		std::cout << "TexImage found" << std::endl;
+		if (debugPrint) {
+			std::cout << "TexImage found" << std::endl;
+		}
 
 		const Json::Value& path = textureData["Path"];
 		// Lifetime of c_str() is tmp so need to split into two variables
@@ -137,14 +151,48 @@ std::shared_ptr<Texture> SceneParser::createTexture(const std::string textureTyp
 		// Cleanup ""
 		jsonStr = jsonStr.substr(1, jsonStr.size() - 2);
 		const char* cPath = jsonStr.c_str();
-		std::cout << "Path: " << cPath << std::endl;
 		return std::make_shared<TexImage>(cPath);
 	} else if (textureType == "TexChecker") {
+		if (debugPrint) {
+			std::cout << "TexChecker found" << std::endl;
+		}
 
+		float size = textureData["Size"].asFloat();
+		const Json::Value& albedo1 = textureData["Albedo1"];
+		float albedoR1 = albedo1[0].asFloat();
+		float albedoG1 = albedo1[1].asFloat();
+		float albedoB1 = albedo1[2].asFloat();
+		const Json::Value& albedo2 = textureData["Albedo2"];
+		float albedoR2 = albedo2[0].asFloat();
+		float albedoG2 = albedo2[1].asFloat();
+		float albedoB2 = albedo2[2].asFloat();
+		return std::make_shared<TexChecker>(vec3(albedoR1, albedoG1, albedoB1), vec3(albedoR2, albedoG2, albedoB2), size);
 	} else if (textureType == "TexPerlin") {
+		if (debugPrint) {
+			std::cout << "TexPerlin found" << std::endl;
+		}
 
+		float freq = textureData["Frequency"].asFloat();
+		int deg = textureData["Interval"].asInt();
+		const Json::Value& albedo1 = textureData["Albedo1"];
+		float albedoR1 = albedo1[0].asFloat();
+		float albedoG1 = albedo1[1].asFloat();
+		float albedoB1 = albedo1[2].asFloat();
+		const Json::Value& albedo2 = textureData["Albedo2"];
+		float albedoR2 = albedo2[0].asFloat();
+		float albedoG2 = albedo2[1].asFloat();
+		float albedoB2 = albedo2[2].asFloat();
+		return std::make_shared<TexPerlin>(freq, deg, vec3(albedoR1, albedoG1, albedoB1), vec3(albedoR2, albedoG2, albedoB2));
 	} else if (textureType == "TexSolidColour") {
+		if (debugPrint) {
+			std::cout << "TexSolidColour found" << std::endl;
+		}
 
+		const Json::Value& albedo = textureData["Albedo"];
+		float albedoR = albedo[0].asFloat();
+		float albedoG = albedo[1].asFloat();
+		float albedoB = albedo[2].asFloat();
+		return std::make_shared<TexSolidColour>(vec3(albedoR, albedoG, albedoB));
 	}
 
 	return nullptr;
