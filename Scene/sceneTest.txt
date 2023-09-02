@@ -8,7 +8,7 @@
 		        "Origin": [0.0, 0.0, -1.0],
 		        "Colour": [0.0, 0.0, 0.0],
                 "Material": {
-                    "MatLambertian": {
+                    "Lambertian": {
 			            "Albedo": [0.8, 0.3, 0.3],
 			            "Texture": {
 			                "TexImage": {

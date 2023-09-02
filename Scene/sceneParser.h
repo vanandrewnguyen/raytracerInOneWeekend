@@ -113,7 +113,7 @@ void SceneParser::parseSphere(HitableList& worldList, const std::string objectTy
 
 std::shared_ptr<Material> SceneParser::createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint) {
 	// Handle different material types
-	if (materialType == "MatLambertian") {
+	if (materialType == "Lambertian") {
 		if (debugPrint) {
 			std::cout << "Lambertian found" << std::endl;
 		}
@@ -129,9 +129,45 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
 			return std::make_shared<MatLambertian>(vec3(albedoR, albedoG, albedoB), tex);
 		}
-	} else if (materialType == "MatDielectric") {
+	} else if (materialType == "Dielectric") {
 		if (debugPrint) {
 			std::cout << "Dielectric found" << std::endl;
+		}
+
+		float refraction = materialData["RefractiveIndex"].asFloat();
+		return std::make_shared<MatDielectric>(refraction);
+	} else if (materialType == "Metal") {
+		if (debugPrint) {
+			std::cout << "Metal found" << std::endl;
+		}
+
+		float reflectance = materialData["Reflectance"].asFloat();
+		const Json::Value& albedo = materialData["Albedo"];
+		float albedoR = albedo[0].asFloat();
+		float albedoG = albedo[1].asFloat();
+		float albedoB = albedo[2].asFloat();
+		return std::make_shared<MatMetal>(vec3(albedoR, albedoG, albedoB), reflectance);
+	} else if (materialType == "Isotropic") {
+		if (debugPrint) {
+			std::cout << "Isotropic found" << std::endl;
+		}
+
+		const Json::Value& tex = materialData["Texture"];
+		for (const std::string& textureType : tex.getMemberNames()) {
+			const Json::Value& textureData = tex[textureType];
+			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
+			return std::make_shared<Isotropic>(tex);
+		}
+	} else if (materialType == "DiffuseLight") {
+		if (debugPrint) {
+			std::cout << "Diffuse light found" << std::endl;
+		}
+
+		const Json::Value& tex = materialData["Texture"];
+		for (const std::string& textureType : tex.getMemberNames()) {
+			const Json::Value& textureData = tex[textureType];
+			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
+			return std::make_shared<DiffuseLight>(tex);
 		}
 	}
 

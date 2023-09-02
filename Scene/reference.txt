@@ -100,42 +100,42 @@ ConstantVolume:
 
 // Materials //
 
-MatLambertian:
+"Lambertian":
 {
-	Albedo: 0.0, 0.0, 0.0,
-	Texture:
+	"Albedo": [0.0, 0.0, 0.0],
+	"Texture":
 	{
 	
 	}
 }
 
 // Use for light emitting scene objects
-DiffuseLight:
+"DiffuseLight":
 {
-	Texture:
+	"Texture":
 	{
 	
 	}
 }
 
 // Use for constant volumes
-Isotropic:
+"Isotropic":
 {
-	Texture:
+	"Texture":
 	{
 	
 	}
 }
 
-MatMetal:
+"Metal":
 {
-	Albedo: 0.0, 0.0, 0.0,
-	Reflectance: 0.0,
+	"Albedo": [0.0, 0.0, 0.0],
+	"Reflectance": 0.0,
 }
 
-MatDielectric:
+"Dielectric":
 {
-	RefractionIndex: 1.0,
+	"RefractiveIndex: 1.0,
 }
 
 // Textures //
