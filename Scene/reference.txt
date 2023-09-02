@@ -10,88 +10,89 @@
 
 // Scene Objects //
 
-Box:
+"Box":
 {
-	BoxMinPoint: 0.0, 0.0, 0.0,
-	BoxMaxPoint: 1.0, 1.0, 1.0,
-	Material:
+	"Point1": [0.0, 0.0, 0.0],
+	"Point2": [1.0, 1.0, 1.0],
+	"Material":
 	{
 	
 	},
 }
 
-Sphere:
+"Sphere":
 {
-	Radius: 0.0,
-	Origin: 0.0, 0.0, 0.0,
-	Colour: 0.0, 0.0, 0.0,
-	Material:
+	"Radius": 0.0,
+	"Origin": [0.0, 0.0, 0.0],
+	"Albedo": [0.0, 0.0, 0.0],
+	"Material":
 	{
 	
 	},
 }
 
-MovingSphere:
+"MovingSphere":
 {
-	Radius: 0.0,
-	Origin: 0.0, 0.0, 0.0,
-	Target: 0.0, 0.0, 0.0,
-	TimeStart: 0.0,
-	TimeEnd: 1.0,
-	Colour: 0.0, 0.0, 0.0,
-	Material:
+	"Radius": 0.0,
+	"Origin": [0.0, 0.0, 0.0],
+	"Target": [0.0, 0.0, 0.0],
+	"Albedo": [0.0, 0.0, 0.0],
+	"TimeStart": 0.0,
+	"TimeEnd": 1.0,
+	"Material":
 	{
 	
 	}
 }
 
-XYRect:
+"XYRect":
 {
-	x0: 0.0,
-	x1: 0.0, 
-	y0: 0.0,
-	y1: 0.0,
-	Axis: 0.0,
-	Material:
+	"x0": 0.0,
+	"x1": 0.0, 
+	"y0": 0.0,
+	"y1": 0.0,
+	"Axis": 0.0,
+	"Material":
 	{
 	
 	},
 }
 
-XZRect:
+"XZRect":
 {
-	x0: 0.0,
-	x1: 0.0, 
-	z0: 0.0,
-	z1: 0.0,
-	Axis: 0.0,
-	Material:
+	"x0": 0.0,
+	"x1": 0.0, 
+	"z0": 0.0,
+	"z1": 0.0,
+	"Axis": 0.0,
+	"Material":
 	{
 	
 	},
 }
 
-YZRect:
+"YZRect":
 {
-	y0: 0.0,
-	y1: 0.0, 
-	z0: 0.0,
-	z1: 0.0,
-	Axis: 0.0,
-	Material:
+	"y0": 0.0,
+	"y1": 0.0, 
+	"z0": 0.0,
+	"z1": 0.0,
+	"Axis": 0.0,
+	"Material":
 	{
 	
 	},
 }
 
-ConstantVolume:
+// Not implemented yet.
+"ConstantVolume": 
 {
-	ObjectBoundary:
+	"ObjectBoundary":
 	{
 		// Another scene object, like a box
 	},
-	Density: 0.0,
-	Texture:
+	"Density": 0.0,
+	"Texture":
 	{
 		
 	},

@@ -137,8 +137,8 @@ void SceneParser::parseMovingSphere(HitableList& worldList, const std::string ob
 	const Json::Value& p1 = objectData["Origin"];
 	const Json::Value& p2 = objectData["Target"];
 	const Json::Value& albedo = objectData["Albedo"];
-	float time1 = objectData["Time1"].asFloat();
-	float time2 = objectData["Time2"].asFloat();
+	float time1 = objectData["TimeStart"].asFloat();
+	float time2 = objectData["TimeEnd"].asFloat();
 	float rad = objectData["Radius"].asFloat();
 
 	float pX1 = p1[0].asFloat();
@@ -214,7 +214,7 @@ void SceneParser::parseXYRect(HitableList& worldList, const std::string objectTy
 	float _x1 = objectData["x1"].asFloat();
 	float _y0 = objectData["y0"].asFloat();
 	float _y1 = objectData["y1"].asFloat();
-	float k = objectData["k"].asFloat();
+	float k = objectData["Axis"].asFloat();
 
 	const Json::Value& material = objectData["Material"];
 	for (const std::string& materialType : material.getMemberNames()) {
@@ -240,7 +240,7 @@ void SceneParser::parseYZRect(HitableList& worldList, const std::string objectTy
 	float _y1 = objectData["y1"].asFloat();
 	float _z0 = objectData["z0"].asFloat();
 	float _z1 = objectData["z1"].asFloat();
-	float k = objectData["k"].asFloat();
+	float k = objectData["Axis"].asFloat();
 
 	const Json::Value& material = objectData["Material"];
 	for (const std::string& materialType : material.getMemberNames()) {
@@ -266,7 +266,7 @@ void SceneParser::parseXZRect(HitableList& worldList, const std::string objectTy
 	float _x1 = objectData["x1"].asFloat();
 	float _z0 = objectData["z0"].asFloat();
 	float _z1 = objectData["z1"].asFloat();
-	float k = objectData["k"].asFloat();
+	float k = objectData["Axis"].asFloat();
 
 	const Json::Value& material = objectData["Material"];
 	for (const std::string& materialType : material.getMemberNames()) {
