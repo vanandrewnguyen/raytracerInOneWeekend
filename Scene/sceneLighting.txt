@@ -14,7 +14,7 @@
 	"Settings": {
 		"ImageWidth": 200,
 		"ImageHeight": 100,
-		"SampleCount": 1,
+		"SampleCount": 100,
 		"BackgroundColour": [0.0, 0.0, 0.0],
 		"UseOutdoorLighting": 0,
     }, 
@@ -62,8 +62,8 @@
 			"Data": {
                 "x0": 0.15,
 				"x1": 1.0, 
-				"z0": -0.2,
-				"z1": 0.5,
+				"y0": -0.2,
+				"y1": 0.5,
 				"Axis": -1.5,
 				"Material": {
 					"DiffuseLight": {
