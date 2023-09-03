@@ -140,6 +140,9 @@
     <ClInclude Include="Libraries\jsoncpp\dist\json\json-forwards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene\scene.h">
+      <Filter>Source Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
@@ -150,13 +153,13 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Scene\sceneSingleSphere.txt">
-      <Filter>Source Files\Scene</Filter>
-    </Text>
     <Text Include="Scene\reference.txt">
       <Filter>Source Files\Scene</Filter>
     </Text>
-    <Text Include="Scene\sceneTest.txt">
+    <Text Include="Scene\sceneSingleSphere.txt">
+      <Filter>Source Files\Scene</Filter>
+    </Text>
+    <Text Include="Scene\sceneThreeSpheres.txt">
       <Filter>Source Files\Scene</Filter>
     </Text>
   </ItemGroup>

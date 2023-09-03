@@ -12,7 +12,7 @@
 #include "../Hitables/hitable.h"
 #include "../Hitables/hitableList.h"
 
-class SceneParser {
+class SceneParser : public Scene {
 public:
 	SceneParser();
 
@@ -32,12 +32,6 @@ public:
 	void parseConstantVolume(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
 	std::shared_ptr<Material> createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint = false);
 	std::shared_ptr<Texture> createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint = false);
-
-public:
-	HitableList worldList;
-	int imageWidth, imageHeight, sampleCount;
-	vec3 bgColour;
-	bool useSkyColour;
 };
 
 SceneParser::SceneParser() {}

@@ -172,6 +172,7 @@
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="rotate.h" />
+    <ClInclude Include="Scene\scene.h" />
     <ClInclude Include="Scene\sceneParser.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="stb_image.h" />
@@ -191,7 +192,7 @@
   <ItemGroup>
     <Text Include="Scene\reference.txt" />
     <Text Include="Scene\sceneSingleSphere.txt" />
-    <Text Include="Scene\sceneTest.txt" />
+    <Text Include="Scene\sceneThreeSpheres.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

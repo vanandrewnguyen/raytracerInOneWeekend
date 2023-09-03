@@ -1,9 +1,10 @@
-// GIBBERISH
+// Scene with three spheres of lambertian, metal, dielectric materials 
+// on top of a checkered ground.
 
 {
     "Camera": {
-        "LookFrom": [-3.0, 3.0, -2.0],
-		"LookAt": [0.0, -0.1, -1.0],
+        "LookFrom": [3.0, 3.0, 2.0],
+		"LookAt": [0.0, 0.0, -1.0],
 		"UpVector": [0.0, 1.0, 0.0],
 		"ViewFOV": 20.0,
 		"Aperture": 0.1,
@@ -23,16 +24,43 @@
 			"Type": "Sphere",
 			"Data": {
                 "Radius": 0.55,
-		        "Origin": [0.0, 0.0, -1.0],
+		        "Origin": [1.0, 0.0, -1.0],
 		        "Colour": [0.0, 0.0, 0.0],
                 "Material": {
                     "Lambertian": {
 			            "Albedo": [0.8, 0.3, 0.3],
 			            "Texture": {
-			                "TexImage": {
-				                "Path": "earthmap.jpg",
+			                "TexSolidColour": {
+				                "Albedo": [0.9, 0.8, 0.9],
 			                }
 			            }
+		            },
+                },
+            },
+		},
+		{
+			"Type": "Sphere",
+			"Data": {
+                "Radius": 0.55,
+		        "Origin": [-1.0, 0.0, -1.0],
+		        "Colour": [0.0, 0.0, 0.0],
+                "Material": {
+                    "Metal": {
+			            "Albedo": [1.0, 1.0, 1.0],
+						"Reflectance": 0.5,
+		            },
+                },
+            },
+		},
+		{
+			"Type": "Sphere",
+			"Data": {
+                "Radius": 0.55,
+		        "Origin": [0.0, 0.0, -1.0],
+		        "Colour": [0.0, 0.0, 0.0],
+                "Material": {
+                    "Dielectric": {
+			            "RefractiveIndex": 1.33,
 		            },
                 },
             },
