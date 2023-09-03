@@ -166,7 +166,7 @@
 "TexPerlin":
 {
 	"Frequency": 1.0,
-	"Interval": 1.0,
+	"Interval": 1,
 	"Albedo1": [0.0, 0.0, 0.0],
 	"Albedo2": [1.0, 1.0, 1.0],
 }

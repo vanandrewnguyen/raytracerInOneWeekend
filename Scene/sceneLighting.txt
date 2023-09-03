@@ -1,0 +1,100 @@
+// Scene with single textured sphere on top of a checkered ground.
+
+{
+    "Camera": {
+        "LookFrom": [6.0, 2.0, 4.0],
+		"LookAt": [0.0, 0.0, -1.0],
+		"UpVector": [0.0, 1.0, 0.0],
+		"ViewFOV": 20.0,
+		"Aperture": 0.1,
+		"FocusDist": -100.0,
+		"TimeStart": 0.0,
+		"TimeEnd": 1.0,
+	},
+	"Settings": {
+		"ImageWidth": 200,
+		"ImageHeight": 100,
+		"SampleCount": 1,
+		"BackgroundColour": [0.0, 0.0, 0.0],
+		"UseOutdoorLighting": 0,
+    }, 
+    "Objects": [
+        {
+			"Type": "Sphere",
+			"Data": {
+                "Radius": 0.55,
+		        "Origin": [0.0, 0.0, -1.0],
+		        "Colour": [0.0, 0.0, 0.0],
+                "Material": {
+                    "Lambertian": {
+			            "Albedo": [0.8, 0.3, 0.3],
+			            "Texture": {
+			                "TexPerlin": {
+								"Frequency": 2.0,
+								"Interval": 4,
+								"Albedo1": [0.0, 0.0, 0.0],
+								"Albedo2": [0.7, 0.6, 0.5],
+							}
+			            }
+		            },
+                },
+            },
+		},
+		{
+			"Type": "Sphere",
+			"Data": {
+                "Radius": 0.4,
+		        "Origin": [-0.4, 1.1, 0.6],
+		        "Colour": [0.0, 0.0, 0.0],
+                "Material": {
+                    "DiffuseLight": {
+			            "Texture": {
+			                "TexSolidColour": {
+								"Albedo": [4.0, 4.0, 4.0],
+							}
+			            }
+		            },
+                },
+            },
+		},
+		{
+			"Type": "XYRect",
+			"Data": {
+                "x0": 0.15,
+				"x1": 1.0, 
+				"z0": -0.2,
+				"z1": 0.5,
+				"Axis": -1.5,
+				"Material": {
+					"DiffuseLight": {
+			            "Texture": {
+			                "TexSolidColour": {
+								"Albedo": [4.0, 4.0, 4.0],
+							}
+			            }
+		            },
+				},
+            },
+		},
+		{
+			"Type": "Sphere",
+			"Data": {
+                "Radius": 100.0,
+				"Origin": [0.0, -100.5, -1.0],
+				"Colour": [0.0, 1.0, 0.0],
+				"Material": {
+					"Lambertian": {
+						"Albedo": [0.8, 0.3, 0.3],
+						"Texture": {
+							"TexChecker": {
+								"Albedo1": [0.8, 0.3, 0.3],
+								"Albedo2": [1.0, 1.0, 1.0],
+								"Size": 10.0,
+							}
+						}
+					},
+				},
+            },
+        },
+    ]
+}

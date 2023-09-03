@@ -135,11 +135,11 @@ void renderScene(Scene& parser, Camera& cam, HitableList& worldList, bool debugP
 }
 
 int main(int argc, char* argv[]) {
-    bool layout = false;
+    bool layout = true;
 
     if (layout) {
         SceneParser parser = SceneParser();
-        std::string pathname = "sceneThreeSpheres.txt";
+        std::string pathname = "sceneLighting.txt";
         Camera cam = parser.generateScene(pathname, true);
         HitableList worldList = parser.worldList;
 
