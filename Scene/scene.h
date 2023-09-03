@@ -48,13 +48,13 @@ Scene::Scene(int _imageWidth, int _imageHeight, int _sampleCount,
 // Get scene identical of the Cornell Box layout
 Camera Scene::getCornellBoxScene() {
     // Set proper camera values
-    imageWidth = 200;
-    imageHeight = 100;
+    imageWidth = 400;
+    imageHeight = 400;
     sampleCount = 1;
-    lookFrom = vec3(278, 278, -600);
-    lookAt = vec3(0, 0, 0);
+    lookFrom = vec3(278, 278, -1800);
+    lookAt = vec3(278, 278, 0);
     bgColour = vec3(0, 0, 0);
-    useSkyColour = true;
+    useSkyColour = false;
     viewFOV = 20;
     aperture = 40.0;
     focusDist = (lookFrom - lookAt).length();
@@ -80,8 +80,8 @@ Camera Scene::getCornellBoxScene() {
     worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0, 0, 0))));
 
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
-                 float(imageWidth) / float(imageHeight), aperture,
-                 focusDist, timeStart, timeEnd);
+                  float(imageWidth) / float(imageHeight), aperture,
+                  focusDist, timeStart, timeEnd);
 }
 
 // Get identical scene from RayTracingInOneWeekend Book 1 final image
@@ -141,8 +141,8 @@ Camera Scene::getLargeMaterialShowcaseScene() {
     imageWidth = 200;
     imageHeight = 100;
     sampleCount = 1;
-    lookFrom = vec3(278, 278, -800);
-    lookAt = vec3(278, 278, 10);
+    lookFrom = vec3(478, 278, -600);
+    lookAt = vec3(0, 100, 0);
     bgColour = vec3(0, 0, 0);
     useSkyColour = false;
     viewFOV = 20;
