@@ -8,7 +8,8 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [ ] Extended Textures (Worley, Voroni, Value)
 - [ ] Normal Mapping
 - [ ] Volumetric Rendering
-- [ ] JSON Customisable Scenes and UI (Dear Imgui)
+- [x] JSON Customisable Scenes
+- [ ] Scene Selection GUI (Dear Imgui)
 - [ ] Post-processing filters
 - [ ] Ray-triangle intersections
 - [ ] Model loading
