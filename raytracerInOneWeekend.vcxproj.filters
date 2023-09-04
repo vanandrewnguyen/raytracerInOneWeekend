@@ -28,6 +28,9 @@
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{28291b55-45aa-41b7-a463-81982d1bf4f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Output">
+      <UniqueIdentifier>{778c23f3-e7a9-4a50-aee3-2c7278a52a0f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -168,5 +171,10 @@
     <Text Include="Scene\sceneLighting.txt">
       <Filter>Source Files\Scene</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

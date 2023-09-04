@@ -9,7 +9,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [ ] Normal Mapping
 - [ ] Volumetric Rendering
 - [x] JSON Customisable Scenes
-- [x] Scene Selection UI
+- [x] Scene Selection and File Output CLI
 - [ ] Post-processing filters
 - [ ] Ray-triangle intersections
 - [ ] Model loading
@@ -33,8 +33,15 @@ I'm adding a few new features of my own, in my own computer graphics study.
 
 ![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
 
+## Directions for Use
+- Follow the prompts to load a json scene file, or choose from a small selection of scenes (e.g. Cornell Box, Material Lighting). 
+- Render time will vary significantly from image size and sample count for each pixel.
+- After the image finishes rendering, you can close the render window.
+- You will be prompted whether to save the output to an image, which will be saved in "./Outputs/".
+- A small list of sample json scenes have been provided in "./Scenes/", as well as a reference manual for all supported objects.
+
 ## Library Dependancies
 - SDL2
 - Jsoncpp
-- Microui
+- stb_image
 

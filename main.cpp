@@ -170,7 +170,7 @@ namespace render {
     void saveToBMP(const char* filename, int width, int height, const std::vector<std::tuple<int, int, int>>& pixels) {
         std::vector<uint8_t> bmpData; // Create a vector to store the BMP data
 
-    // Convert the RGB pixel data to BMP format (BGR)
+        // Convert the RGB pixel data to BMP format (BGR)
         for (const auto& pixel : pixels) {
             uint8_t b = static_cast<uint8_t>(std::get<0>(pixel));
             uint8_t g = static_cast<uint8_t>(std::get<1>(pixel));
@@ -211,7 +211,6 @@ namespace userInput {
     std::pair<bool, std::string> getUserCmd() {
         int choice;
         std::string userInput;
-
         std::string w, h, ns;
 
         while (true) {
@@ -275,7 +274,7 @@ namespace userInput {
             std::string fileName;
             std::cin >> fileName;
 
-            std::string tmp = std::string(fileName + ".BMP");
+            std::string tmp = std::string("./Outputs/" + fileName + ".BMP");
             const char* name = tmp.c_str();
 
             render::saveToBMP(name, imageWidth, imageHeight, pixelData);
