@@ -1,6 +1,15 @@
+#pragma once
+
+// STD Lib
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
+#include <utility>
+
+// Rendering
 #include "sdltemplate.h"
 
 // Objects
@@ -43,117 +52,185 @@
 float MAXFLOAT = 999.0;
 int MAXDEPTH = 50;
 
-vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, bool useSkyCol) {
-    // Make new list of world items
-    hitRecord rec;
-    if (depth >= MAXDEPTH) {
-        return vec3(0, 0, 0);
+namespace render {
+    vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, bool useSkyCol) {
+        // Make new list of world items
+        hitRecord rec;
+        if (depth >= MAXDEPTH) {
+            return vec3(0, 0, 0);
+        }
+
+        if (!(world.hit(r, 0.001, MAXFLOAT, rec))) {
+            // If no collision, return sky colour
+            return (useSkyCol) ? Utility::getSkyColour(r) : bgCol;
+        }
+
+        // Else, do our recursive calls
+        Ray scatteredRay;
+        vec3 attenuation;
+        vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.pos);
+        // Push off the surface normal a little bit (no collision error)
+        if (!(rec.matPtr->scatter(r, rec, attenuation, scatteredRay))) {
+            return emitted;
+        }
+
+        return emitted + attenuation * scene(scatteredRay, bgCol, world, depth + 1, useSkyCol);
+
+        /*
+        if (depth < MAXDEPTH && rec.matPtr->scatter(r, rec, attenuation, scatteredRay)) {
+            return attenuation * scene(scatteredRay, world, depth + 1);
+        } else {
+            return vec3(0, 0, 0);
+        }*/
     }
 
-    if (!(world.hit(r, 0.001, MAXFLOAT, rec))) {
-        // If no collision, return sky colour
-        return (useSkyCol) ? Utility::getSkyColour(r) : bgCol;
+    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, bool useSkyCol) {
+        // Set UV's
+        // We can offset randomly to anti alias cheaply, moving the cam
+        vec3 col(0, 0, 0);
+        for (int s = 0; s < sampleCount; s++) {
+            float u = float(x + (float)rand() / RAND_MAX) / float(imgWidth);
+            float v = float(y + (float)rand() / RAND_MAX) / float(imgHeight);
+
+            // Get sky colour
+            Ray rayDir = cam.getRay(u, v);
+            vec3 pos = rayDir.getPointParam(2.0);
+            col += scene(rayDir, bgCol, world, 0, useSkyCol);
+        }
+        // Divide by sample count
+        col /= float(sampleCount);
+
+        // Colour gamma correction
+        col = vec3(sqrt(col.getX()), sqrt(col.getY()), sqrt(col.getZ()));
+
+        // Normalize values
+        int ir = static_cast<int>(255.999 * col.getX());
+        int ig = static_cast<int>(255.999 * col.getY());
+        int ib = static_cast<int>(255.999 * col.getZ());
+
+        // Write in real time
+        if (x % imgWidth == 1) sdltemplate::loop();
+
+        // Output
+        sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));
+        sdltemplate::drawPoint(x, imgHeight - y);
     }
-    
-    // Else, do our recursive calls
-    Ray scatteredRay;
-    vec3 attenuation;
-    vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.pos);
-    // Push off the surface normal a little bit (no collision error)
-    if (!(rec.matPtr->scatter(r, rec, attenuation, scatteredRay))) {
-        return emitted;
-    }
 
-    return emitted + attenuation * scene(scatteredRay, bgCol, world, depth + 1, useSkyCol);
-    
-    /*
-    if (depth < MAXDEPTH && rec.matPtr->scatter(r, rec, attenuation, scatteredRay)) {
-        return attenuation * scene(scatteredRay, world, depth + 1);
-    } else {
-        return vec3(0, 0, 0);
-    }*/
-}
+    void renderScene(Scene& parser, Camera& cam, HitableList& worldList, bool debugPrint = false) {
+        srand((unsigned)time(NULL));
 
-void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, bool useSkyCol) {
-    // Set UV's
-    // We can offset randomly to anti alias cheaply, moving the cam
-    vec3 col(0, 0, 0);
-    for (int s = 0; s < sampleCount; s++) {
-        float u = float(x + (float)rand() / RAND_MAX) / float(imgWidth);
-        float v = float(y + (float)rand() / RAND_MAX) / float(imgHeight);
+        // Establish SDL Window
+        sdltemplate::sdl("Raytracer", parser.imageWidth, parser.imageHeight);
+        sdltemplate::loop();
 
-        // Get sky colour
-        Ray rayDir = cam.getRay(u, v);
-        vec3 pos = rayDir.getPointParam(2.0);
-        col += scene(rayDir, bgCol, world, 0, useSkyCol);
-    }
-    // Divide by sample count
-    col /= float(sampleCount);
-
-    // Colour gamma correction
-    col = vec3(sqrt(col.getX()), sqrt(col.getY()), sqrt(col.getZ()));
-
-    // Normalize values
-    int ir = static_cast<int>(255.999 * col.getX());
-    int ig = static_cast<int>(255.999 * col.getY());
-    int ib = static_cast<int>(255.999 * col.getZ());
-
-    // Write in real time
-    if (x % imgWidth == 1) sdltemplate::loop();
-
-    // Output
-    sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));
-    sdltemplate::drawPoint(x, imgHeight - y);
-}
-
-void renderScene(Scene& parser, Camera& cam, HitableList& worldList, bool debugPrint = false) {
-    srand((unsigned)time(NULL));
-
-    // Establish SDL Window
-    sdltemplate::sdl("Raytracer", parser.imageWidth, parser.imageHeight);
-    sdltemplate::loop();
-
-    for (int y = parser.imageHeight - 1; y >= 0; y--) {
-        for (int x = 0; x < parser.imageWidth; x++) {
-            // Output
-            writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour);
-            // Debugging
-            if (debugPrint) {
-                std::cout << "Rendering pixel " << int(x + y) << std::endl;
+        for (int y = parser.imageHeight - 1; y >= 0; y--) {
+            for (int x = 0; x < parser.imageWidth; x++) {
+                // Output
+                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour);
+                // Debugging
+                if (debugPrint) {
+                    std::cout << "Rendering pixel " << int(x + y) << std::endl;
+                }
             }
         }
-    }
 
-    if (debugPrint) {
-        std::cout << "Done!" << std::endl;
-    }
+        if (debugPrint) {
+            std::cout << "Done!" << std::endl;
+        }
 
-    // Keep window active
-    while (sdltemplate::running) {
-        sdltemplate::loop();
+        // Keep window active
+        while (sdltemplate::running) {
+            sdltemplate::loop();
+        }
+    }
+}
+
+namespace userInput {
+    void printPremadeScenes() {
+        std::cout << "List of premade scenes:" << std::endl;
+        for (const auto& pair : Scene::sceneMapping) {
+            std::cout << pair.first << ". " << pair.second << std::endl;
+        }
+    }
+    
+    void printSceneFiles(std::string path) {
+        try {
+            for (const auto& entry : std::filesystem::directory_iterator(path)) {
+                if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+                    std::cout << "Found .txt file: " << entry.path().filename() << std::endl;
+                }
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
+    }
+    
+    std::pair<bool, std::string> getUserCmd() {
+        int choice;
+        std::string userInput;
+
+        while (true) {
+            std::cout << "Please choose an option:" << std::endl;
+            std::cout << "1. Render a premade scene" << std::endl;
+            std::cout << "2. Import a scene file" << std::endl;
+            std::cout << "Enter your choice: ";
+            std::cin >> choice;
+
+            if (choice == 1) {
+                std::cout << "Type 'help' for a list of scenes or enter the scene number: ";
+                std::cin >> userInput;
+
+                if (userInput == "help") {
+                    printPremadeScenes();
+                } else {
+                    if (Utility::isConvertibleToInt(userInput)) {
+                        std::cout << "Selected scene number: " << userInput << std::endl;
+                        return std::pair<bool, std::string>(false, std::string(userInput));
+                    } else {
+                        break;
+                    }
+                }
+            } else if (choice == 2) {
+                std::cout << "Type 'help' for a list of present files or enter the file name: ";
+                std::cin >> userInput;
+
+                if (userInput == "help") {
+                    printSceneFiles(std::string("Scene"));
+                } else {
+                    return std::pair<bool, std::string>(true, std::string(userInput));
+                }
+            } else {
+                std::cout << "Invalid choice. Please try again.\n";
+            }
+
+            std::cout << std::endl;
+        }
+
+        // Default
+        return std::pair<bool, std::string>(true, std::string("sceneSingleSphere.txt"));
     }
 }
 
 int main(int argc, char* argv[]) {
-    bool layout = true;
-
-    if (layout) {
+    std::pair<bool, std::string> userCmd = userInput::getUserCmd();
+    if (userCmd.first) {
         SceneParser parser = SceneParser();
-        std::string pathname = "sceneLighting.txt";
-        Camera cam = parser.generateScene(pathname, true);
+        Camera cam = parser.generateScene(userCmd.second, true);
         HitableList worldList = parser.worldList;
-
-        renderScene(parser, cam, worldList);
+        render::renderScene(parser, cam, worldList);
     } else {
         Scene scene = Scene();
-        Camera cam = scene.getCornellBoxScene();
+        Camera cam = scene.generateSceneFromMapping(atoi(userCmd.second.c_str()));
         HitableList worldList = scene.worldList;
-
-        renderScene(scene, cam, worldList);
+        render::renderScene(scene, cam, worldList);
     }
 
     return 0;
 }
+
+
+
+
 
 /*
 int renderSceneOld() {

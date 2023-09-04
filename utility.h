@@ -69,6 +69,16 @@ namespace Utility {
 		vec3 skyCol(0.5, 0.7, 1.0);
 		return (1.0 - t) * whiteCol + t * skyCol;
 	}
+
+	bool isConvertibleToInt(const std::string& str) {
+		try {
+			std::stoi(str);
+			return true;
+		} catch (...) {
+			// Failed
+		}
+		return false;
+	}
 }
 
 

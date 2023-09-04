@@ -3,6 +3,7 @@
 
 #include "../Hitables/hitable.h"
 #include "../Hitables/hitableList.h"
+#include <map>
 
 class Scene {
 public:
@@ -16,6 +17,7 @@ public:
     Camera getCornellBoxScene();
     Camera getLargeRandomisedSphereScene();
     Camera getLargeMaterialShowcaseScene();
+    Camera generateSceneFromMapping(int index);
 
 public:
 	HitableList worldList;
@@ -23,6 +25,10 @@ public:
     vec3 lookFrom, lookAt, bgColour;
     float viewFOV, aperture, focusDist, timeStart, timeEnd;
     bool useSkyColour;
+
+    static inline std::map<int, std::string> sceneMapping = { {1, std::string("Cornell Box")},
+                                                              {2, std::string("Infinite Spheres on Checkerboard")},
+                                                              {3, std::string("Sphere Material Showcase")} };
 };
 
 Scene::Scene() {}
@@ -43,6 +49,14 @@ Scene::Scene(int _imageWidth, int _imageHeight, int _sampleCount,
     focusDist = _focusDist;
     timeStart = time0;
     timeEnd = time1;
+}
+
+Camera Scene::generateSceneFromMapping(int index) {
+    if (index == 1) return getCornellBoxScene();
+    if (index == 2) return getLargeRandomisedSphereScene();
+    if (index == 3) return getLargeMaterialShowcaseScene();
+
+    return getCornellBoxScene();
 }
 
 // Get scene identical of the Cornell Box layout
