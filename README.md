@@ -9,7 +9,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [ ] Normal Mapping
 - [ ] Volumetric Rendering
 - [x] JSON Customisable Scenes
-- [ ] Scene Selection GUI (Dear Imgui)
+- [x] Scene Selection UI
 - [ ] Post-processing filters
 - [ ] Ray-triangle intersections
 - [ ] Model loading
