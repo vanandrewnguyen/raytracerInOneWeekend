@@ -33,4 +33,8 @@ I'm adding a few new features of my own, in my own computer graphics study.
 
 ![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
 
+## Library Dependancies
+- SDL2
+- Jsoncpp
+- Microui
 
