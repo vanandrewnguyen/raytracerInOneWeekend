@@ -6,11 +6,14 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 #include <utility>
 
 // Rendering
 #include "sdltemplate.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 // Objects
 #include "Hitables/bvhNode.h"
@@ -51,6 +54,9 @@
 // Max depth is the maximum number of bounces a ray can have before destroying itself
 float MAXFLOAT = 999.0;
 int MAXDEPTH = 50;
+int imageWidth = 200;
+int imageHeight = 100;
+int sampleCount = 1;
 
 namespace render {
     vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, bool useSkyCol) {
@@ -84,7 +90,7 @@ namespace render {
         }*/
     }
 
-    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, bool useSkyCol) {
+    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, bool useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
         // Set UV's
         // We can offset randomly to anti alias cheaply, moving the cam
         vec3 col(0, 0, 0);
@@ -114,9 +120,12 @@ namespace render {
         // Output
         sdltemplate::setDrawColor(sdltemplate::createColor(ir, ig, ib, 255));
         sdltemplate::drawPoint(x, imgHeight - y);
+
+        // Write to pixel data
+        pixelData.emplace_back(ir, ig, ib);
     }
 
-    void renderScene(Scene& parser, Camera& cam, HitableList& worldList, bool debugPrint = false) {
+    void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
         srand((unsigned)time(NULL));
 
         // Establish SDL Window
@@ -126,7 +135,7 @@ namespace render {
         for (int y = parser.imageHeight - 1; y >= 0; y--) {
             for (int x = 0; x < parser.imageWidth; x++) {
                 // Output
-                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour);
+                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, pixelData);
                 // Debugging
                 if (debugPrint) {
                     std::cout << "Rendering pixel " << int(x + y) << std::endl;
@@ -140,7 +149,41 @@ namespace render {
 
         // Keep window active
         while (sdltemplate::running) {
+            // Handle events
+            SDL_Event event;
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    sdltemplate::running = false;
+                } else if (event.type == SDL_KEYDOWN) {
+                    if (event.key.keysym.sym == SDLK_ESCAPE) {
+                        sdltemplate::running = false;
+                    }
+                }
+            }
+
             sdltemplate::loop();
+        }
+
+        SDL_Quit();
+    }
+
+    void saveToBMP(const char* filename, int width, int height, const std::vector<std::tuple<int, int, int>>& pixels) {
+        std::vector<uint8_t> bmpData; // Create a vector to store the BMP data
+
+    // Convert the RGB pixel data to BMP format (BGR)
+        for (const auto& pixel : pixels) {
+            uint8_t b = static_cast<uint8_t>(std::get<0>(pixel));
+            uint8_t g = static_cast<uint8_t>(std::get<1>(pixel));
+            uint8_t r = static_cast<uint8_t>(std::get<2>(pixel));
+
+            bmpData.push_back(b);
+            bmpData.push_back(g);
+            bmpData.push_back(r);
+        }
+
+        // Use stb_image_write to save the BMP file
+        if (!stbi_write_bmp(filename, width, height, 3, bmpData.data())) {
+            std::cerr << "Failed to save the BMP image." << std::endl;
         }
     }
 }
@@ -169,6 +212,8 @@ namespace userInput {
         int choice;
         std::string userInput;
 
+        std::string w, h, ns;
+
         while (true) {
             std::cout << "Please choose an option:" << std::endl;
             std::cout << "1. Render a premade scene" << std::endl;
@@ -184,6 +229,16 @@ namespace userInput {
                     printPremadeScenes();
                 } else {
                     if (Utility::isConvertibleToInt(userInput)) {
+                        std::cout << "Image Width: ";
+                        std::cin >> w;
+                        std::cout << "Image Height: ";
+                        std::cin >> h;
+                        std::cout << "Sample Count: ";
+                        std::cin >> ns;
+                        imageWidth = atoi(w.c_str());
+                        imageHeight = atoi(h.c_str());
+                        sampleCount = atoi(ns.c_str());
+
                         std::cout << "Selected scene number: " << userInput << std::endl;
                         return std::pair<bool, std::string>(false, std::string(userInput));
                     } else {
@@ -209,20 +264,42 @@ namespace userInput {
         // Default
         return std::pair<bool, std::string>(true, std::string("sceneSingleSphere.txt"));
     }
+
+    void GetUserWriteToFile(std::vector<std::tuple<int, int, int>>& pixelData, int imageWidth, int imageHeight) {
+        std::cout << "Would you like to write the image to a file? (Y/N) ";
+        std::string userInput;
+        std::cin >> userInput;
+
+        if ((userInput == "y") || (userInput == "Y")) {
+            std::cout << "Enter file name: ";
+            std::string fileName;
+            std::cin >> fileName;
+
+            std::string tmp = std::string(fileName + ".BMP");
+            const char* name = tmp.c_str();
+
+            render::saveToBMP(name, imageWidth, imageHeight, pixelData);
+        }
+        std::cout << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]) {
-    std::pair<bool, std::string> userCmd = userInput::getUserCmd();
-    if (userCmd.first) {
-        SceneParser parser = SceneParser();
-        Camera cam = parser.generateScene(userCmd.second, true);
-        HitableList worldList = parser.worldList;
-        render::renderScene(parser, cam, worldList);
-    } else {
-        Scene scene = Scene();
-        Camera cam = scene.generateSceneFromMapping(atoi(userCmd.second.c_str()));
-        HitableList worldList = scene.worldList;
-        render::renderScene(scene, cam, worldList);
+    while (true) {
+        std::pair<bool, std::string> userCmd = userInput::getUserCmd();
+        std::vector<std::tuple<int, int, int>> pixelData;
+        if (userCmd.first) {
+            SceneParser parser = SceneParser();
+            Camera cam = parser.generateScene(userCmd.second, true);
+            HitableList worldList = parser.worldList;
+            render::renderScene(parser, cam, worldList, pixelData);
+        } else {
+            Scene scene = Scene();
+            Camera cam = scene.generateSceneFromMapping(atoi(userCmd.second.c_str()), imageWidth, imageHeight, sampleCount);
+            HitableList worldList = scene.worldList;
+            render::renderScene(scene, cam, worldList, pixelData);
+        }
+        userInput::GetUserWriteToFile(pixelData, imageWidth, imageHeight);
     }
 
     return 0;

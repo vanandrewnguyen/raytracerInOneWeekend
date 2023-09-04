@@ -86,7 +86,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -118,7 +118,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -178,6 +178,7 @@
     <ClInclude Include="Scene\sceneParser.h" />
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Textures\texChecker.h" />
     <ClInclude Include="Textures\texImage.h" />
     <ClInclude Include="Textures\texPerlin.h" />

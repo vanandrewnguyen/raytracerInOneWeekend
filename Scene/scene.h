@@ -17,7 +17,7 @@ public:
     Camera getCornellBoxScene();
     Camera getLargeRandomisedSphereScene();
     Camera getLargeMaterialShowcaseScene();
-    Camera generateSceneFromMapping(int index);
+    Camera generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
 
 public:
 	HitableList worldList;
@@ -51,7 +51,11 @@ Scene::Scene(int _imageWidth, int _imageHeight, int _sampleCount,
     timeEnd = time1;
 }
 
-Camera Scene::generateSceneFromMapping(int index) {
+Camera Scene::generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount) {
+    imageWidth = _imageWidth;
+    imageHeight = _imageHeight;
+    sampleCount = _sampleCount;
+
     if (index == 1) return getCornellBoxScene();
     if (index == 2) return getLargeRandomisedSphereScene();
     if (index == 3) return getLargeMaterialShowcaseScene();
@@ -62,9 +66,6 @@ Camera Scene::generateSceneFromMapping(int index) {
 // Get scene identical of the Cornell Box layout
 Camera Scene::getCornellBoxScene() {
     // Set proper camera values
-    imageWidth = 400;
-    imageHeight = 400;
-    sampleCount = 1;
     lookFrom = vec3(278, 278, -1800);
     lookAt = vec3(278, 278, 0);
     bgColour = vec3(0, 0, 0);
@@ -101,9 +102,6 @@ Camera Scene::getCornellBoxScene() {
 // Get identical scene from RayTracingInOneWeekend Book 1 final image
 Camera Scene::getLargeRandomisedSphereScene() {
     // Set proper camera values
-    imageWidth = 800;
-    imageHeight = 400;
-    sampleCount = 10;
     lookFrom = vec3(13, 2, 3);
     lookAt = vec3(0, 0, 0);
     bgColour = vec3(1, 1, 1);
@@ -152,9 +150,6 @@ Camera Scene::getLargeRandomisedSphereScene() {
 // Get identical scene from RayTracingInOneWeekend Book 2 final image
 Camera Scene::getLargeMaterialShowcaseScene() {
     // Set proper camera values
-    imageWidth = 200;
-    imageHeight = 100;
-    sampleCount = 1;
     lookFrom = vec3(478, 278, -600);
     lookAt = vec3(0, 100, 0);
     bgColour = vec3(0, 0, 0);
