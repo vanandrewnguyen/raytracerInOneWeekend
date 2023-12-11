@@ -7,7 +7,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [x] Acceleration Structures (BVH)
 - [ ] Extended Textures (Worley, Voroni, Value)
 - [ ] Normal Mapping
-- [ ] Volumetric Rendering
+- [x] Volumetric Rendering
 - [x] JSON Customisable Scenes
 - [x] Scene Selection and File Output CLI
 - [ ] Post-processing filters
