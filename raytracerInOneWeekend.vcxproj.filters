@@ -149,6 +149,9 @@
     <ClInclude Include="stb_image_write.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Textures\texWorley.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
