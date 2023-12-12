@@ -7,7 +7,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [x] Acceleration Structures (BVH)
 - [ ] Extended Textures (Worley, Voroni, Value)
 - [ ] Normal Mapping
-- [ ] Volumetric Rendering
+- [x] Volumetric Rendering
 - [x] JSON Customisable Scenes
 - [x] Scene Selection and File Output CLI
 - [ ] Post-processing filters
@@ -39,6 +39,50 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - After the image finishes rendering, you can close the render window.
 - You will be prompted whether to save the output to an image, which will be saved in "./Outputs/".
 - A small list of sample json scenes have been provided in "./Scenes/", as well as a reference manual for all supported objects.
+
+An example of an editable json scene.
+```
+{
+  "Camera": {
+    "LookFrom": [-3.0, 3.0, -2.0],
+		"LookAt": [0.0, -0.1, -1.0],
+		"UpVector": [0.0, 1.0, 0.0],
+		"ViewFOV": 20.0,
+		"Aperture": 0.1,
+		"FocusDist": -100.0,
+		"TimeStart": 0.0,
+		"TimeEnd": 1.0,
+	},
+	"Settings": {
+		"ImageWidth": 800,
+		"ImageHeight": 400,
+		"SampleCount": 1,
+		"BackgroundColour": [1.0, 1.0, 1.0],
+		"UseOutdoorLighting": 1,
+  }, 
+  "Objects": [
+    {
+    "Type": "Sphere",
+    "Data": {
+        "Radius": 0.55,
+        "Origin": [0.0, 0.0, -1.0],
+        "Colour": [0.0, 0.0, 0.0],
+        "Material": {
+          "Lambertian": {
+            "Albedo": [0.8, 0.3, 0.3],
+            "Texture": {
+              "TexImage": {
+                "Path": "earthmap.jpg",
+              }
+            }
+          },
+        },
+      },
+    },
+    ]
+}
+```
+
 
 ## Library Dependancies
 - SDL2
