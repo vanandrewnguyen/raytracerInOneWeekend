@@ -70,6 +70,26 @@ namespace Utility {
 		return std::fmod(std::sin(co.getX() * 12.9898 + co.getY() * 78.233) * 43758.5453, 1.0);
 	}
 
+	vec3 hash33(vec3 p3) {
+		vec3 p = p3 * vec3(0.1031, 0.11369, 0.13787);
+		p = p.fract();
+		float dotProd = dot(p, vec3(p.getY(), p.getX(), p.getZ()) + vec3(19.19, 19.19, 19.19));
+		p += vec3(dotProd, dotProd, dotProd);
+		return vec3(-1.0, -1.0, -1.0) + 2.0 * vec3(
+			std::fmod((p.getX() + p.getY()) * p.getZ(), 1.0),
+			std::fmod((p.getX() + p.getZ()) * p.getY(), 1.0),
+			std::fmod((p.getY() + p.getZ()) * p.getX(), 1.0)
+		);
+
+		/*
+		vec3 p3 = p * vec3(1.1031f, 1.1030f, 1.0973f);
+		p3 = p3 - vec3(floor(p3.getX()), floor(p3.getY()), floor(p3.getZ()));
+		p3 = p3 + vec3(19.19f, 19.19f, 19.19f);
+		p3 = p3 - vec3(floor(p3.getX()), floor(p3.getY()), floor(p3.getZ()));
+		return vec3(std::fmod((p3.getX() + p3.getY()) * p3.getZ(), 1.0f), std::fmod((p3.getY() + p3.getZ()) * p3.getX(), 1.0f), std::fmod((p3.getZ() + p3.getX()) * p3.getY(), 1.0f));
+		*/
+	}
+
 	// Step
 	float smoothStep(float e1, float e2, float val) {
 		val = clamp((val - e1) / (e2 - e1), 0.0, 1.0);

@@ -7,52 +7,52 @@
 class TexWorley : public Texture {
 public:
 	TexWorley() {
-		numCells = 16.0;
+		scale = 1.0;
 		col0 = vec3(0, 0, 0);
 		col1 = vec3(1, 1, 1);
 	}
 
-	TexWorley(float nC, vec3 c0, vec3 c1) {
-		numCells = nC;
+	TexWorley(float s, vec3 c0, vec3 c1) {
+		scale = s;
 		col0 = c0;
 		col1 = c1;
 	}
 
 	virtual vec3 getColourVal(float u, float v, const vec3& p) const override {
-		vec2 uv = vec2(u, v);
-		return Utility::colourRamp(col0, col1, worleyNoise(uv));
+		float worley = worleyNoise(p * scale);
+		// float worley = Utility::hash21(vec2(p.getX(), p.getY())); <- stripes r cool
+		// std::cout << "Worley noise at: " << u << "." << v << " is " << worley << std::endl;
+		return Utility::colourRamp(col0, col1, worley);
 	}
 
 private:
-	vec2 getCellPoint(vec2 cell) const {
-		vec2 cellBase = cell / numCells;
-		float cellX = cell.getX();
-		float cellY = cell.getY();
-		float noiseX = Utility::hash21(vec2(cellX, cellY));
-		float noiseY = Utility::hash21(vec2(cellY, cellX));
-		return cellBase + vec2(0.5, 0.5) + 1.5 * vec2(noiseX, noiseY) / numCells;
-	}
+	float worleyNoise(vec3 pos) const {
+		vec3 id = pos.floor();
+		vec3 fd = pos - id;
 
-	float worleyNoise(vec2 coord) const {
-		vec2 cell = vec2(coord.getX() * numCells, coord.getY() * numCells);
-		float dist = 1.0;
+		float minimalDist = 1.0;
 
-		// 5x5 neighbour cell block
-		for (int x = 0; x < 5; x++) {
-			for (int y = 0; y < 5; y++) {
-				vec2 cellPoint = getCellPoint(vec2(cell.getX() + (x-2), cell.getY() + (y-2)));
-				dist = std::min(dist, Utility::distanceBetween(cellPoint, coord));
+		float range = 1.0;
+		for (float x = -range; x <= range; x++) {
+			for (float y = -range; y <= range; y++) {
+				for (float z = -range; z <= range; z++) {
+					vec3 coord(x, y, z);
+					vec3 rId = Utility::hash33(id + coord) * 0.5f + vec3(0.5, 0.5, 0.5);
+					vec3 r = coord + rId - fd;
+					float d = dot(r, r);
+
+					if (d < minimalDist) {
+						minimalDist = d;
+					}
+				}
 			}
 		}
 
-		vec2 n = vec2(1.0 / numCells, 1.0 / numCells);
-		dist /= n.length();
-		dist = 1.0 - dist;
-		return dist;
+		return 1.0 - minimalDist;
 	}
 
 public:
-	float numCells;
+	float scale;
 	vec3 col0;
 	vec3 col1;
 };

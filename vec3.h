@@ -40,6 +40,9 @@ public:
 	inline float lengthSquared() const { return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; }
 	void makeUnitVec();
 	bool nearZero() const;
+	vec3 fract() const;
+	vec3 floor() const;
+	vec3 mod(const vec3& other, const vec3& scale) const;
 };
 
 // Constructor
@@ -190,6 +193,20 @@ bool vec3::nearZero() const {
 	// Return true if the vector is close to zero in all dimensions.
 	const auto s = 1e-8;
 	return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+}
+
+vec3 vec3::fract() const {
+	return vec3(std::fmod(e[0], 1.0), std::fmod(e[1], 1.0), std::fmod(e[2], 1.0));
+}
+
+vec3 vec3::floor() const {
+	return vec3(std::floor(e[0]), std::floor(e[1]), std::floor(e[2]));
+}
+
+vec3 vec3::mod(const vec3& other, const vec3& scale) const {
+	return vec3(std::fmod(e[0] + other.e[0], scale.e[0]),
+				std::fmod(e[1] + other.e[1], scale.e[1]),
+				std::fmod(e[2] + other.e[2], scale.e[2]));
 }
 
 #endif

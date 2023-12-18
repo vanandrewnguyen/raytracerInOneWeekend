@@ -17,6 +17,7 @@ public:
     Camera getCornellBoxScene();
     Camera getLargeRandomisedSphereScene();
     Camera getLargeMaterialShowcaseScene();
+    Camera getDebugScene();
     Camera generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
 
 public:
@@ -28,7 +29,8 @@ public:
 
     static inline std::map<int, std::string> sceneMapping = { {1, std::string("Cornell Box")},
                                                               {2, std::string("Infinite Spheres on Checkerboard")},
-                                                              {3, std::string("Sphere Material Showcase")} };
+                                                              {3, std::string("Sphere Material Showcase")},
+                                                              {4, std::string("Debug Scene")} };
 };
 
 Scene::Scene() {}
@@ -59,6 +61,7 @@ Camera Scene::generateSceneFromMapping(int index, int _imageWidth, int _imageHei
     if (index == 1) return getCornellBoxScene();
     if (index == 2) return getLargeRandomisedSphereScene();
     if (index == 3) return getLargeMaterialShowcaseScene();
+    if (index == 4) return getDebugScene();
 
     return getCornellBoxScene();
 }
@@ -198,6 +201,32 @@ Camera Scene::getLargeMaterialShowcaseScene() {
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
            float(imageWidth) / float(imageHeight), aperture,
            focusDist, timeStart, timeEnd);
+}
+
+// Get super basic scene with one scene
+Camera Scene::getDebugScene() {
+    // Set proper camera values
+    lookFrom = vec3(12, 1.5, -6);
+    lookAt = vec3(-2, -0.4, 0);
+    bgColour = vec3(1, 1, 1);
+    useSkyColour = true;
+    viewFOV = 15;
+    aperture = 0.1;
+    focusDist = (lookFrom - lookAt).length();
+    timeStart = 0;
+    timeEnd = 1;
+    
+    std::shared_ptr<Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<Texture> textureWorley = std::make_shared<TexWorley>(8.0, vec3(0,0,0), vec3(1,1,1));
+    std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+
+    worldList.append(std::make_shared<Sphere>(0.55, vec3(0, 0, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley)));
+    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley)));
+    worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley)));
+
+    return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
 }
 
 
