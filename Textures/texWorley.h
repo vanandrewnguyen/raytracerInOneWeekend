@@ -13,7 +13,7 @@ public:
 		return vec3(0, 0, 0);
 	}
 public:
-
+	float numCells;
 };
 
 #endif

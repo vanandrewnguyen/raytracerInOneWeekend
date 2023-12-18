@@ -110,9 +110,9 @@ namespace render {
         col = vec3(sqrt(col.getX()), sqrt(col.getY()), sqrt(col.getZ()));
 
         // Normalize values
-        int ir = static_cast<int>(255.999 * col.getX());
-        int ig = static_cast<int>(255.999 * col.getY());
-        int ib = static_cast<int>(255.999 * col.getZ());
+        int ir = Utility::clamp(static_cast<int>(255.999 * col.getX()), 0, 255);
+        int ig = Utility::clamp(static_cast<int>(255.999 * col.getY()), 0, 255);
+        int ib = Utility::clamp(static_cast<int>(255.999 * col.getZ()), 0, 255);
 
         // Write in real time
         if (x % imgWidth == 1) sdltemplate::loop();
