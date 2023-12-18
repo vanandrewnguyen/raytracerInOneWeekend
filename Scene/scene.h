@@ -203,9 +203,8 @@ Camera Scene::getLargeMaterialShowcaseScene() {
            focusDist, timeStart, timeEnd);
 }
 
-// Get super basic scene with one scene
+// Get super basic scene with one sphere
 Camera Scene::getDebugScene() {
-    // Set proper camera values
     lookFrom = vec3(12, 1.5, -6);
     lookAt = vec3(-2, -0.4, 0);
     bgColour = vec3(1, 1, 1);
@@ -215,14 +214,14 @@ Camera Scene::getDebugScene() {
     focusDist = (lookFrom - lookAt).length();
     timeStart = 0;
     timeEnd = 1;
-    
-    std::shared_ptr<Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
-    std::shared_ptr<Texture> textureWorley = std::make_shared<TexWorley>(8.0, vec3(0,0,0), vec3(1,1,1));
+
+    std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1,0,0.2), vec3(1,1,1));
+    std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
     std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
 
-    worldList.append(std::make_shared<Sphere>(0.55, vec3(0, 0, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley)));
-    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley)));
-    worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley)));
+    worldList.append(std::make_shared<Sphere>(0.55, vec3(0, 0, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley1)));
+    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker)));
+    worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
 
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
         float(imageWidth) / float(imageHeight), aperture,
