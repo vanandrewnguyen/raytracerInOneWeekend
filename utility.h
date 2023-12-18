@@ -5,6 +5,7 @@
 #include <limits>
 #include <memory>
 #include "vec3.h"
+#include "vec2.h"
 #include "ray.h"
 
 namespace Utility {
@@ -12,7 +13,7 @@ namespace Utility {
 	const double infinity = std::numeric_limits<double>::infinity();
 	const double pi = 3.1415926535897932385;
 
-	// Utility Functions
+	// Math
 	double clamp(double x, double min, double max) {
 		if (x < min) return min;
 		if (x > max) return max;
@@ -25,6 +26,24 @@ namespace Utility {
 		return x;
 	}
 
+	bool isConvertibleToInt(const std::string& str) {
+		try {
+			std::stoi(str);
+			return true;
+		}
+		catch (...) {
+			// Failed
+		}
+		return false;
+	}
+
+	float distanceBetween(vec2 p1, vec2 p2) {
+		float dx = p2.getX() - p1.getX();
+		float dy = p2.getY() - p1.getY();
+		return std::sqrt(dx * dx + dy * dy);
+	}
+
+	// Conversion
 	float degToRad(float deg) {
 		return deg * (pi / 180);
 	}
@@ -33,6 +52,7 @@ namespace Utility {
 		return rad * (180 / pi);
 	}
 
+	// Random generators and hashes
 	double randomDouble() {
 		return (double)rand() / (RAND_MAX + 1.0);
 	}
@@ -46,6 +66,11 @@ namespace Utility {
 		return randNum;
 	}
 
+	float hash21(vec2 co) {
+		return std::fmod(std::sin(co.getX() * 12.9898 + co.getY() * 78.233) * 43758.5453, 1.0);
+	}
+
+	// Step
 	float smoothStep(float e1, float e2, float val) {
 		val = clamp((val - e1) / (e2 - e1), 0.0, 1.0);
 		// Hermite curve
@@ -65,6 +90,12 @@ namespace Utility {
 		return out;
 	}
 
+	// Rendering Colours
+	vec3 colourRamp(vec3 c0, vec3 c1, float ratio) {
+		ratio = std::fmax(0.0f, std::fmin(1.0f, ratio));
+		return c0 + ratio * (c1 - c0);
+	}
+
 	vec3 getSkyColour(const Ray& r) {
 		vec3 unitDir = unitVector(r.getDirection());
 		// Shift from -1->1 to 0->1
@@ -74,16 +105,6 @@ namespace Utility {
 		vec3 whiteCol(1.0, 1.0, 1.0);
 		vec3 skyCol(0.5, 0.7, 1.0);
 		return (1.0 - t) * whiteCol + t * skyCol;
-	}
-
-	bool isConvertibleToInt(const std::string& str) {
-		try {
-			std::stoi(str);
-			return true;
-		} catch (...) {
-			// Failed
-		}
-		return false;
 	}
 }
 

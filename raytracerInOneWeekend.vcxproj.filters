@@ -152,6 +152,9 @@
     <ClInclude Include="Textures\texWorley.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="vec2.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
