@@ -17,6 +17,10 @@ I'm adding a few new features of my own, in my own computer graphics study.
 
 ## Sample Outputs
 
+**Material Showcase (~100 samples)**
+
+![materialShowcase](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/19a6ffcd-127a-49f2-8f16-d189ed8ffea3)
+
 **Final scene with subsurface scattering, constant volumetric mediums, caustics, boxes. (~500 samples)**
 
 ![finallargescene](https://user-images.githubusercontent.com/53636492/190929904-59f555dd-45a5-4216-9abc-a7dc5f75bfe8.PNG)
