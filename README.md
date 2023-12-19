@@ -18,6 +18,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 ## Sample Outputs
 
 **Material Showcase (~100 samples)**
+(Isotropic, Perlin Noise, Worley Noise, Dielectrics, Metallics, Image Textures)
 
 ![materialShowcase](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/19a6ffcd-127a-49f2-8f16-d189ed8ffea3)
 
