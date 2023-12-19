@@ -46,6 +46,8 @@
 #include "Textures/texPerlin.h"
 #include "Textures/texImage.h"
 #include "Textures/texWorley.h"
+#include "Textures/texNoise.h"
+#include "Textures/texStripes.h"
 
 // Scene
 #include "Scene/scene.h"

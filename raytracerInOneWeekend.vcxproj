@@ -179,6 +179,8 @@
     <ClInclude Include="sdltemplate.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="Textures\texNoise.h" />
+    <ClInclude Include="Textures\texStripes.h" />
     <ClInclude Include="Textures\texWorley.h" />
     <ClInclude Include="Textures\texChecker.h" />
     <ClInclude Include="Textures\texImage.h" />

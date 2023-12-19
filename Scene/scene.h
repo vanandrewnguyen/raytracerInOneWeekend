@@ -15,8 +15,9 @@ public:
 
     // Hard-coded scenes
     Camera getCornellBoxScene();
-    Camera getLargeRandomisedSphereScene();
-    Camera getLargeMaterialShowcaseScene();
+    Camera getBook1Scene();
+    Camera getBook2Scene();
+    Camera getTextureMaterialShowcase();
     Camera getDebugScene();
     Camera generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
 
@@ -29,8 +30,9 @@ public:
 
     static inline std::map<int, std::string> sceneMapping = { {1, std::string("Cornell Box")},
                                                               {2, std::string("Infinite Spheres on Checkerboard")},
-                                                              {3, std::string("Sphere Material Showcase")},
-                                                              {4, std::string("Debug Scene")} };
+                                                              {3, std::string("Spheres and Cubes in Shadow")},
+                                                              {4, std::string("Material/Texture Showcase")},
+                                                              {5, std::string("Debug Scene")} };
 };
 
 Scene::Scene() {}
@@ -59,9 +61,10 @@ Camera Scene::generateSceneFromMapping(int index, int _imageWidth, int _imageHei
     sampleCount = _sampleCount;
 
     if (index == 1) return getCornellBoxScene();
-    if (index == 2) return getLargeRandomisedSphereScene();
-    if (index == 3) return getLargeMaterialShowcaseScene();
-    if (index == 4) return getDebugScene();
+    if (index == 2) return getBook1Scene();
+    if (index == 3) return getBook2Scene();
+    if (index == 4) return getTextureMaterialShowcase();
+    if (index == 5) return getDebugScene();
 
     return getCornellBoxScene();
 }
@@ -103,7 +106,7 @@ Camera Scene::getCornellBoxScene() {
 }
 
 // Get identical scene from RayTracingInOneWeekend Book 1 final image
-Camera Scene::getLargeRandomisedSphereScene() {
+Camera Scene::getBook1Scene() {
     // Set proper camera values
     lookFrom = vec3(13, 2, 3);
     lookAt = vec3(0, 0, 0);
@@ -151,7 +154,7 @@ Camera Scene::getLargeRandomisedSphereScene() {
 }
 
 // Get identical scene from RayTracingInOneWeekend Book 2 final image
-Camera Scene::getLargeMaterialShowcaseScene() {
+Camera Scene::getBook2Scene() {
     // Set proper camera values
     lookFrom = vec3(478, 278, -600);
     lookAt = vec3(0, 100, 0);
@@ -203,6 +206,51 @@ Camera Scene::getLargeMaterialShowcaseScene() {
            focusDist, timeStart, timeEnd);
 }
 
+// Get a scene with all available textures and materials
+Camera Scene::getTextureMaterialShowcase() {
+    lookFrom = vec3(12, 1.6, -6);
+    lookAt = vec3(-4, -0.1, 0);
+    bgColour = vec3(1, 1, 1);
+    useSkyColour = true;
+    viewFOV = 20;
+    aperture = 0.1;
+    focusDist = (lookFrom - lookAt).length();
+    timeStart = 0;
+    timeEnd = 1;
+
+    std::shared_ptr<Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1,0,0.2), vec3(1,1,1));
+    std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
+    std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+    std::shared_ptr<Texture> textureNoise = std::make_shared<TexNoise>(8.0, vec3(1, 1, 1));
+    std::shared_ptr<Texture> texturePerlin = std::make_shared<TexPerlin>(1.0, 1, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+    std::shared_ptr<Texture> textureMarble1 = std::make_shared<TexPerlin>(4.0, 4, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+    std::shared_ptr<Texture> textureMarble2 = std::make_shared<TexPerlin>(8.0, 8, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+    std::shared_ptr<Texture> textureStripes = std::make_shared<TexStripes>(1.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
+
+    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker)));
+
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, 1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureImage)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, 0), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureWorley2)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureWorley1)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, -2), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureStripes)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, -3), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureNoise)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, -4), vec3(0, 0, 0), std::make_shared<MatDielectric>(1.33)));
+
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, 1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), texturePerlin)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, 0), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureMarble1)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), textureMarble2)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -2), vec3(0, 0, 0), std::make_shared<Isotropic>(textureMarble2)));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -3), vec3(0, 0, 0), std::make_shared<DiffuseLight>(std::make_shared<TexSolidColour>(vec3(4.5, 4.1, 4)))));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -4), vec3(0, 0, 0), std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.8)));
+
+    // worldList.append(std::make_shared<YZRect>(0.15, 1.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
+
+    return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
+}
+
 // Get super basic scene with one sphere
 Camera Scene::getDebugScene() {
     lookFrom = vec3(12, 1.5, -6);
@@ -215,7 +263,7 @@ Camera Scene::getDebugScene() {
     timeStart = 0;
     timeEnd = 1;
 
-    std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1,0,0.2), vec3(1,1,1));
+    std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
     std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
     std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
 

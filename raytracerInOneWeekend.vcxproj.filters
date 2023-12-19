@@ -155,6 +155,12 @@
     <ClInclude Include="vec2.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Textures\texStripes.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures\texNoise.h">
+      <Filter>Source Files\Textures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
