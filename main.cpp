@@ -1,6 +1,7 @@
 #pragma once
 
 // STD Lib
+#include <chrono>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -62,7 +63,7 @@ int imageHeight = 100;
 int sampleCount = 1;
 
 namespace render {
-    vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, bool useSkyCol) {
+    vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, int useSkyCol) {
         // Make new list of world items
         hitRecord rec;
         if (depth >= MAXDEPTH) {
@@ -71,7 +72,22 @@ namespace render {
 
         if (!(world.hit(r, 0.001, MAXFLOAT, rec))) {
             // If no collision, return sky colour
-            return (useSkyCol) ? Utility::getFakeScatteringSkyGradient(r) : bgCol;
+            switch (useSkyCol) {
+            case 0:
+                return bgCol;
+                break;
+            case 1:
+                return Utility::getFakeScatteringSkyGradient(r);
+                break;
+            case 2:
+                return Utility::getSimpleSkyGradient(r);
+                break;
+            case 3:
+                return Utility::getNightSkyGradient(r);
+                break;
+            default:
+                return bgCol;
+            }
         }
 
         // Else, do our recursive calls
@@ -93,7 +109,7 @@ namespace render {
         }*/
     }
 
-    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, bool useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
+    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, int useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
         // Set UV's
         // We can offset randomly to anti alias cheaply, moving the cam
         vec3 col(0, 0, 0);
@@ -134,6 +150,7 @@ namespace render {
         // Establish SDL Window
         sdltemplate::sdl("Raytracer", parser.imageWidth, parser.imageHeight);
         sdltemplate::loop();
+        std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
         for (int y = parser.imageHeight - 1; y >= 0; y--) {
             for (int x = 0; x < parser.imageWidth; x++) {
@@ -145,6 +162,10 @@ namespace render {
                 }
             }
         }
+
+        // Print time taken
+        std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+        Utility::printTimeTaken(startTime, endTime);
 
         if (debugPrint) {
             std::cout << "Done!" << std::endl;

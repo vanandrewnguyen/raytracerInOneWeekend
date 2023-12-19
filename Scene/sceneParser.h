@@ -92,7 +92,7 @@ void SceneParser::parseSettings(Json::Value& root, std::string rootName, bool de
 	float bgColourG = bgColourJson[1].asFloat();
 	float bgColourB = bgColourJson[2].asFloat();
 	bgColour = vec3(bgColourR, bgColourG, bgColourB);
-	useSkyColour = (settings["UseOutdoorLighting"].asInt() == 1) ? true : false;
+	useSkyColour = (settings["UseOutdoorLighting"].asInt());
 }
 
 Camera SceneParser::generateScene(std::string& pathname, bool debugPrint) {	

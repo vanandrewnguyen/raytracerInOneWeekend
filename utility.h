@@ -70,6 +70,17 @@ namespace Utility {
 		return std::fmod(std::sin(co.getX() * 12.9898 + co.getY() * 78.233) * 43758.5453, 1.0);
 	}
 
+	float hash31(vec3 p) {
+		vec3 fract = vec3(std::fmod(p.getX(), 1.0f), std::fmod(p.getY(), 1.0f), std::fmod(p.getZ(), 1.0f));
+		fract = fract * vec3(.1031, .11369, .13787);
+		float res = std::fmod(dot(fract, vec3(1.0f, 1.0f, 1.0f)), 19.19f);
+		fract += vec3(res, res, res);
+
+		float output = -1.0f + 2.0f * std::fmod((fract.getX() + fract.getY()) * fract.getZ(), 1.0f);
+
+		return output;
+	}
+
 	vec3 hash33(vec3 p3) {
 		vec3 p = p3 * vec3(0.1031, 0.11369, 0.13787);
 		p = p.fract();
@@ -80,14 +91,6 @@ namespace Utility {
 			std::fmod((p.getX() + p.getZ()) * p.getY(), 1.0),
 			std::fmod((p.getY() + p.getZ()) * p.getX(), 1.0)
 		);
-
-		/*
-		vec3 p3 = p * vec3(1.1031f, 1.1030f, 1.0973f);
-		p3 = p3 - vec3(floor(p3.getX()), floor(p3.getY()), floor(p3.getZ()));
-		p3 = p3 + vec3(19.19f, 19.19f, 19.19f);
-		p3 = p3 - vec3(floor(p3.getX()), floor(p3.getY()), floor(p3.getZ()));
-		return vec3(std::fmod((p3.getX() + p3.getY()) * p3.getZ(), 1.0f), std::fmod((p3.getY() + p3.getZ()) * p3.getX(), 1.0f), std::fmod((p3.getZ() + p3.getX()) * p3.getY(), 1.0f));
-		*/
 	}
 
 	// Step
@@ -127,10 +130,22 @@ namespace Utility {
 		return (1.0 - t) * whiteCol + t * skyCol;
 	}
 
+	vec3 getNightSkyGradient(const Ray& r) {
+		vec3 unitDir = unitVector(r.getDirection());
+		float t = 0.5 * (unitDir.getY() + 1.0);
+
+		// Interpolation
+		vec3 bottomCol(0,0,0);
+		vec3 topCol(0.08, 0.125, 0.173);
+		vec3 rampCol = (1.0 - t) * bottomCol + t * topCol;
+
+		return rampCol;
+	}
+
 	vec3 getFakeScatteringSkyGradient(const Ray& r) {
 		// Source: https://www.shadertoy.com/view/lt2SR1
 		vec3 rd = unitVector(r.getDirection());
-		vec3 sunDir = vec3(0, 0.1, 1.0);
+		vec3 sunDir = vec3(-2, -0.4, 0) / (vec3(-2, -0.4, 0).length());
 		
 		float yd = std::min(rd.getY(), 0.0f);
 		rd.setY(std::max(rd.getY(), 0.0f));
@@ -147,6 +162,19 @@ namespace Utility {
 		col += vec3(flare, flare, flare);
 
 		return col;
+	}
+
+	// Time
+	void printTimeTaken(std::chrono::high_resolution_clock::time_point startTime, std::chrono::high_resolution_clock::time_point endTime) {
+		std::chrono::hours hours = std::chrono::duration_cast<std::chrono::hours>(endTime - startTime);
+		std::chrono::minutes minutes = std::chrono::duration_cast<std::chrono::minutes>(endTime - startTime) % std::chrono::hours(1);
+		std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime) % std::chrono::minutes(1);
+
+		// Print the duration
+		std::cout << "Time taken to render: "
+			<< hours.count() << " hours, "
+			<< minutes.count() << " minutes, "
+			<< seconds.count() << " seconds " << std::endl;
 	}
 }
 

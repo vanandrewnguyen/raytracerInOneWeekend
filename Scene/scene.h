@@ -11,7 +11,7 @@ public:
 	Scene(int _imageWidth, int _imageHeight, int _sampleCount, 
           vec3 _lookFrom, vec3 _lookAt,
           float _viewFOV, float _aperture, float _focusDist, float time0, float time1,
-          vec3 _bgColour, bool _useSkyColour);
+          vec3 _bgColour, int _useSkyColour);
 
     // Hard-coded scenes
     Camera getCornellBoxScene();
@@ -26,7 +26,7 @@ public:
     int imageWidth, imageHeight, sampleCount;
     vec3 lookFrom, lookAt, bgColour;
     float viewFOV, aperture, focusDist, timeStart, timeEnd;
-    bool useSkyColour;
+    int useSkyColour;
 
     static inline std::map<int, std::string> sceneMapping = { {1, std::string("Cornell Box")},
                                                               {2, std::string("Infinite Spheres on Checkerboard")},
@@ -40,7 +40,7 @@ Scene::Scene() {}
 Scene::Scene(int _imageWidth, int _imageHeight, int _sampleCount,
     vec3 _lookFrom, vec3 _lookAt,
     float _viewFOV, float _aperture, float _focusDist, float time0, float time1,
-    vec3 _bgColour, bool _useSkyColour) {
+    vec3 _bgColour, int _useSkyColour) {
     imageWidth = _imageWidth;
     imageHeight = _imageHeight;
     sampleCount = _sampleCount;
@@ -75,7 +75,7 @@ Camera Scene::getCornellBoxScene() {
     lookFrom = vec3(278, 278, -1800);
     lookAt = vec3(278, 278, 0);
     bgColour = vec3(0, 0, 0);
-    useSkyColour = false;
+    useSkyColour = 0;
     viewFOV = 20;
     aperture = 40.0;
     focusDist = (lookFrom - lookAt).length();
@@ -111,7 +111,7 @@ Camera Scene::getBook1Scene() {
     lookFrom = vec3(13, 2, 3);
     lookAt = vec3(0, 0, 0);
     bgColour = vec3(1, 1, 1);
-    useSkyColour = true;
+    useSkyColour = 2;
     viewFOV = 20;
     aperture = 0.2;
     focusDist = (lookFrom - lookAt).length();
@@ -159,7 +159,7 @@ Camera Scene::getBook2Scene() {
     lookFrom = vec3(478, 278, -600);
     lookAt = vec3(0, 100, 0);
     bgColour = vec3(0, 0, 0);
-    useSkyColour = false;
+    useSkyColour = 0;
     viewFOV = 20;
     aperture = 40.0;
     focusDist = (lookFrom - lookAt).length();
@@ -211,7 +211,7 @@ Camera Scene::getTextureMaterialShowcase() {
     lookFrom = vec3(12, 1.6, -6);
     lookAt = vec3(-4, -0.1, 0);
     bgColour = vec3(1, 1, 1);
-    useSkyColour = true;
+    useSkyColour = 2;
     viewFOV = 20;
     aperture = 0.1;
     focusDist = (lookFrom - lookAt).length();
@@ -256,13 +256,14 @@ Camera Scene::getDebugScene() {
     lookFrom = vec3(12, 1.5, -6);
     lookAt = vec3(-2, -0.4, 0);
     bgColour = vec3(1, 1, 1);
-    useSkyColour = true;
-    viewFOV = 15;
+    useSkyColour = 1;
+    viewFOV = 40;
     aperture = 0.1;
     focusDist = (lookFrom - lookAt).length();
     timeStart = 0;
     timeEnd = 1;
 
+    /*
     std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
     std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
     std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
@@ -270,6 +271,7 @@ Camera Scene::getDebugScene() {
     worldList.append(std::make_shared<Sphere>(0.55, vec3(0, 0, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley1)));
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker)));
     worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
+    */
 
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
         float(imageWidth) / float(imageHeight), aperture,

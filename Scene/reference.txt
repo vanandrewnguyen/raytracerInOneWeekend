@@ -18,7 +18,7 @@
 		"ImageHeight": 100,
 		"SampleCount": 1,
 		"BackgroundColour": [1.0, 1.0, 1.0], // Used if outdoor lighting not shown
-		"UseOutdoorLighting": 1,
+		"UseOutdoorLighting": 2, // 0 = off, 1 = sunrise/sunset, 2 = midday, 3 = nightfall
 	},
 	"Objects": [
 		// Scene Objects go in here.
