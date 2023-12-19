@@ -116,7 +116,7 @@ namespace Utility {
 		return c0 + ratio * (c1 - c0);
 	}
 
-	vec3 getSkyColour(const Ray& r) {
+	vec3 getSimpleSkyGradient(const Ray& r) {
 		vec3 unitDir = unitVector(r.getDirection());
 		// Shift from -1->1 to 0->1
 		float t = 0.5 * (unitDir.getY() + 1.0);
@@ -125,6 +125,28 @@ namespace Utility {
 		vec3 whiteCol(1.0, 1.0, 1.0);
 		vec3 skyCol(0.5, 0.7, 1.0);
 		return (1.0 - t) * whiteCol + t * skyCol;
+	}
+
+	vec3 getFakeScatteringSkyGradient(const Ray& r) {
+		// Source: https://www.shadertoy.com/view/lt2SR1
+		vec3 rd = unitVector(r.getDirection());
+		vec3 sunDir = vec3(0, 0.1, 1.0);
+		
+		float yd = std::min(rd.getY(), 0.0f);
+		rd.setY(std::max(rd.getY(), 0.0f));
+
+		vec3 col(0, 0, 0);
+
+		col += vec3(0.4f, 0.4f - std::exp(-rd.getY() * 20.0f) * 0.15f, 0.0f) * std::exp(-rd.getY() * 9.0f); // Red / Green 
+		col += vec3(0.3f, 0.5f, 0.6f) * (1.0f - std::exp(-rd.getY() * 8.0f)) * std::exp(-rd.getY() * 0.9f); // Blue
+
+		col = Utility::colourRamp(col * 1.2f, vec3(0.3,  0.3, 0.3), 1.0f - std::exp(yd * 100.0f)); // Fog
+
+		col += vec3(1.0f, 0.8f, 0.55f) * pow(std::max(dot(rd, sunDir), 0.0f), 15.0f) * 0.6f; // Sun
+		float flare = pow(std::max(dot(rd, sunDir), 0.0f), 150.0f) * 0.15f;
+		col += vec3(flare, flare, flare);
+
+		return col;
 	}
 }
 

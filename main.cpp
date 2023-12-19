@@ -71,7 +71,7 @@ namespace render {
 
         if (!(world.hit(r, 0.001, MAXFLOAT, rec))) {
             // If no collision, return sky colour
-            return (useSkyCol) ? Utility::getSkyColour(r) : bgCol;
+            return (useSkyCol) ? Utility::getFakeScatteringSkyGradient(r) : bgCol;
         }
 
         // Else, do our recursive calls
