@@ -6,14 +6,16 @@ I'm adding a few new features of my own, in my own computer graphics study.
 ## Feature List
 - [x] Acceleration Structures (BVH)
 - [x] Extended Textures (Worley, Perlin)
-- [ ] Normal Mapping
 - [x] Volumetric Rendering
 - [x] JSON Customisable Scenes
 - [x] Scene Selection and File Output CLI
+- [x] Sky options; gradients/scattering
+- [ ] Multi-threading
+- [ ] Normal Mapping
 - [ ] Cube Maps
 - [ ] Ray-triangle intersections
 - [ ] Model loading
-- [ ] Atmospheric Scattering
+
 
 ## Sample Outputs
 
