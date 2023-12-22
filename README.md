@@ -26,7 +26,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 
 **Final scene with subsurface scattering, constant volumetric mediums, caustics, boxes. (~500 samples)**
 
-![finallargescene](https://user-images.githubusercontent.com/53636492/190929904-59f555dd-45a5-4216-9abc-a7dc5f75bfe8.PNG)
+![book2](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/39f55032-0a6c-491b-82b5-6aaa99274ad7)
 
 **Randomly generated spheres with defocus blur. (~100 samples)**
 
