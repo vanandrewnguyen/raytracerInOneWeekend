@@ -171,6 +171,9 @@
     <ClInclude Include="Materials\lambertian.h" />
     <ClInclude Include="Materials\material.h" />
     <ClInclude Include="Materials\metal.h" />
+    <ClInclude Include="Normals\normalBase.h" />
+    <ClInclude Include="Normals\constant.h" />
+    <ClInclude Include="Normals\rough.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="rotate.h" />

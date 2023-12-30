@@ -31,6 +31,9 @@
     <Filter Include="Source Files\Output">
       <UniqueIdentifier>{778c23f3-e7a9-4a50-aee3-2c7278a52a0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Normals">
+      <UniqueIdentifier>{eb329152-fd4e-476a-a15e-811f75eb563b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -160,6 +163,15 @@
     </ClInclude>
     <ClInclude Include="Textures\texNoise.h">
       <Filter>Source Files\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="Normals\constant.h">
+      <Filter>Source Files\Normals</Filter>
+    </ClInclude>
+    <ClInclude Include="Normals\normalBase.h">
+      <Filter>Source Files\Normals</Filter>
+    </ClInclude>
+    <ClInclude Include="Normals\rough.h">
+      <Filter>Source Files\Normals</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
