@@ -50,6 +50,11 @@
 #include "Textures/texNoise.h"
 #include "Textures/texStripes.h"
 
+// Normals
+#include "Normals/normalBase.h"
+#include "Normals/constant.h"
+#include "Normals/rough.h"
+
 // Scene
 #include "Scene/scene.h"
 #include "Scene/sceneParser.h"
