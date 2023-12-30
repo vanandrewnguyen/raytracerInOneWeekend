@@ -6,25 +6,26 @@ I'm adding a few new features of my own, in my own computer graphics study.
 ## Feature List
 - [x] Acceleration Structures (BVH)
 - [x] Extended Textures (Worley, Perlin)
-- [ ] Normal Mapping
 - [x] Volumetric Rendering
-- [x] JSON Customisable Scenes
+- [x] JSON Customisable Scenes (Read from file)
 - [x] Scene Selection and File Output CLI
+- [x] Sky options; fake scattering gradients
+- [ ] Multi-threading
+- [ ] Normal Mapping using Textures
 - [ ] Cube Maps
 - [ ] Ray-triangle intersections
 - [ ] Model loading
-- [ ] Atmospheric Scattering
+
 
 ## Sample Outputs
+**Final scene with subsurface scattering, constant volumetric mediums, caustics, boxes. (~500 samples)**
+
+![book2](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/39f55032-0a6c-491b-82b5-6aaa99274ad7)
 
 **Material Showcase (~100 samples)**
 (Isotropic, Perlin Noise, Worley Noise, Dielectrics, Metallics, Image Textures)
 
 ![materialShowcase](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/19a6ffcd-127a-49f2-8f16-d189ed8ffea3)
-
-**Final scene with subsurface scattering, constant volumetric mediums, caustics, boxes. (~500 samples)**
-
-![finallargescene](https://user-images.githubusercontent.com/53636492/190929904-59f555dd-45a5-4216-9abc-a7dc5f75bfe8.PNG)
 
 **Randomly generated spheres with defocus blur. (~100 samples)**
 
