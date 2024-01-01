@@ -62,17 +62,6 @@ bool Sphere::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
 			rec.t = quadratic;
 			rec.pos = r.getPointParam(rec.t);
 			rec.normal = (rec.pos - center) / radius;
-
-			/*
-			// Normal map shifting here
-			// Test for spheres, then do others
-			if (matPtr->hasNormalMap) {
-				std::shared_ptr<NormalBase> nmap = matPtr->normalMap;
-				vec3 perturbation = nmap->computeNormalShift(rec.normal, rec.u, rec.v);
-				rec.normal = nmap->shiftNormal(rec.normal, perturbation);
-			}
-			*/
-
 			rec.matPtr = matPtr;
 			getUV(rec.normal, rec.u, rec.v);
 			return true;

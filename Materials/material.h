@@ -29,7 +29,7 @@ Material::Material() {
 }
 
 void Material::assignNormalMap(const std::shared_ptr<NormalBase>& inputMap) {
-	hasNormalMap = false;
+	hasNormalMap = true;
 	normalMap = inputMap;
 }
 
