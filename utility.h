@@ -43,6 +43,27 @@ namespace Utility {
 		return std::sqrt(dx * dx + dy * dy);
 	}
 
+	float linearInterp(const float& x0, const float& y0, const float& x1, const float& y1, const float& x) {
+		double output;
+		if ((x1 - x0) == 0.0) {
+			output = y0;
+		} else {
+			output = y0 + ((x - x0) * ((y1 - y0) / (x1 - x0)));
+		}
+		return output;
+	}
+
+	float bilinearInterp(const float& x0, const float& y0, const float& v0,
+						const float& x1, const float& y1, const float& v1,
+						const float& x2, const float& y2, const float& v2,
+						const float& x3, const float& y3, const float& v3,
+						const float& x, const float& y) {
+		float p1 = linearInterp(x0, v0, x1, v1, x);
+		float p2 = linearInterp(x2, v2, x3, v3, x);
+		float p3 = linearInterp(y0, p1, y2, p2, y);
+		return p3;
+	}
+
 	// Conversion
 	float degToRad(float deg) {
 		return deg * (pi / 180);

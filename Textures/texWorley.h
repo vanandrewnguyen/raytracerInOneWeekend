@@ -22,7 +22,6 @@ public:
 		float worley = worleyNoise(p * scale);
 		return Utility::colourRamp(col0, col1, worley);
 	}
-
 private:
 	float worleyNoise(vec3 pos) const {
 		vec3 id = pos.floor();

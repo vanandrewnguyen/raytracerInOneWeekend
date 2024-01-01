@@ -38,9 +38,9 @@ vec3 NormalBase::computeNormalShift(const vec3& normal, float u, float v) {
 }
 
 vec3 NormalBase::shiftNormal(const vec3& normal, const vec3& perturbation) {
-	// Get up vector
-	vec3 up = vec3(0, 0, -1);
-	if ((normal.getZ() > 0.99) || (normal.getZ() < -0.99)) {
+	// Get up vector  (edge cases)
+	vec3 up = vec3(0, 1, 0);
+	if ((normal.getY() > 0.99) || (normal.getY() < -0.99)) {
 		up = vec3(1, 0, 0);
 	}
 
@@ -51,7 +51,7 @@ vec3 NormalBase::shiftNormal(const vec3& normal, const vec3& perturbation) {
 	perturbationU.makeUnitVec();
 
 	// Apply perturbation
-	vec3 res = normal + (perturbationU * perturbation.getX()) + (perturbationV * perturbation.getY()) + (normal * perturbation.getZ());
+	vec3 res = normal + (perturbationU * perturbation.getX()) + (normal * perturbation.getY()) + (perturbationV * perturbation.getZ());
 	res.makeUnitVec();
 	return res;
 }

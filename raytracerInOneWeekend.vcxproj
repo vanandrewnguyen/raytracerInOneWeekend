@@ -197,6 +197,7 @@
     <ClInclude Include="vec3.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\checkerboard.jpg" />
     <Image Include="Assets\earthmap.jpg" />
     <Image Include="Assets\texBrickWall.jpg" />
   </ItemGroup>

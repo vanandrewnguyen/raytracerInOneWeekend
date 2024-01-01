@@ -266,7 +266,7 @@ Camera Scene::getDebugScene() {
     std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
     std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
     std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
-    std::shared_ptr<Texture> texturePlain = std::make_shared<TexSolidColour>(vec3(0.8, 0.3, 0.3));
+    std::shared_ptr<TexImage> texturePlain = std::make_shared<TexImage>("checkerboard.jpg"); // std::make_shared<TexSolidColour>(vec3(0.8, 0.3, 0.3));
 
     std::shared_ptr<NormalBase> constantNormal = std::make_shared<Constant>();
     std::shared_ptr<NormalBase> roughNormal = std::make_shared<Rough>();
@@ -278,7 +278,7 @@ Camera Scene::getDebugScene() {
     std::shared_ptr<Material> matMetal = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.1);
     matMetal->assignNormalMap(constantNormal);
     std::shared_ptr<Material> matMetal2 = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.1);
-    matMetal->assignNormalMap(textureNormal);
+    matMetal->assignNormalMap(roughNormal);
 
     worldList.append(std::make_shared<Sphere>(0.55, vec3(0, 0, -1), vec3(0, 0, 0), matMetal));
     worldList.append(std::make_shared<Sphere>(0.55, vec3(2, 0, -1), vec3(0, 0, 0), matMetal2));

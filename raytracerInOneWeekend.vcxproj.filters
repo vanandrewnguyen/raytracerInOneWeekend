@@ -184,6 +184,9 @@
     <Image Include="Assets\texBrickWall.jpg">
       <Filter>Source Files\Assets</Filter>
     </Image>
+    <Image Include="Assets\checkerboard.jpg">
+      <Filter>Source Files\Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Scene\reference.txt">
