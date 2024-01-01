@@ -54,6 +54,7 @@
 #include "Normals/normalBase.h"
 #include "Normals/constant.h"
 #include "Normals/rough.h"
+#include "Normals/normalTexture.h"
 
 // Scene
 #include "Scene/scene.h"

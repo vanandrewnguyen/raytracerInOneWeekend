@@ -173,6 +173,9 @@
     <ClInclude Include="Normals\rough.h">
       <Filter>Source Files\Normals</Filter>
     </ClInclude>
+    <ClInclude Include="Normals\normalTexture.h">
+      <Filter>Source Files\Normals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">

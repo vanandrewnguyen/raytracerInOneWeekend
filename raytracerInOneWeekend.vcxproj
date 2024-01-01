@@ -173,6 +173,7 @@
     <ClInclude Include="Materials\metal.h" />
     <ClInclude Include="Normals\normalBase.h" />
     <ClInclude Include="Normals\constant.h" />
+    <ClInclude Include="Normals\normalTexture.h" />
     <ClInclude Include="Normals\rough.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />

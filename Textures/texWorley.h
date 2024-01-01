@@ -20,8 +20,6 @@ public:
 
 	virtual vec3 getColourVal(float u, float v, const vec3& p) const override {
 		float worley = worleyNoise(p * scale);
-		// float worley = Utility::hash21(vec2(p.getX(), p.getY())); <- stripes r cool
-		// std::cout << "Worley noise at: " << u << "." << v << " is " << worley << std::endl;
 		return Utility::colourRamp(col0, col1, worley);
 	}
 
