@@ -11,7 +11,7 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [x] Scene Selection and File Output CLI
 - [x] Sky options; fake scattering gradients
 - [ ] Multi-threading
-- [ ] Normal Mapping using Textures
+- [x] Basic Normal Mapping
 - [ ] Cube Maps
 - [ ] Ray-triangle intersections
 - [ ] Model loading
