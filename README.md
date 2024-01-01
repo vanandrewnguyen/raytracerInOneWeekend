@@ -10,9 +10,8 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [x] JSON Customisable Scenes (Read from file)
 - [x] Scene Selection and File Output CLI
 - [x] Sky options; fake scattering gradients
+- [x] (Super) Basic Normal Mapping
 - [ ] Multi-threading
-- [x] Basic Normal Mapping
-- [ ] Cube Maps
 - [ ] Ray-triangle intersections
 - [ ] Model loading
 
