@@ -3,6 +3,8 @@
 
 #include "normalBase.h"
 
+// THIS DOES NOT WORK! WIP.
+
 class NormalTexture : public NormalBase {
 public:
 	NormalTexture();

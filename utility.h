@@ -190,12 +190,14 @@ namespace Utility {
 		std::chrono::hours hours = std::chrono::duration_cast<std::chrono::hours>(endTime - startTime);
 		std::chrono::minutes minutes = std::chrono::duration_cast<std::chrono::minutes>(endTime - startTime) % std::chrono::hours(1);
 		std::chrono::seconds seconds = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime) % std::chrono::minutes(1);
+		std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime) % std::chrono::seconds(1);
 
 		// Print the duration
 		std::cout << "Time taken to render: "
 			<< hours.count() << " hours, "
 			<< minutes.count() << " minutes, "
-			<< seconds.count() << " seconds " << std::endl;
+			<< seconds.count() << " seconds, "
+			<< ms.count() << " milliseconds " << std::endl;
 	}
 }
 

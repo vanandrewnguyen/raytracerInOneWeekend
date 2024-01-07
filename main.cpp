@@ -6,7 +6,9 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <tuple>
 #include <vector>
 #include <utility>
@@ -67,6 +69,7 @@ int MAXDEPTH = 50;
 int imageWidth = 200;
 int imageHeight = 100;
 int sampleCount = 1;
+std::mutex mutex;
 
 namespace render {
     vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, int useSkyCol) {
@@ -150,6 +153,21 @@ namespace render {
         pixelData.emplace_back(ir, ig, ib);
     }
 
+    void renderChunk(Scene& parser, Camera& cam, HitableList& worldList, int startRow, int endRow, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
+        // Render portion of the image
+        for (int y = endRow - 1; y >= startRow; y--) {
+            for (int x = 0; x < parser.imageWidth; x++) {
+                // Output (remember your thread safety)
+                std::lock_guard<std::mutex> lock(mutex);
+                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, pixelData);
+
+                if (debugPrint) {
+                    std::cout << "Rendering pixel " << int(x + y) << std::endl;
+                }
+            }
+        }
+    }
+
     void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
         srand((unsigned)time(NULL));
 
@@ -158,15 +176,25 @@ namespace render {
         sdltemplate::loop();
         std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
-        for (int y = parser.imageHeight - 1; y >= 0; y--) {
-            for (int x = 0; x < parser.imageWidth; x++) {
-                // Output
-                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, pixelData);
-                // Debugging
-                if (debugPrint) {
-                    std::cout << "Rendering pixel " << int(x + y) << std::endl;
-                }
-            }
+        // Get available CPU cores (8)
+        const int numThreads = std::thread::hardware_concurrency();
+
+        // Create and launch threads
+        // We are splitting the image into 'n' rows instead of using active 'n' cells method
+        std::vector<std::thread> threads;
+        int rowsPerThread = parser.imageHeight / numThreads;
+        int startRow = 0;
+        int endRow = rowsPerThread;
+
+        for (int i = 0; i < numThreads; i++) {
+            threads.emplace_back(renderChunk, std::ref(parser), std::ref(cam), std::ref(worldList), startRow, endRow, std::ref(pixelData), debugPrint);
+            startRow = endRow;
+            endRow = (i == numThreads - 2) ? parser.imageHeight : endRow + rowsPerThread;
+        }
+
+        // Join threads and wait
+        for (std::thread& thread : threads) {
+            thread.join();
         }
 
         // Print time taken
