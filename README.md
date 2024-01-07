@@ -10,9 +10,8 @@ I'm adding a few new features of my own, in my own computer graphics study.
 - [x] JSON Customisable Scenes (Read from file)
 - [x] Scene Selection and File Output CLI
 - [x] Sky options; fake scattering gradients
+- [x] (Super) Basic Normal Mapping
 - [ ] Multi-threading
-- [ ] Normal Mapping using Textures
-- [ ] Cube Maps
 - [ ] Ray-triangle intersections
 - [ ] Model loading
 
@@ -30,6 +29,9 @@ I'm adding a few new features of my own, in my own computer graphics study.
 **Randomly generated spheres with defocus blur. (~100 samples)**
 
 ![checker2 (2)](https://user-images.githubusercontent.com/53636492/189015882-25888ada-3437-4f5e-b545-652d299769a9.PNG)
+
+**Constant Normal Map + Simple Rough Normal Map (~30 Samples)**
+![normalMapBasic](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/086d85e1-0605-4c9e-807f-c53733cda58f)
 
 **Basic diffuse lighting. (~100 samples)**
 
