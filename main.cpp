@@ -153,19 +153,24 @@ namespace render {
         pixelData.emplace_back(ir, ig, ib);
     }
 
-    void renderChunk(Scene& parser, Camera& cam, HitableList& worldList, int startRow, int endRow, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
+    std::vector<std::tuple<int, int, int>> renderChunk(Scene& parser, Camera& cam, HitableList& worldList, int startRow, int endRow, bool debugPrint = false) {
+        // Return a partial array of the final image
+        std::vector<std::tuple<int, int, int>> partialPixelData;
+
         // Render portion of the image
         for (int y = endRow - 1; y >= startRow; y--) {
             for (int x = 0; x < parser.imageWidth; x++) {
                 // Output (remember your thread safety)
                 std::lock_guard<std::mutex> lock(mutex);
-                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, pixelData);
+                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, partialPixelData);
 
                 if (debugPrint) {
                     std::cout << "Rendering pixel " << int(x + y) << std::endl;
                 }
             }
         }
+
+        return partialPixelData;
     }
 
     void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
@@ -186,15 +191,31 @@ namespace render {
         int startRow = 0;
         int endRow = rowsPerThread;
 
+        // Vector to store partial pixel data and their start height
+        std::vector<std::pair<int, std::vector<std::tuple<int, int, int>>>> partialResults;
+
         for (int i = 0; i < numThreads; i++) {
-            threads.emplace_back(renderChunk, std::ref(parser), std::ref(cam), std::ref(worldList), startRow, endRow, std::ref(pixelData), debugPrint);
+            threads.emplace_back([&, i, startRow, endRow]() {
+                std::vector<std::tuple<int, int, int>> partialPixelData = renderChunk(std::ref(parser), std::ref(cam), 
+                                                                                      std::ref(worldList), startRow, 
+                                                                                      endRow, debugPrint);
+                partialResults.emplace_back(startRow, std::move(partialPixelData));
+                });
+
             startRow = endRow;
             endRow = (i == numThreads - 2) ? parser.imageHeight : endRow + rowsPerThread;
         }
 
-        // Join threads and wait
+        // Join threads, wait
         for (std::thread& thread : threads) {
             thread.join();
+        }
+
+        // Combine partial results into the final pixelData without sorting, since we know order
+        // Parallel reduction -> fix the data race of multiple threads trying to write to pixelData simultaneously
+        // Image is reconstructed at the end
+        for (const auto& partialResult : partialResults) {
+            pixelData.insert(pixelData.end(), partialResult.second.begin(), partialResult.second.end());
         }
 
         // Print time taken
@@ -454,5 +475,80 @@ int renderSceneOld() {
     }
 
     return 0;
+}
+*/
+
+/*
+* Old rendering code before parallel reduction
+void renderChunk(Scene& parser, Camera& cam, HitableList& worldList, int startRow, int endRow, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
+    // Render portion of the image
+    for (int y = endRow - 1; y >= startRow; y--) {
+        for (int x = 0; x < parser.imageWidth; x++) {
+            // Output (remember your thread safety)
+            std::lock_guard<std::mutex> lock(mutex);
+            writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, pixelData);
+
+            if (debugPrint) {
+                std::cout << "Rendering pixel " << int(x + y) << std::endl;
+            }
+        }
+    }
+}
+
+void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, bool debugPrint = false) {
+    srand((unsigned)time(NULL));
+
+    // Establish SDL Window
+    sdltemplate::sdl("Raytracer", parser.imageWidth, parser.imageHeight);
+    sdltemplate::loop();
+    std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+
+    // Get available CPU cores (8)
+    const int numThreads = std::thread::hardware_concurrency();
+
+    // Create and launch threads
+    // We are splitting the image into 'n' rows instead of using active 'n' cells method
+    std::vector<std::thread> threads;
+    int rowsPerThread = parser.imageHeight / numThreads;
+    int startRow = 0;
+    int endRow = rowsPerThread;
+
+    for (int i = 0; i < numThreads; i++) {
+        threads.emplace_back(renderChunk, std::ref(parser), std::ref(cam), std::ref(worldList), startRow, endRow, std::ref(pixelData), debugPrint);
+        startRow = endRow;
+        endRow = (i == numThreads - 2) ? parser.imageHeight : endRow + rowsPerThread;
+    }
+
+    // Join threads and wait
+    for (std::thread& thread : threads) {
+        thread.join();
+    }
+
+    // Print time taken
+    std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+    Utility::printTimeTaken(startTime, endTime);
+
+    if (debugPrint) {
+        std::cout << "Done!" << std::endl;
+    }
+
+    // Keep window active
+    while (sdltemplate::running) {
+        // Handle events
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                sdltemplate::running = false;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    sdltemplate::running = false;
+                }
+            }
+        }
+
+        sdltemplate::loop();
+    }
+
+    SDL_Quit();
 }
 */
