@@ -1,7 +1,7 @@
 # raytracerInOneWeekend
-I'm writing a custom ray-tracer using Peter Shirley's Raytracing in One Weekend textbook series.
+I'm writing a custom ray-tracer based on Peter Shirley's Raytracing in One Weekend textbook series.
 
-I'm adding a few new features of my own, in my own computer graphics study.
+I'm adding a few new features of my own to supplement my own computer graphics study.
 
 ## Feature List
 - [x] Acceleration Structures (BVH)
@@ -91,20 +91,27 @@ An example of an editable json scene.
 }
 ```
 
+## Additional Notes
+I've found multiple ways that have been used to parallelize ray-tracing. The method I've used is to split the canvas into rows which are picked up by the host cores. It's naive, and has some issues.
+1. ~~There is a data race by trying to access the output pixel array. This causes some rows to stop rendering completely until others finish. This could potentially be fixed with parallel reduction, having each row chunk return a partial array of the full image. Once all threads finish, the final image could be rebuilt. This is a WIP.~~ Results below.
+2. It's still slow. Some methods of using active cells force any idle cells to complete and for the host to continue rendering continuously. Some scenes have empty areas which cause it to render much faster. It is counter-productive to let those cells sit idle.
+
+I ran some tests for a 500x500 debug scene, with 10 samples. Here are the results, we can see a ~30% improvement.
+Threads | 1 | 2 | 4 | 8
+--- | --- | --- | --- |--- 
+Seconds | 24.919 | 20.750 | 19.442 | 19.102
+
+![image](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/26e8556a-183f-4666-99d8-e62ceaff5b49)
+
+I fixed the data race issue described above and ran identical tests. Here are the results across multiple runs. There is a ~7% improvement.
+Run | 1 | 2 | 3 | 4 | Avg
+--- | --- | --- | --- | --- | ---
+Before | 29.591 | 34.593 | 34.412 | 33.584 | 33.045
+After | 33.640 | 30.201 | 29.505 | 30.590 | 30.984
+
+![image](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/8d001a63-23ac-4aff-8a88-97be2a8c2ce8)
 
 ## Library Dependancies
 - SDL2
 - Jsoncpp
 - stb_image
-
-## Additional Notes
-I've found multiple ways that have been used to parallelize ray-tracing. The method I've used is to split the canvas into rows which are picked up by the host cores. It's naive, and has some issues.
-1. There is a data race by trying to access the output pixel array. This causes some rows to stop rendering completely until others finish. This could potentially be fixed with parallel reduction, having each row chunk return a partial array of the full image. Once all threads finish, the final image could be rebuilt. This is a WIP.
-2. It's still slow. Some methods of using active cells force any idle cells to complete and for the host to continue rendering continuously. Some scenes have empty areas which cause it to render much faster. It is counter-productive to let those cells sit idle.
-
-I ran some tests for a 500x500 debug scene, with 10 samples. Here are the results, we can see a ~1.3x improvement.
-Threads | #1 | #2 | #4 | #8
---- | --- | --- | --- |--- 
-Seconds | 24.919 | 20.750 | 19.442 | 19.102
-
-![image](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/26e8556a-183f-4666-99d8-e62ceaff5b49)
