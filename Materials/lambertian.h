@@ -1,5 +1,5 @@
-#ifndef LAMBERTIAN
-#define LAMBERTIAN
+#ifndef LAMBERTIAN_H
+#define LAMBERTIAN_H
 
 #include "material.h"
 #include "../Textures/texture.h"
@@ -7,10 +7,10 @@
 class MatLambertian : public Material {
 public:
 	vec3 albedo;
-	std::shared_ptr<Texture> texPtr;
+	std::shared_ptr<raytrace::Texture> texPtr;
 public:
 	// Constructor
-	MatLambertian(const vec3& a, std::shared_ptr<Texture> t = NULL) {
+	MatLambertian(const vec3& a, std::shared_ptr<raytrace::Texture> t = NULL) {
 		albedo = a;
 		texPtr = t;
 	}

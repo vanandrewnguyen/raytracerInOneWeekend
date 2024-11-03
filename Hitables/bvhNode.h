@@ -1,9 +1,9 @@
-#ifndef BVH
-#define BVH
+#ifndef BVH_H
+#define BVH_H
 
 #include "hitable.h"
 #include "hitableList.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 
 #include <algorithm>
 #include <cstdio>

@@ -34,6 +34,18 @@
     <Filter Include="Source Files\Normals">
       <UniqueIdentifier>{eb329152-fd4e-476a-a15e-811f75eb563b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Qt">
+      <UniqueIdentifier>{f034f0b2-d87a-4a45-b7f0-10b17a8268b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Transforms">
+      <UniqueIdentifier>{6c9de1c7-2bef-463e-b3fb-fdb130e41fd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{788e92ee-83ee-45fb-bb61-d3b0b3e9a940}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{3af06bad-9d68-4f16-b498-4cfbe1689952}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,15 +57,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sdltemplate.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vec3.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ray.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Materials\lambertian.h">
@@ -68,9 +71,6 @@
     <ClInclude Include="Materials\dielectric.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="utility.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Textures\texture.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
@@ -79,9 +79,6 @@
     </ClInclude>
     <ClInclude Include="Textures\texChecker.h">
       <Filter>Source Files\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="perlin.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Textures\texPerlin.h">
       <Filter>Source Files\Textures</Filter>
@@ -119,12 +116,6 @@
     <ClInclude Include="Hitables\box.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
-    <ClInclude Include="translate.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rotate.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Hitables\constantVolume.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
@@ -155,9 +146,6 @@
     <ClInclude Include="Textures\texWorley.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="vec2.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Textures\texStripes.h">
       <Filter>Source Files\Textures</Filter>
     </ClInclude>
@@ -175,6 +163,36 @@
     </ClInclude>
     <ClInclude Include="Normals\normalTexture.h">
       <Filter>Source Files\Normals</Filter>
+    </ClInclude>
+    <ClInclude Include="init.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transforms\rotate.h">
+      <Filter>Source Files\Transforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Transforms\translate.h">
+      <Filter>Source Files\Transforms</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\camera.h">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\ray.h">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\render.h">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\perlin.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\utility.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\vec2.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\vec3.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

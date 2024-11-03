@@ -1,5 +1,5 @@
-#ifndef NORMALCONSTANT
-#define NORMALCONSTANT
+#ifndef NORMALCONSTANT_H
+#define NORMALCONSTANT_H
 
 #include "normalBase.h"
 

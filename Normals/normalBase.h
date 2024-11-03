@@ -1,8 +1,8 @@
-#ifndef NORMALBASE
-#define NORMALBASE
+#ifndef NORMALBASE_H
+#define NORMALBASE_H
 
-#include "../vec2.h"
-#include "../vec3.h"
+#include "../Utils/vec2.h"
+#include "../Utils/vec3.h"
 #include "../Textures/texture.h"
 
 class NormalBase {
@@ -13,7 +13,7 @@ public:
 
 	virtual vec3 computeNormalShift(const vec3& normal, float u, float v);
 	vec3 shiftNormal(const vec3 &normal, const vec3 &perturbation);
-	vec2 textureDiff(const std::shared_ptr<Texture> &inputTex, float u, float v);
+	vec2 textureDiff(const std::shared_ptr<raytrace::Texture> &inputTex, float u, float v);
 	void setAmp(float a);
 	
 public:
@@ -56,7 +56,7 @@ vec3 NormalBase::shiftNormal(const vec3& normal, const vec3& perturbation) {
 	return res;
 }
 
-vec2 NormalBase::textureDiff(const std::shared_ptr<Texture>& inputTex, float u, float v) {
+vec2 NormalBase::textureDiff(const std::shared_ptr<raytrace::Texture>& inputTex, float u, float v) {
 	// Get partial derivatives of texture (slope grad) at (u, v)
 	float ep = 0.001;
 	vec2 uDisplacement = vec2(ep, 0.0);

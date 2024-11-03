@@ -1,8 +1,8 @@
-#ifndef TRANSLATE
-#define TRANSLATE
+#ifndef TRANSLATE_H
+#define TRANSLATE_H
 
-#include "Hitables/hitable.h"
-#include "ray.h"
+#include "../Hitables/hitable.h"
+#include "../Render/ray.h"
 
 class Translate : public Hitable {
 public:

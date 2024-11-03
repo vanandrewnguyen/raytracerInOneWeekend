@@ -1,9 +1,9 @@
-#ifndef XZRECT
-#define XZRECT
+#ifndef XZRECT_H
+#define XZRECT_H
 
 #include "hitable.h"
 #include "../Materials/material.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 
 class XZRect : public Hitable {
 public:

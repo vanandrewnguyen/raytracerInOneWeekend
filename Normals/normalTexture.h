@@ -1,5 +1,5 @@
-#ifndef NORMALTEXTURE
-#define NORMALTEXTURE
+#ifndef NORMALTEXTURE_H
+#define NORMALTEXTURE_H
 
 #include "normalBase.h"
 

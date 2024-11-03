@@ -88,14 +88,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;C:\Qt\6.8.0\msvc2022_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Qt\6.8.0\msvc2022_64\lib;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,14 +121,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;C:\Qt\6.8.0\msvc2022_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Qt\6.8.0\msvc2022_64\lib;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,7 +153,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="camera.h" />
     <ClInclude Include="Hitables\aabb.h" />
     <ClInclude Include="Hitables\box.h" />
     <ClInclude Include="Hitables\bvhNode.h" />
@@ -163,6 +164,7 @@
     <ClInclude Include="Hitables\xyRect.h" />
     <ClInclude Include="Hitables\xzRect.h" />
     <ClInclude Include="Hitables\yzRect.h" />
+    <ClInclude Include="init.h" />
     <ClInclude Include="Libraries\jsoncpp\dist\json\json-forwards.h" />
     <ClInclude Include="Libraries\jsoncpp\dist\json\json.h" />
     <ClInclude Include="Materials\dielectric.h" />
@@ -175,9 +177,9 @@
     <ClInclude Include="Normals\constant.h" />
     <ClInclude Include="Normals\normalTexture.h" />
     <ClInclude Include="Normals\rough.h" />
-    <ClInclude Include="perlin.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="rotate.h" />
+    <ClInclude Include="Render\camera.h" />
+    <ClInclude Include="Render\ray.h" />
+    <ClInclude Include="Render\render.h" />
     <ClInclude Include="Scene\scene.h" />
     <ClInclude Include="Scene\sceneParser.h" />
     <ClInclude Include="sdltemplate.h" />
@@ -191,10 +193,12 @@
     <ClInclude Include="Textures\texPerlin.h" />
     <ClInclude Include="Textures\texSolidColour.h" />
     <ClInclude Include="Textures\texture.h" />
-    <ClInclude Include="translate.h" />
-    <ClInclude Include="utility.h" />
-    <ClInclude Include="vec2.h" />
-    <ClInclude Include="vec3.h" />
+    <ClInclude Include="Transforms\rotate.h" />
+    <ClInclude Include="Transforms\translate.h" />
+    <ClInclude Include="Utils\perlin.h" />
+    <ClInclude Include="Utils\utility.h" />
+    <ClInclude Include="Utils\vec2.h" />
+    <ClInclude Include="Utils\vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\checkerboard.jpg" />

@@ -1,12 +1,12 @@
-#ifndef BOXH
-#define BOXH
+#ifndef BOX_H
+#define BOX_H
 
 #include <memory>
 
 #include "xyRect.h"
 #include "xzRect.h"
 #include "yzRect.h"
-#include "../vec3.h"
+#include "../Utils/vec3.h"
 
 class Box : public Hitable {
 public:

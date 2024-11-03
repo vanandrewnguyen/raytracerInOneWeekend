@@ -1,10 +1,10 @@
-#ifndef TEXTUREWORLEY
-#define TEXTUREWORLEY
+#ifndef TEXTUREWORLEY_H
+#define TEXTUREWORLEY_H
 
 #include "texture.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 
-class TexWorley : public Texture {
+class TexWorley : public raytrace::Texture {
 public:
 	TexWorley() {
 		scale = 1.0;

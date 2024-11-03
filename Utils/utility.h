@@ -1,17 +1,19 @@
-#ifndef UTILITY
-#define UTILITY
+#ifndef UTILITY_H
+#define UTILITY_H
 
 #include <cmath>
 #include <limits>
 #include <memory>
 #include "vec3.h"
 #include "vec2.h"
-#include "ray.h"
+#include "../Render/ray.h"
 
 namespace Utility {
 	// Constants
 	const double infinity = std::numeric_limits<double>::infinity();
 	const double pi = 3.1415926535897932385;
+	const float maxFloat = 999.0;
+	const int maxDepth = 50;
 
 	// Math
 	double clamp(double x, double min, double max) {

@@ -1,23 +1,24 @@
-#ifndef DIFFUSELIGHT
-#define DIFFUSELIGHT
+#ifndef DIFFUSELIGHT_H
+#define DIFFUSELIGHT_H
 
 #include "material.h"
 #include "../Textures/texture.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 #include "../Hitables/hitable.h"
 
 class DiffuseLight : public Material {
 public:
-	std::shared_ptr<Texture> emit;
+	// std::shared_ptr<raytrace::Texture> emit;
+
 public:
-	DiffuseLight(std::shared_ptr<Texture> tex);
+	DiffuseLight(std::shared_ptr<raytrace::Texture> tex);
 
 	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scattered) const override;
 	virtual vec3 emitted(float u, float v, const vec3& p) const override;
 };
 
-DiffuseLight::DiffuseLight(std::shared_ptr<Texture> tex) {
-	emit = tex;
+DiffuseLight::DiffuseLight(std::shared_ptr<raytrace::Texture> tex) {
+	// emit = tex;
 }
 
 bool DiffuseLight::scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scattered) const {
@@ -25,7 +26,7 @@ bool DiffuseLight::scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenua
 }
 
 vec3 DiffuseLight::emitted(float u, float v, const vec3& p) const {
-	return emit->getColourVal(u, v, p);
+	return vec3(0, 0, 0); // return emit->getColourVal(u, v, p);
 }
 
 #endif

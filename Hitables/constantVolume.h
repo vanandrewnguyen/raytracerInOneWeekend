@@ -1,9 +1,9 @@
-#ifndef CONSTANTVOLUME
-#define CONSTANTVOLUME
+#ifndef CONSTANTVOLUME_H
+#define CONSTANTVOLUME_H
 
 #include "hitable.h"
 #include "../Materials/material.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 #include "../Materials/isotropic.h"
 
 class ConstantVolume : public Hitable {
@@ -13,12 +13,12 @@ public:
 	double negInverseDensity;
 
 public:
-	ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<Texture> tex);
+	ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<raytrace::Texture> tex);
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
 
-ConstantVolume::ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<Texture> tex) {
+ConstantVolume::ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<raytrace::Texture> tex) {
 	boundary = hit;
 	negInverseDensity = -1/density;
 	phaseFunc = std::make_shared<Isotropic>(tex);

@@ -1,14 +1,14 @@
-#ifndef TEXIMAGE
-#define TEXIMAGE
+#ifndef TEXIMAGE_H
+#define TEXIMAGE_H
 
 #include "texture.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stb_image.h"
 
 #include <iostream>
 
-class TexImage : public Texture {
+class TexImage : public raytrace::Texture {
 private:
 	const int bytesPerPixel = 3;
 	unsigned char* data;

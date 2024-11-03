@@ -1,9 +1,9 @@
-#ifndef YZRECT
-#define YZRECT
+#ifndef YZRECT_H
+#define YZRECT_H
 
 #include "hitable.h"
 #include "../Materials/material.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 
 class YZRect : public Hitable {
 public:

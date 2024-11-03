@@ -1,9 +1,9 @@
-#ifndef TEXTURESOLID
-#define TEXTURESOLID
+#ifndef TEXTURESOLID_H
+#define TEXTURESOLID_H
 
 #include "texture.h"
 
-class TexSolidColour : public Texture {
+class TexSolidColour : public raytrace::Texture {
 public:
 	TexSolidColour();
 	TexSolidColour(vec3 col);

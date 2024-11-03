@@ -1,8 +1,8 @@
-#ifndef SPHERE
-#define SPHERE
+#ifndef SPHERE_H
+#define SPHERE_H
 
 #include "hitable.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 
 class Material;
 

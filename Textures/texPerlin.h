@@ -1,10 +1,10 @@
-#ifndef TEXTUREPERLIN
-#define TEXTUREPERLIN
+#ifndef TEXTUREPERLIN_H
+#define TEXTUREPERLIN_H
 
 #include "texture.h"
-#include "../perlin.h"
+#include "../Utils/perlin.h"
 
-class TexPerlin : public Texture {
+class TexPerlin : public raytrace::Texture {
 public:
 	TexPerlin() {
 		freq = 1.0;

@@ -1,8 +1,8 @@
-#ifndef CAMERA
-#define CAMERA
+#ifndef CAMERA_H
+#define CAMERA_H
 
 #include "ray.h"
-#include "utility.h"
+#include "../Utils/utility.h"
 
 class Camera {
 private:

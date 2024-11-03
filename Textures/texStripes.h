@@ -1,10 +1,10 @@
-#ifndef TEXTURESTRIPES
-#define TEXTURESTRIPES
+#ifndef TEXTURESTRIPES_H
+#define TEXTURESTRIPES_H
 
 #include "texture.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 
-class TexStripes : public Texture {
+class TexStripes : public raytrace::Texture {
 public:
 	TexStripes() {
 		scale = 1.0;

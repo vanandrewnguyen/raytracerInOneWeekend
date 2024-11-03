@@ -1,8 +1,8 @@
-#ifndef METAL
-#define METAL
+#ifndef METAL_H
+#define METAL_H
 
 #include "material.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 #include "../Hitables/hitable.h"
 
 class MatMetal : public Material {

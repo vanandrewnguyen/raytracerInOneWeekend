@@ -1,5 +1,5 @@
-#ifndef SCENEPARSER
-#define SCENEPARSER
+#ifndef SCENEPARSER_H
+#define SCENEPARSER_H
 
 #include <iostream>
 #include <fstream>
@@ -31,7 +31,7 @@ public:
 	void parseXZRect(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
 	void parseConstantVolume(const std::string objectType, const Json::Value& objectData, bool debugPrint = false);
 	std::shared_ptr<Material> createMaterial(const std::string materialType, const Json::Value& materialData, bool debugPrint = false);
-	std::shared_ptr<Texture> createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint = false);
+	std::shared_ptr<raytrace::Texture> createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint = false);
 };
 
 SceneParser::SceneParser() {}
@@ -353,7 +353,7 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 		const Json::Value& tex = materialData["Texture"];
 		for (const std::string& textureType : tex.getMemberNames()) {
 			const Json::Value& textureData = tex[textureType];
-			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
+			std::shared_ptr<raytrace::Texture> tex = createTexture(textureType, textureData, debugPrint);
 			return std::make_shared<MatLambertian>(vec3(albedoR, albedoG, albedoB), tex);
 		}
 	} else if (materialType == "Dielectric") {
@@ -382,7 +382,7 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 		const Json::Value& tex = materialData["Texture"];
 		for (const std::string& textureType : tex.getMemberNames()) {
 			const Json::Value& textureData = tex[textureType];
-			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
+			std::shared_ptr<raytrace::Texture> tex = createTexture(textureType, textureData, debugPrint);
 			return std::make_shared<Isotropic>(tex);
 		}
 	} else if (materialType == "DiffuseLight") {
@@ -393,7 +393,7 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 		const Json::Value& tex = materialData["Texture"];
 		for (const std::string& textureType : tex.getMemberNames()) {
 			const Json::Value& textureData = tex[textureType];
-			std::shared_ptr<Texture> tex = createTexture(textureType, textureData, debugPrint);
+			std::shared_ptr<raytrace::Texture> tex = createTexture(textureType, textureData, debugPrint);
 			return std::make_shared<DiffuseLight>(tex);
 		}
 	}
@@ -401,7 +401,7 @@ std::shared_ptr<Material> SceneParser::createMaterial(const std::string material
 	return nullptr;
 }
 
-std::shared_ptr<Texture> SceneParser::createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint) {
+std::shared_ptr<raytrace::Texture> SceneParser::createTexture(const std::string textureType, const Json::Value& textureData, bool debugPrint) {
 	// Handle different texture types
 	if (textureType == "TexImage") {
 		if (debugPrint) {

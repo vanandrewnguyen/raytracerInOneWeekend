@@ -1,10 +1,10 @@
-#ifndef HITABLE
-#define HITABLE
+#ifndef HITABLE_H
+#define HITABLE_H
 
 #include <memory>
 
 #include "aabb.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 
 class Material;
 

@@ -1,9 +1,9 @@
-#ifndef ROTATE
-#define ROTATE
+#ifndef ROTATE_H
+#define ROTATE_H
 
-#include "Hitables/hitable.h"
-#include "ray.h"
-#include "utility.h"
+#include "../Hitables/hitable.h"
+#include "../Render/ray.h"
+#include "../Utils/utility.h"
 #include <limits>
 
 class RotateY : public Hitable {

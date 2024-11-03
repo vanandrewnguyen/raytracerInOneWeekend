@@ -1,10 +1,10 @@
-#ifndef TEXTURENOISE
-#define TEXTURENOISE
+#ifndef TEXTURENOISE_H
+#define TEXTURENOISE_H
 
 #include "texture.h"
-#include "../utility.h"
+#include "../Utils/utility.h"
 
-class TexNoise : public Texture {
+class TexNoise : public raytrace::Texture {
 public:
 	TexNoise() {
 		scale = 1.0;

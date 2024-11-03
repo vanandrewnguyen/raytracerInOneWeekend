@@ -1,5 +1,5 @@
-#ifndef MOVINGSPHERE
-#define MOVINGSPHERE
+#ifndef MOVINGSPHERE_H
+#define MOVINGSPHERE_H
 
 #include "hitable.h"
 

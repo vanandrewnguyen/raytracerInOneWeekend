@@ -1,5 +1,5 @@
-#ifndef SCENEHEADER
-#define SCENEHEADER
+#ifndef SCENE_H
+#define SCENE_H
 
 #include "../Hitables/hitable.h"
 #include "../Hitables/hitableList.h"
@@ -218,15 +218,15 @@ Camera Scene::getTextureMaterialShowcase() {
     timeStart = 0;
     timeEnd = 1;
 
-    std::shared_ptr<Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
-    std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1,0,0.2), vec3(1,1,1));
-    std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
-    std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
-    std::shared_ptr<Texture> textureNoise = std::make_shared<TexNoise>(8.0, vec3(1, 1, 1));
-    std::shared_ptr<Texture> texturePerlin = std::make_shared<TexPerlin>(1.0, 1, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
-    std::shared_ptr<Texture> textureMarble1 = std::make_shared<TexPerlin>(4.0, 4, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
-    std::shared_ptr<Texture> textureMarble2 = std::make_shared<TexPerlin>(8.0, 8, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
-    std::shared_ptr<Texture> textureStripes = std::make_shared<TexStripes>(1.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
+    std::shared_ptr<raytrace::Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<raytrace::Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1,0,0.2), vec3(1,1,1));
+    std::shared_ptr<raytrace::Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
+    std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+    std::shared_ptr<raytrace::Texture> textureNoise = std::make_shared<TexNoise>(8.0, vec3(1, 1, 1));
+    std::shared_ptr<raytrace::Texture> texturePerlin = std::make_shared<TexPerlin>(1.0, 1, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+    std::shared_ptr<raytrace::Texture> textureMarble1 = std::make_shared<TexPerlin>(4.0, 4, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+    std::shared_ptr<raytrace::Texture> textureMarble2 = std::make_shared<TexPerlin>(8.0, 8, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+    std::shared_ptr<raytrace::Texture> textureStripes = std::make_shared<TexStripes>(1.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
 
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker)));
 
@@ -263,9 +263,9 @@ Camera Scene::getDebugScene() {
     timeStart = 0;
     timeEnd = 1;
 
-    std::shared_ptr<Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
-    std::shared_ptr<Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
-    std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+    std::shared_ptr<raytrace::Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
+    std::shared_ptr<raytrace::Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
+    std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
     std::shared_ptr<TexImage> texturePlain = std::make_shared<TexImage>("checkerboard.jpg"); // std::make_shared<TexSolidColour>(vec3(0.8, 0.3, 0.3));
 
     std::shared_ptr<NormalBase> constantNormal = std::make_shared<Constant>();
@@ -295,8 +295,8 @@ Camera Scene::getDebugScene() {
 // Get super basic scene with one scene
 Camera Scene::getMinimalTestScene() {
     HitableList worldList;
-    std::shared_ptr<Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
-    std::shared_ptr<Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+    std::shared_ptr<raytrace::Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
 
     worldList.append(std::make_shared<Sphere>(0.55, vec3(0.0, 0, -1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureImage)));
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker)));

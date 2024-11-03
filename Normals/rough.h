@@ -1,5 +1,5 @@
-#ifndef NORMALROUGH
-#define NORMALROUGH
+#ifndef NORMALROUGH_H
+#define NORMALROUGH_H
 
 #include <random>
 #include "normalBase.h"

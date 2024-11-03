@@ -1,8 +1,8 @@
-#ifndef DIELECTRIC
-#define DIELECTRIC
+#ifndef DIELECTRIC_H
+#define DIELECTRIC_H
 
 #include "material.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 #include "../Hitables/hitable.h"
 
 class MatDielectric : public Material {

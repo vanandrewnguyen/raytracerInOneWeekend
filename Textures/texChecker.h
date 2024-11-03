@@ -1,9 +1,9 @@
-#ifndef TEXTURECHECKER
-#define TEXTURECHECKER
+#ifndef TEXTURECHECKER_H
+#define TEXTURECHECKER_H
 
 #include "texture.h"
 
-class TexChecker : public Texture {
+class TexChecker : public raytrace::Texture {
 public:
 	TexChecker();
 	TexChecker(vec3 even, vec3 odd, float size);

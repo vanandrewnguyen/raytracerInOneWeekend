@@ -1,9 +1,9 @@
-#ifndef XYRECT
-#define XYRECT
+#ifndef XYRECT_H
+#define XYRECT_H
 
 #include "hitable.h"
 #include "../Materials/material.h"
-#include "../ray.h"
+#include "../Render/ray.h"
 
 class XYRect : public Hitable {
 public:

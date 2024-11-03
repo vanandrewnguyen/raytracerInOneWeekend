@@ -1,9 +1,9 @@
-#ifndef AABBHEADER
-#define AABBHEADER
+#ifndef AABB_H
+#define AABB_H
 
 #include <cmath>
-#include "../vec3.h"
-#include "../ray.h"
+#include "../Utils/vec3.h"
+#include "../Render/ray.h"
 
 class AABB {
 public:
