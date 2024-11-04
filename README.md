@@ -44,6 +44,7 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 ![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
 
 ## Directions for Use
+![raytracer_gui](https://github.com/user-attachments/assets/b900472f-18ca-4817-8d9c-d3862c1071e1)
 - Follow the prompts to load a json scene file, or choose from a small selection of scenes (e.g. Cornell Box, Material Lighting). 
 - Render time will vary significantly from image size and sample count for each pixel.
 - After the image finishes rendering, you can close the render window.
