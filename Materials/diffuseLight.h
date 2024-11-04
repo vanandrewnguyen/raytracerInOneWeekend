@@ -8,7 +8,7 @@
 
 class DiffuseLight : public Material {
 public:
-	// std::shared_ptr<raytrace::Texture> emit;
+	 std::shared_ptr<raytrace::Texture> emit;
 
 public:
 	DiffuseLight(std::shared_ptr<raytrace::Texture> tex);
@@ -18,7 +18,7 @@ public:
 };
 
 DiffuseLight::DiffuseLight(std::shared_ptr<raytrace::Texture> tex) {
-	// emit = tex;
+	 emit = tex;
 }
 
 bool DiffuseLight::scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scattered) const {
@@ -26,7 +26,7 @@ bool DiffuseLight::scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenua
 }
 
 vec3 DiffuseLight::emitted(float u, float v, const vec3& p) const {
-	return vec3(0, 0, 0); // return emit->getColourVal(u, v, p);
+	return emit->getColourVal(u, v, p);
 }
 
 #endif
