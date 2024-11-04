@@ -8,10 +8,12 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 - [x] Extended Textures (Worley, Perlin)
 - [x] Volumetric Rendering
 - [x] JSON Customisable Scenes (Read from file)
-- [x] Scene Selection and File Output CLI
+- [x] Scene Selection and File Output GUI using Qt
 - [x] Sky options; fake scattering gradients
 - [x] (Super) Basic Normal Mapping
 - [x] Multi-threading
+- [ ] Denoising extension
+- [ ] Checkpointing extension
 - [ ] Ray-triangle intersections
 - [ ] Model loading
 
