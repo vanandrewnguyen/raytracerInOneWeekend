@@ -7,10 +7,10 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 - [x] Acceleration Structures (BVH)
 - [x] Extended Textures (Worley, Perlin)
 - [x] Volumetric Rendering
-- [x] JSON Customisable Scenes (Read from file)
+- [x] Loadable JSON Scenes
 - [x] Scene Selection and File Output GUI using Qt
 - [x] Sky options; fake scattering gradients
-- [x] (Super) Basic Normal Mapping
+- [x] Basic Normal Mapping
 - [x] Multi-threading
 - [ ] Denoising extension
 - [ ] Checkpointing extension
@@ -117,3 +117,4 @@ After | 33.640 | 30.201 | 29.505 | 30.590 | 30.984
 - SDL2
 - Jsoncpp
 - stb_image
+- Qt 6.8.0
