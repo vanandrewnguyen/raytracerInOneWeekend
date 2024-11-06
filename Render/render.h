@@ -126,55 +126,60 @@ namespace render {
         return partialPixelData;
     }
 
-    void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, std::mutex& mutex, bool debugPrint = false) {
+    void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, std::mutex& mutex, bool useMultithread = true, bool debugPrint = false) {
         srand((unsigned)time(NULL));
 
         // Establish SDL Window
         sdltemplate::sdl("Raytracer", parser.imageWidth, parser.imageHeight);
         sdltemplate::loop();
         std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
+        
+        if (!useMultithread) {
+            // Render the entire scene in a single loop (no threads)
+            pixelData = renderChunk(parser, cam, worldList, 0, parser.imageHeight, mutex, debugPrint);
+        } else {
+            // Get available CPU cores (8)
+            const int numThreads = std::thread::hardware_concurrency();
 
-        // Get available CPU cores (8)
-        const int numThreads = std::thread::hardware_concurrency();
+            // Create and launch threads
+            // We are splitting the image into 'n' rows instead of using active 'n' cells method
+            std::vector<std::thread> threads;
+            int rowsPerThread = parser.imageHeight / numThreads;
+            int startRow = 0;
+            int endRow = rowsPerThread;
 
-        // Create and launch threads
-        // We are splitting the image into 'n' rows instead of using active 'n' cells method
-        std::vector<std::thread> threads;
-        int rowsPerThread = parser.imageHeight / numThreads;
-        int startRow = 0;
-        int endRow = rowsPerThread;
+            // Vector to store partial pixel data and their start height
+            std::vector<std::pair<int, std::vector<std::tuple<int, int, int>>>> partialResults;
 
-        // Vector to store partial pixel data and their start height
-        std::vector<std::pair<int, std::vector<std::tuple<int, int, int>>>> partialResults;
+            for (int i = 0; i < numThreads; i++) {
+                threads.emplace_back([&, i, startRow, endRow]() {
+                    std::vector<std::tuple<int, int, int>> partialPixelData = renderChunk(std::ref(parser),
+                        std::ref(cam),
+                        std::ref(worldList),
+                        startRow,
+                        endRow,
+                        mutex,
+                        debugPrint);
+                    partialResults.emplace_back(startRow, std::move(partialPixelData));
+                    });
 
-        for (int i = 0; i < numThreads; i++) {
-            threads.emplace_back([&, i, startRow, endRow]() {
-                std::vector<std::tuple<int, int, int>> partialPixelData = renderChunk(std::ref(parser), 
-                                                                                      std::ref(cam),
-                                                                                      std::ref(worldList),
-                                                                                      startRow,
-                                                                                      endRow,
-                                                                                      mutex,
-                                                                                      debugPrint);
-                partialResults.emplace_back(startRow, std::move(partialPixelData));
-                });
+                startRow = endRow;
+                endRow = (i == numThreads - 2) ? parser.imageHeight : endRow + rowsPerThread;
+            }
 
-            startRow = endRow;
-            endRow = (i == numThreads - 2) ? parser.imageHeight : endRow + rowsPerThread;
+            // Join threads, wait
+            for (std::thread& thread : threads) {
+                thread.join();
+            }
+
+            // Combine partial results into the final pixelData without sorting, since we know order
+            // Parallel reduction -> fix the data race of multiple threads trying to write to pixelData simultaneously
+            // Image is reconstructed at the end
+            for (const auto& partialResult : partialResults) {
+                pixelData.insert(pixelData.end(), partialResult.second.begin(), partialResult.second.end());
+            }
         }
-
-        // Join threads, wait
-        for (std::thread& thread : threads) {
-            thread.join();
-        }
-
-        // Combine partial results into the final pixelData without sorting, since we know order
-        // Parallel reduction -> fix the data race of multiple threads trying to write to pixelData simultaneously
-        // Image is reconstructed at the end
-        for (const auto& partialResult : partialResults) {
-            pixelData.insert(pixelData.end(), partialResult.second.begin(), partialResult.second.end());
-        }
-
+    
         // Print time taken
         std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
         Utility::printTimeTaken(startTime, endTime);
@@ -234,12 +239,15 @@ public:
     int imageHeight;
     int sampleCount;
     std::string sceneName;
+    bool useMultithread;
 
     QLineEdit* widthInput;
     QLineEdit* heightInput;
     QLineEdit* sampleCountInput;
     QButtonGroup* sceneGroup;
     QLabel* filePathLabel;
+    QRadioButton* singleThreadedButton;
+    QRadioButton* multiThreadedButton;
 
     // Todo: move this into a utility file or data file
     static inline std::map<int, std::string> sceneMapping = {
@@ -257,6 +265,9 @@ public:
         // Tab 1: User Input
         QWidget* inputTab = new QWidget();
         QVBoxLayout* inputLayout = new QVBoxLayout(inputTab);
+
+        QLabel* sizeLabel = new QLabel("Render Output options:");
+        inputLayout->addWidget(sizeLabel);
 
         int defaultImageWidth = 400;
         int defaultImageHeight = 400;
@@ -284,6 +295,24 @@ public:
         inputLayout->addWidget(heightInput);
         inputLayout->addWidget(new QLabel("Sample Count:"));
         inputLayout->addWidget(sampleCountInput);
+
+        // Threading options
+        QLabel* threadingLabel = new QLabel("Processing options:");
+        inputLayout->addWidget(threadingLabel);
+
+        QButtonGroup* threadingGroup = new QButtonGroup(inputTab);
+        singleThreadedButton = new QRadioButton("Single Threaded");
+        multiThreadedButton = new QRadioButton("Multithreaded");
+        multiThreadedButton->setChecked(true);
+        useMultithread = true;
+        connect(singleThreadedButton, &QRadioButton::toggled, this, &MainWindow::updateSettings);
+        connect(multiThreadedButton, &QRadioButton::toggled, this, &MainWindow::updateSettings);
+
+        threadingGroup->addButton(singleThreadedButton);
+        threadingGroup->addButton(multiThreadedButton);
+
+        inputLayout->addWidget(singleThreadedButton);
+        inputLayout->addWidget(multiThreadedButton);
 
         // Tab 2: Premade Scene Selection
         QWidget* premadeSceneTab = new QWidget();
@@ -447,6 +476,7 @@ private slots:
         imageWidth = widthInput->text().toInt();
         imageHeight = heightInput->text().toInt();
         sampleCount = sampleCountInput->text().toInt();
+        useMultithread = multiThreadedButton->isChecked();
     }
 
     void startPremadeRender() {
@@ -466,7 +496,7 @@ private slots:
         Scene scene = Scene();
         Camera cam = scene.generateSceneFromMapping(index, imageWidth, imageHeight, sampleCount);
         HitableList worldList = scene.worldList;
-        render::renderScene(scene, cam, worldList, pixelData, mutexLock);
+        render::renderScene(scene, cam, worldList, pixelData, mutexLock, useMultithread);
 
         promptSaveImage();
     }
@@ -480,7 +510,7 @@ private slots:
         SceneParser parser = SceneParser();
         Camera cam = parser.generateScene(sceneName, true);
         HitableList worldList = parser.worldList;
-        render::renderScene(parser, cam, worldList, pixelData, mutexLock);
+        render::renderScene(parser, cam, worldList, pixelData, mutexLock, useMultithread);
 
         promptSaveImage();
     }
