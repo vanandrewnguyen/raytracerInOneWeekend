@@ -266,19 +266,6 @@ namespace render {
 }
 
 namespace denoise {
-    // Grab squared distance between two colour values
-    float colDisSquared(const std::tuple<int, int, int>& c1, const std::tuple<int, int, int>& c2) {
-        float rDiff = std::get<0>(c1) - std::get<0>(c2);
-        float gDiff = std::get<1>(c1) - std::get<1>(c2);
-        float bDiff = std::get<2>(c1) - std::get<2>(c2);
-        return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
-    }
-
-    // Compute weight for a neighboring pixel (m, n) given distance and smoothing param
-    float computeWeight(float distance, float h) {
-        return std::exp(-distance / (h * h));
-    }
-
     // Extract a patch centered on (i, j) in the unfiltered image
     std::vector<std::tuple<int, int, int>> extractPatch(const std::vector<std::tuple<int, int, int>>& pixels,
                                                         int width,
@@ -299,16 +286,167 @@ namespace denoise {
         }
         return patch;
     }
+
+    // Function to calculate variance of pixel color (based on surrounding pixels or external estimation)
+    float calculateColorVariance(const std::vector<std::tuple<int, int, int>>& patch) {
+        float rSum = 0.0f;
+        float gSum = 0.0f;
+        float bSum = 0.0f;
+        size_t patchSize = patch.size();
+
+        // Compute mean col values
+        for (auto& col : patch) {
+            rSum += std::get<0>(col);
+            gSum += std::get<1>(col);
+            bSum += std::get<2>(col);
+        }
+
+        float rMean = rSum / patchSize;
+        float gMean = gSum / patchSize;
+        float bMean = bSum / patchSize;
+
+        // Compute variance (sum of squares of diff of curr vaue to mean divided by num data)
+        float rVar = 0.0f, gVar = 0.0f, bVar = 0.0f;
+        for (auto& col : patch) {
+            rVar += (std::get<0>(col) - rMean) * (std::get<0>(col) - rMean);
+            gVar += (std::get<1>(col) - gMean) * (std::get<1>(col) - gMean);
+            bVar += (std::get<2>(col) - bMean) * (std::get<2>(col) - bMean);
+        }
+
+        // Average variance for RGB channels
+        return std::max(0.0f, ((rVar + gVar + bVar) / (3 * patchSize)));  
+    }
+
+    // Grab squared distance between two colour values
+    float colDisSquared(const std::tuple<int, int, int>& c1, const std::tuple<int, int, int>& c2) {
+        float rDiff = std::get<0>(c1) - std::get<0>(c2);
+        float gDiff = std::get<1>(c1) - std::get<1>(c2);
+        float bDiff = std::get<2>(c1) - std::get<2>(c2);
+
+        return rDiff * rDiff + gDiff * gDiff + bDiff * bDiff;
+    }
+
+    float colDisSquaredRousselle(const std::tuple<int, int, int>& c1,
+                                 const std::tuple<int, int, int>& c2,
+                                 float varP, 
+                                 float varQ, 
+                                 float rangeSigma, 
+                                 float epsilon) {
+        float colourDis = colDisSquared(c1, c2);
+        float varPQ = std::min(varP, varQ);
+
+        // See updated distance formula (on linked paper for nlm Rousselle at al RKZ12)
+        float dis = ((colourDis - (varP + varPQ)) / ((epsilon + varP + varQ) / (2 * rangeSigma * rangeSigma)));
+        return dis;
+    }
+
+    float calculateWeight(int i, int j, int ni, int nj,
+        const std::vector<std::tuple<int, int, int>>& currPatch,
+        const std::vector<std::tuple<int, int, int>>& neighbourPatch,
+        float spatialSigma, float rangeSigma, int smoothing) {
+
+        // Calculate spatial distance (Euclidean distance) between (i, j) and (ni, nj)
+        float spatialDistance = std::sqrt((i - ni) * (i - ni) + (j - nj) * (j - nj));
+        float spatialWeight = std::exp(-spatialDistance * spatialDistance / (2 * spatialSigma * spatialSigma));
+
+        // Calculate patch difference (range similarity) between currPatch and neighbourPatch
+        float patchDistance = 0.0f;
+        for (size_t k = 0; k < currPatch.size(); ++k) {
+            // patchDistance += colDisSquaredRousselle(currPatch[k], neighbourPatch[k], currPatchVariance, neighbourPatchVariance, rangeSigma, epsilon);
+            patchDistance += denoise::colDisSquared(currPatch[k], neighbourPatch[k]);
+        }
+        patchDistance /= static_cast<float>(currPatch.size());
+        patchDistance = std::max(0.0f, patchDistance);
+
+        float k = static_cast<float>(smoothing) / 100.0; // this and line 358 is fucking up the rangeSigma of 100... because calc are wrong
+        float rangeWeight = std::exp(-patchDistance / (k * k * 2 * rangeSigma * rangeSigma));
+
+        // Final NLM weight is the product of spatial and range weights
+        return spatialWeight * rangeWeight;
+    }
+
+    void nlmeansRegression(int width, int height, int patchRadius, 
+                           float spatialSigma, float rangeSigma, float smoothing, int passIndex, float epsilon,
+                           const std::vector<std::tuple<int, int, int>>& unfilteredPixels,
+                           std::vector<std::tuple<int, int, int>>& filteredPixels) {
+        // Calculate weights using non-local means
+        for (int i = 0; i < height; ++i) {
+            for (int j = 0; j < width; ++j) {
+                // Grab patch at pixel (i, j)
+                std::vector<std::tuple<int, int, int>> currPatch = denoise::extractPatch(unfilteredPixels,
+                    width,
+                    height,
+                    i,
+                    j,
+                    patchRadius);
+
+                // Sums of colour channels
+                float rSum = 0.0f;
+                float gSum = 0.0f;
+                float bSum = 0.0f;
+                float weightSum = 0.0f;
+
+                // Loop over neighbors within patch radius
+                for (int m = -patchRadius; m <= patchRadius; ++m) {
+                    for (int n = -patchRadius; n <= patchRadius; ++n) {
+                        int ni = std::clamp(i + m, 0, height - 1);
+                        int nj = std::clamp(j + n, 0, width - 1);
+
+                        // Extract neighboring patch and calculate weight
+                        std::vector<std::tuple<int, int, int>> neighbourPatch = denoise::extractPatch(unfilteredPixels,
+                            width,
+                            height,
+                            ni,
+                            nj,
+                            patchRadius);
+
+                        float currWeight = calculateWeight(i, j, ni, nj, currPatch, neighbourPatch, spatialSigma, rangeSigma, smoothing);
+                        weightSum += currWeight;
+
+                        // Accumulate weighted color values
+                        std::tuple<int, int, int> origCol = unfilteredPixels[ni * width + nj];
+                        rSum += currWeight * std::get<0>(origCol);
+                        gSum += currWeight * std::get<1>(origCol);
+                        bSum += currWeight * std::get<2>(origCol);
+                    }
+                }
+
+                // Normalize color values by the total weight sum
+                rSum /= weightSum;
+                gSum /= weightSum;
+                bSum /= weightSum;
+
+                // Adjust RGB order based on pass index
+                if (passIndex == 1) {
+                    filteredPixels[i * width + j] = std::make_tuple(static_cast<int>(bSum),
+                        static_cast<int>(gSum),
+                        static_cast<int>(rSum));
+                } else {
+                    filteredPixels[i * width + j] = std::make_tuple(static_cast<int>(rSum),
+                        static_cast<int>(gSum),
+                        static_cast<int>(bSum));
+                }
+            }
+        }
+    }
 }
 
 class MainWindow : public QMainWindow {
 public:
     std::vector<std::tuple<int, int, int>> pixelData;
+    int unfilteredPixelsWidth, unfilteredPixelsHeight;
+    std::vector<std::tuple<int, int, int>> unfilteredPixels;
+    std::vector<std::tuple<int, int, int>> firstPassPixels;
+    std::vector<std::tuple<int, int, int>> secondPassPixels;
     std::mutex mutexLock;
 
     int imageWidth;
     int imageHeight;
     int sampleCount;
+    int patchRadius;
+    int spatialSigma;
+    int rangeSigma;
+    int smoothing;
     std::string sceneName;
     std::string renderFileName;
     std::string renderFilePath;
@@ -317,6 +455,10 @@ public:
     QLineEdit* widthInput;
     QLineEdit* heightInput;
     QLineEdit* sampleCountInput;
+    QLineEdit* kernelSizeInput;
+    QLineEdit* spatialSigmaInput;
+    QLineEdit* rangeSigmaInput;
+    QLineEdit* smoothingInput;
     QButtonGroup* sceneGroup;
     QLabel* sceneFilePathLabel;
     QLabel* renderFilePathLabel;
@@ -425,13 +567,40 @@ public:
         connect(startRenderButtonPremade, &QPushButton::clicked, this, &MainWindow::startPremadeRender);
         connect(startRenderButtonLoaded, &QPushButton::clicked, this, &MainWindow::startLoadedRender);
 
-        // Tab 3: Load Scene from JSON
+        // Tab 4: Denoiser
         QWidget* denoiseTab = new QWidget();
         QVBoxLayout* denoiseLayout = new QVBoxLayout(denoiseTab);
 
         QPushButton* loadRenderButton = new QPushButton("Load Render Output");
         renderFilePathLabel = new QLabel("No file selected.");
         connect(loadRenderButton, &QPushButton::clicked, this, &MainWindow::openLoadedRender);
+
+        patchRadius = 3; // radius of 3 == 7x7
+        smoothing = 5;
+        spatialSigma = 0;
+        rangeSigma = 100;
+        kernelSizeInput = new QLineEdit(QString::number(patchRadius));
+        spatialSigmaInput = new QLineEdit(QString::number(spatialSigma));
+        rangeSigmaInput = new QLineEdit(QString::number(rangeSigma));
+        smoothingInput = new QLineEdit(QString::number(smoothing));
+        kernelSizeInput->setValidator(validator);
+        spatialSigmaInput->setValidator(validator);
+        rangeSigmaInput->setValidator(validator);
+        smoothingInput->setValidator(validator);
+
+        connect(kernelSizeInput, &QLineEdit::textChanged, this, &MainWindow::updateSettings);
+        connect(spatialSigmaInput, &QLineEdit::textChanged, this, &MainWindow::updateSettings);
+        connect(rangeSigmaInput, &QLineEdit::textChanged, this, &MainWindow::updateSettings);
+        connect(smoothingInput, &QLineEdit::textChanged, this, &MainWindow::updateSettings);
+
+        denoiseLayout->addWidget(new QLabel("Kernel Size: (Higher = Slower)"));
+        denoiseLayout->addWidget(kernelSizeInput);
+        denoiseLayout->addWidget(new QLabel("Spatial Sigma: (Predicted as image variance, sensitivity of pixel colour distance)"));
+        denoiseLayout->addWidget(spatialSigmaInput);
+        denoiseLayout->addWidget(new QLabel("Range Sigma: (Sensitivity of pixel spatial distance)"));
+        denoiseLayout->addWidget(rangeSigmaInput);
+        denoiseLayout->addWidget(new QLabel("Smoothing Filter Strength (% of 100)"));
+        denoiseLayout->addWidget(smoothingInput);
 
         QPushButton* startDenoiseButton = new QPushButton("Start Denoise");
         denoiseLayout->addWidget(new QLabel("Load Render Output (BMP):"));
@@ -570,6 +739,10 @@ private slots:
         imageHeight = heightInput->text().toInt();
         sampleCount = sampleCountInput->text().toInt();
         useMultithread = multiThreadedButton->isChecked();
+        patchRadius = kernelSizeInput->text().toInt();
+        spatialSigma = spatialSigmaInput->text().toInt();
+        rangeSigma = rangeSigmaInput->text().toInt();
+        smoothing = smoothingInput->text().toInt();
     }
 
     void startPremadeRender() {
@@ -621,30 +794,39 @@ private slots:
     void openLoadedRender() {
         QString filePath = QFileDialog::getOpenFileName(this, "Open Render File", "", "BMP Files (*.bmp)");
         if (!filePath.isEmpty()) {
+            unfilteredPixels.clear();
+            firstPassPixels.clear();
+            secondPassPixels.clear();
+
             QFileInfo fileInfo(filePath);
             QString fileName = fileInfo.fileName();
             QString filePath = fileInfo.absoluteFilePath();
             renderFilePathLabel->setText(fileName); 
             renderFileName = fileName.toUtf8().constData();
             renderFilePath = filePath.toUtf8().constData();
+
+            // Load BMP file into pixel array
+            if (render::loadFromBMP(renderFilePath.c_str(), unfilteredPixels, unfilteredPixelsWidth, unfilteredPixelsHeight)) {
+                std::cout << "Image loaded successfully!" << std::endl;
+                std::cout << "Width: " << unfilteredPixelsWidth << ", Height: " << unfilteredPixelsHeight << std::endl;
+            } else {
+                std::cout << "Failed to load the image." << std::endl;
+                return;
+            }
+
+            // Populate and predict spatial and range sigmas
+            // Range sigma is estimated to be ~5% of image variance
+            firstPassPixels.resize(unfilteredPixelsWidth * unfilteredPixelsHeight);
+            secondPassPixels.resize(unfilteredPixelsWidth * unfilteredPixelsHeight);
+            spatialSigma = denoise::calculateColorVariance(unfilteredPixels);
+            spatialSigmaInput->setText(QString::number(spatialSigma));
+            rangeSigma = static_cast<int>(0.05 * spatialSigma);
+            rangeSigmaInput->setText(QString::number(rangeSigma));
         }
     }
 
     void startDenoise() {
-        // Load BMP file into pixel array
-        std::vector<std::tuple<int, int, int>> unfilteredPixels;
-        std::vector<std::tuple<int, int, int>> filteredPixels;
-        int width, height;
-
-        if (render::loadFromBMP(renderFilePath.c_str(), unfilteredPixels, width, height)) {
-            std::cout << "Image loaded successfully!" << std::endl;
-            std::cout << "Width: " << width << ", Height: " << height << std::endl;
-        } else {
-            std::cout << "Failed to load the image." << std::endl;
-            return;
-        }
-
-        filteredPixels.resize(width * height);
+        std::chrono::high_resolution_clock::time_point startTime = std::chrono::high_resolution_clock::now();
 
         /*
         We use the techniques in the paper "Nonlinearly Weighted First-order Regression for
@@ -656,76 +838,39 @@ private slots:
         regression to compute denoised value.
         Second pass uses variance of first pass as regression weights, doing the same
         first-order regression to remove residual artefacts. 
+
+        NLM = non-local means (pixel weight based on similarity rather than spatial closeness)
         */
 
-        const int patchRadius = 2; // 3x3
-        const float smoothing = 10.0f; 
+        const float epsilon = 0.0001;
+
+        // Pixel spatial and similarity sensitivity
+        // spatialSigma = how much physical distance affects regression weights, could keep as image variance?
+        // rangeSigma = variance of pixel colour difference, low % of variance... this number needs finetuning
 
         /// FIRST PASS
-        // Calculate weights using non-local means
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                // Grab patch at pixel (i, j)
-                std::vector<std::tuple<int, int, int>> currPatch = denoise::extractPatch(unfilteredPixels, 
-                                                                                         width,
-                                                                                         height,
-                                                                                         i,
-                                                                                         j,
-                                                                                         patchRadius);
-                // Sums of colour channels
-                float rSum = 0.0f;
-                float gSum = 0.0f;
-                float bSum = 0.0f;
-                float weightSum = 0.0f;
-                
-                // Loop neighbours and calculate their weights, then accumulate weight per pixel
-                for (int m = -patchRadius; m <= patchRadius; ++m) {
-                    for (int n = -patchRadius; n <= patchRadius; ++n) {
-                        int ni = std::clamp(i + m, 0, height - 1);
-                        int nj = std::clamp(j + n, 0, width - 1);
-                        std::vector<std::tuple<int, int, int>> currPatch = denoise::extractPatch(unfilteredPixels,
-                            width,
-                            height,
-                            ni,
-                            nj,
-                            patchRadius);
-
-                        // Compute weight #TODO add equation here
-                        float currDis = 0.0f;
-                        for (size_t k = 0; k < currPatch.size(); ++k) {
-                            currDis += denoise::colDisSquared(currPatch[k], currPatch[k]);
-                        }
-                        float currWeight = denoise::computeWeight(currDis, smoothing);
-                        weightSum += currWeight;
-
-                        // Accumulate weighted colour value
-                        std::tuple<int, int, int>& origCol = unfilteredPixels[ni * width + nj];
-                        rSum += currWeight * std::get<0>(origCol);
-                        gSum += currWeight * std::get<1>(origCol);
-                        bSum += currWeight * std::get<2>(origCol);
-                    }
-                }
-
-                // Normalize and add weights
-                rSum /= weightSum;
-                gSum /= weightSum;
-                bSum /= weightSum;
-                filteredPixels[i * width + j] = std::make_tuple(static_cast<int>(bSum), 
-                                                                static_cast<int>(gSum), 
-                                                                static_cast<int>(rSum));
-            }
-        }
+        std::cout << "Starting first pass with rangeSigma " << rangeSigma << ", spatialSigma " << spatialSigma << ", smoothing " << smoothing << " and kernel size " << patchRadius << std::endl;
+        denoise::nlmeansRegression(unfilteredPixelsWidth, unfilteredPixelsHeight, patchRadius, spatialSigma, rangeSigma, smoothing, 1, epsilon, unfilteredPixels, firstPassPixels);
 
         /// SECOND PASS
+        spatialSigma = denoise::calculateColorVariance(firstPassPixels);
+        std::cout << "Starting second pass with rangeSigma " << rangeSigma << ", spatialSigma " << spatialSigma << ", smoothing " << smoothing << " and kernel size " << patchRadius << std::endl;
+        denoise::nlmeansRegression(unfilteredPixelsWidth, unfilteredPixelsHeight, patchRadius, spatialSigma, rangeSigma, smoothing, 2, epsilon, firstPassPixels, secondPassPixels);
 
+        // Timekeeping
+        std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
+        Utility::printTimeTaken(startTime, endTime);
 
         // Save final image
         std::string pathCopy = renderFileName;
-        std::string suffix = "_denoised";
+        std::string suffix = "_denoised_k" + std::to_string(patchRadius) + 
+                             "_rS" + std::to_string(rangeSigma) + 
+                             "_sS" + std::to_string(spatialSigma) + 
+                             "_s" + std::to_string(smoothing);
         size_t dotPos = pathCopy.find_last_of('.');
         pathCopy.insert(dotPos, suffix);
 
-        render::saveToBMP(pathCopy.c_str(), width, height, filteredPixels);
+        render::saveToBMP(pathCopy.c_str(), unfilteredPixelsWidth, unfilteredPixelsHeight, secondPassPixels);
         std::cout << "Finished and exported to " << pathCopy << std::endl;
     }
 };
