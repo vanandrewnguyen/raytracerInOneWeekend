@@ -289,32 +289,35 @@ namespace denoise {
 
     // Function to calculate variance of pixel color (based on surrounding pixels or external estimation)
     float calculateColorVariance(const std::vector<std::tuple<int, int, int>>& patch) {
-        float rSum = 0.0f;
-        float gSum = 0.0f;
-        float bSum = 0.0f;
         size_t patchSize = patch.size();
+        // Handle empty patch case
+        if (patchSize == 0) {
+            return 0.0f;
+        }
 
-        // Compute mean col values
-        for (auto& col : patch) {
-            rSum += std::get<0>(col);
-            gSum += std::get<1>(col);
-            bSum += std::get<2>(col);
+        // Compute mean color values
+        float rSum = 0.0f, gSum = 0.0f, bSum = 0.0f;
+        for (const auto& col : patch) {
+            rSum += static_cast<float>(std::get<0>(col));
+            gSum += static_cast<float>(std::get<1>(col));
+            bSum += static_cast<float>(std::get<2>(col));
         }
 
         float rMean = rSum / patchSize;
         float gMean = gSum / patchSize;
         float bMean = bSum / patchSize;
 
-        // Compute variance (sum of squares of diff of curr vaue to mean divided by num data)
+        // Compute variance for each color channel
         float rVar = 0.0f, gVar = 0.0f, bVar = 0.0f;
-        for (auto& col : patch) {
+        for (const auto& col : patch) {
             rVar += (std::get<0>(col) - rMean) * (std::get<0>(col) - rMean);
             gVar += (std::get<1>(col) - gMean) * (std::get<1>(col) - gMean);
             bVar += (std::get<2>(col) - bMean) * (std::get<2>(col) - bMean);
         }
 
-        // Average variance for RGB channels
-        return std::max(0.0f, ((rVar + gVar + bVar) / (3 * patchSize)));  
+        // Normalize by patch size and average across channels
+        float avgVariance = (rVar + gVar + bVar) / (3 * patchSize);
+        return std::max(0.0f, avgVariance);
     }
 
     // Grab squared distance between two colour values
@@ -343,7 +346,7 @@ namespace denoise {
     float calculateWeight(int i, int j, int ni, int nj,
         const std::vector<std::tuple<int, int, int>>& currPatch,
         const std::vector<std::tuple<int, int, int>>& neighbourPatch,
-        float spatialSigma, float rangeSigma, int smoothing) {
+        float spatialSigma, float rangeSigma, float smoothing) {
 
         // Calculate spatial distance (Euclidean distance) between (i, j) and (ni, nj)
         float spatialDistance = std::sqrt((i - ni) * (i - ni) + (j - nj) * (j - nj));
@@ -358,53 +361,196 @@ namespace denoise {
         patchDistance /= static_cast<float>(currPatch.size());
         patchDistance = std::max(0.0f, patchDistance);
 
-        float k = static_cast<float>(smoothing) / 100.0; // this and line 358 is fucking up the rangeSigma of 100... because calc are wrong
+        float k = smoothing / 100.0f;
         float rangeWeight = std::exp(-patchDistance / (k * k * 2 * rangeSigma * rangeSigma));
 
         // Final NLM weight is the product of spatial and range weights
         return spatialWeight * rangeWeight;
     }
 
-    void nlmeansRegression(int width, int height, int patchRadius, 
-                           float spatialSigma, float rangeSigma, float smoothing, int passIndex, float epsilon,
-                           const std::vector<std::tuple<int, int, int>>& unfilteredPixels,
-                           std::vector<std::tuple<int, int, int>>& filteredPixels) {
+    void firstOrderRegression(int width, int height, int patchRadius,
+                              float spatialSigma, float rangeSigma, float smoothing, int passIndex, float epsilon,
+                              const std::vector<std::tuple<int, int, int>>& unfilteredPixels,
+                              std::vector<std::tuple<int, int, int>>& filteredPixels) {
+        /*
+        np = neighbouring pixel
+        Err(a, b, c) = sum(weight) * (np - (a(nx-x) + b(ny-y) + c)^2)
+        Partial derivative of a, b, c (product rule)
+        dE/da = -2*sum(w) * (nx-x)*(np - (a(nx-x) + b(ny-y) + c)))
+        dE/db = -2*sum(w) * (ny-y)*(np - (a(nx-x) + b(ny-y) + c)))
+        dE/dc = -2*sum(w) * (np - (a(nx-x) + b(ny-y) + c)))
+        Expand then represent in matrix form A.x = B
+        x = [a, b, c]
+        A = 
+        [sum(w)*(nx-x)^2 sum(w)*(nx-x)*(ny-y) sum(w)*(nx-x)]
+        [sum(w)*(nx-x)*(ny-y) sum(w)*(ny-y)^2 sum(w)*(ny-y)]
+        [sum(w)*(nx-x) sum(w)*(nx-y) sum(w)]
+        B = 
+        [sum(x)*(nx-x)*np]
+        [sum(x)*(ny-y)*np]
+        [sum(x)*np]
+
+        since take first row for example
+        sum(x)*(nx-x)*np = dE/da 
+                         = -2*sum(w) * (nx-x)*(np - (a(nx-x) + b(ny-y) + c))) 
+                         = a*sum(w)*(nx-x)^2 + b*sum(w)*(nx-x)*(ny-y) +c*sum(w)*(nx-x)
+
+        To solve, accumulate weighted sums across neighbours to build 3x3 matrix A
+        then, solve for a, b, c once determinant is not zero using Cramer's rule
+
+        */
+        
         // Calculate weights using non-local means
-        for (int i = 0; i < height; ++i) {
-            for (int j = 0; j < width; ++j) {
-                // Grab patch at pixel (i, j)
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                // Coefficients for regression for each colour channel (r, g, b)
+                // for linear model: pixel ~= a(nx-x) + b(ny-y) + c
+                // a, b are spatial coefficients, c is intercept constant term
+                float aR = 0, bR = 0, cR = 0;
+                float aG = 0, bG = 0, cG = 0;
+                float aB = 0, bB = 0, cB = 0;
+
+                // Weighted least squares sums for rgb channels
+                // sumWx2 = sum(w) * dx^2, w = weight, dx = delta(nx-x)
+                // sumWxy = sum(w) * dx * dy
+                // sumWxpR/G/B - w*dx/dy/1*p for R/G/B
+                // sumW = sum of all w to normalise
+                float sumWx2 = 0, sumWy2 = 0, sumWxy = 0;
+                float sumWxpR = 0, sumWypR = 0, sumWpR = 0;
+                float sumWxpG = 0, sumWypG = 0, sumWpG = 0;
+                float sumWxpB = 0, sumWypB = 0, sumWpB = 0;
+                float sumW = 0;
+
+                // Target pixel's intensity (as tuple RGB)
+                auto [targetR, targetG, targetB] = unfilteredPixels[y * width + x];
+
+                // Loop through the neighborhood defined by patchRadius
+                for (int dy = -patchRadius; dy <= patchRadius; ++dy) {
+                    for (int dx = -patchRadius; dx <= patchRadius; ++dx) {
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                            // Neighboring pixel
+                            auto [nr, ng, nb] = unfilteredPixels[ny * width + nx];
+
+                            // Compute weight based on distance and range similarity
+                            float spatialDist2 = dx * dx + dy * dy;
+                            float rangeDist2 = std::pow(targetR - nr, 2) + std::pow(targetG - ng, 2) + std::pow(targetB - nb, 2);
+                            float k = smoothing / 100.0f;
+                            float weight = std::exp(-spatialDist2 / (2 * spatialSigma * spatialSigma) - rangeDist2 / (k * k * 2 * rangeSigma * rangeSigma));
+
+                            // Accumulate weighted sums for regression (weight = similarity)
+                            // Notice no use of patches compared to zero order regression to compute variance
+                            sumWx2 += weight * dx * dx;
+                            sumWy2 += weight * dy * dy;
+                            sumWxy += weight * dx * dy;
+
+                            sumWxpR += weight * dx * nr;
+                            sumWypR += weight * dy * nr;
+                            sumWpR += weight * nr;
+
+                            sumWxpG += weight * dx * ng;
+                            sumWypG += weight * dy * ng;
+                            sumWpG += weight * ng;
+
+                            sumWxpB += weight * dx * nb;
+                            sumWypB += weight * dy * nb;
+                            sumWpB += weight * nb;
+
+                            sumW += weight;
+                        }
+                    }
+                }
+
+                // Don't solve for 3x3 matrix, we solve for 2x2 submatrices since c is a constant
+                /*
+                A =
+                [sumw*x^2 sumw*x*y sumw*x]
+                [sumw*x*y sumw*y^2 sumw*y]
+                [sumw*x sumw*y sumw]
+                =
+                [sumWx2 sumWxy sumx*y]
+                [sumWxy sumWy2 sumx*y]
+                [sumw*x sumw*y sumw]
+                = 
+                [sumWx2 sumWxy]
+                [sumWxy sumWy2]
+                det(A) = sumWx2 * sumWy2 - sumWxy^2;
+                */
+                // Solve for rgb channels coefficients
+                // Intercept gives pixel value at currPixel
+                // Ax = B if det =/= 0 then unique solution, otherwise we default to average sum
+                float det = sumWx2 * sumWy2 - sumWxy * sumWxy;
+                if (std::abs(det) > epsilon) {
+                    // Solve for aR, bR (Cramer's Rule)
+                    aR = (sumWy2 * sumWxpR - sumWxy * sumWypR) / det;
+                    bR = (sumWx2 * sumWypR - sumWxy * sumWxpR) / det;
+                    cR = (sumWpR - aR * 0 - bR * 0) / sumW;
+
+                    aG = (sumWy2 * sumWxpG - sumWxy * sumWypG) / det;
+                    bG = (sumWx2 * sumWypG - sumWxy * sumWxpG) / det;
+                    cG = (sumWpG - aG * 0 - bG * 0) / sumW;
+
+                    aB = (sumWy2 * sumWxpB - sumWxy * sumWypB) / det;
+                    bB = (sumWx2 * sumWypB - sumWxy * sumWxpB) / det;
+                    cB = (sumWpB - aB * 0 - bB * 0) / sumW;
+                } else {
+                    cR = sumWpR / sumW;
+                    cG = sumWpG / sumW;
+                    cB = sumWpB / sumW;
+                }
+
+                // Set the denoised pixel color for the current pixel
+                if (passIndex == 1) {
+                    filteredPixels[y * width + x] = std::make_tuple(static_cast<int>(cB), static_cast<int>(cG), static_cast<int>(cR));
+                } else {
+                    filteredPixels[y * width + x] = std::make_tuple(static_cast<int>(cR), static_cast<int>(cG), static_cast<int>(cB));
+                }
+            }
+        }
+    }
+
+    void zeroOrderRegression(int width, int height, int patchRadius,
+                             float spatialSigma, float rangeSigma, float smoothing, int passIndex, float epsilon,
+                             const std::vector<std::tuple<int, int, int>>& unfilteredPixels,
+                             std::vector<std::tuple<int, int, int>>& filteredPixels) {
+        // Calculate weights using non-local means
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                // Grab patch at pixel (x, y)
                 std::vector<std::tuple<int, int, int>> currPatch = denoise::extractPatch(unfilteredPixels,
                     width,
                     height,
-                    i,
-                    j,
+                    y,
+                    x,
                     patchRadius);
 
-                // Sums of colour channels
+                // Sums of color channels
                 float rSum = 0.0f;
                 float gSum = 0.0f;
                 float bSum = 0.0f;
                 float weightSum = 0.0f;
 
                 // Loop over neighbors within patch radius
-                for (int m = -patchRadius; m <= patchRadius; ++m) {
-                    for (int n = -patchRadius; n <= patchRadius; ++n) {
-                        int ni = std::clamp(i + m, 0, height - 1);
-                        int nj = std::clamp(j + n, 0, width - 1);
+                for (int dy = -patchRadius; dy <= patchRadius; ++dy) {
+                    for (int dx = -patchRadius; dx <= patchRadius; ++dx) {
+                        int ny = std::clamp(y + dy, 0, height - 1);
+                        int nx = std::clamp(x + dx, 0, width - 1);
 
                         // Extract neighboring patch and calculate weight
                         std::vector<std::tuple<int, int, int>> neighbourPatch = denoise::extractPatch(unfilteredPixels,
                             width,
                             height,
-                            ni,
-                            nj,
+                            ny,
+                            nx,
                             patchRadius);
 
-                        float currWeight = calculateWeight(i, j, ni, nj, currPatch, neighbourPatch, spatialSigma, rangeSigma, smoothing);
+                        float currWeight = calculateWeight(y, x, ny, nx, currPatch, neighbourPatch, spatialSigma, rangeSigma, smoothing);
                         weightSum += currWeight;
 
                         // Accumulate weighted color values
-                        std::tuple<int, int, int> origCol = unfilteredPixels[ni * width + nj];
+                        std::tuple<int, int, int> origCol = unfilteredPixels[ny * width + nx];
                         rSum += currWeight * std::get<0>(origCol);
                         gSum += currWeight * std::get<1>(origCol);
                         bSum += currWeight * std::get<2>(origCol);
@@ -418,11 +564,11 @@ namespace denoise {
 
                 // Adjust RGB order based on pass index
                 if (passIndex == 1) {
-                    filteredPixels[i * width + j] = std::make_tuple(static_cast<int>(bSum),
+                    filteredPixels[y * width + x] = std::make_tuple(static_cast<int>(bSum),
                         static_cast<int>(gSum),
                         static_cast<int>(rSum));
                 } else {
-                    filteredPixels[i * width + j] = std::make_tuple(static_cast<int>(rSum),
+                    filteredPixels[y * width + x] = std::make_tuple(static_cast<int>(rSum),
                         static_cast<int>(gSum),
                         static_cast<int>(bSum));
                 }
@@ -444,9 +590,9 @@ public:
     int imageHeight;
     int sampleCount;
     int patchRadius;
-    int spatialSigma;
-    int rangeSigma;
-    int smoothing;
+    float spatialSigma;
+    float rangeSigma;
+    float smoothing;
     std::string sceneName;
     std::string renderFileName;
     std::string renderFilePath;
@@ -576,13 +722,13 @@ public:
         connect(loadRenderButton, &QPushButton::clicked, this, &MainWindow::openLoadedRender);
 
         patchRadius = 3; // radius of 3 == 7x7
-        smoothing = 5;
-        spatialSigma = 0;
-        rangeSigma = 100;
+        smoothing = 5.0f;
+        spatialSigma = 0.0f;
+        rangeSigma = 100.0f;
         kernelSizeInput = new QLineEdit(QString::number(patchRadius));
-        spatialSigmaInput = new QLineEdit(QString::number(spatialSigma));
-        rangeSigmaInput = new QLineEdit(QString::number(rangeSigma));
-        smoothingInput = new QLineEdit(QString::number(smoothing));
+        spatialSigmaInput = new QLineEdit(QString::number(static_cast<int>(spatialSigma)));
+        rangeSigmaInput = new QLineEdit(QString::number(static_cast<int>(rangeSigma)));
+        smoothingInput = new QLineEdit(QString::number(static_cast<int>(smoothing)));
         kernelSizeInput->setValidator(validator);
         spatialSigmaInput->setValidator(validator);
         rangeSigmaInput->setValidator(validator);
@@ -740,9 +886,9 @@ private slots:
         sampleCount = sampleCountInput->text().toInt();
         useMultithread = multiThreadedButton->isChecked();
         patchRadius = kernelSizeInput->text().toInt();
-        spatialSigma = spatialSigmaInput->text().toInt();
-        rangeSigma = rangeSigmaInput->text().toInt();
-        smoothing = smoothingInput->text().toInt();
+        spatialSigma = static_cast<float>(spatialSigmaInput->text().toInt());
+        rangeSigma = static_cast<float>(rangeSigmaInput->text().toInt());
+        smoothing = static_cast<float>(smoothingInput->text().toInt());
     }
 
     void startPremadeRender() {
@@ -819,9 +965,9 @@ private slots:
             firstPassPixels.resize(unfilteredPixelsWidth * unfilteredPixelsHeight);
             secondPassPixels.resize(unfilteredPixelsWidth * unfilteredPixelsHeight);
             spatialSigma = denoise::calculateColorVariance(unfilteredPixels);
-            spatialSigmaInput->setText(QString::number(spatialSigma));
-            rangeSigma = static_cast<int>(0.05 * spatialSigma);
-            rangeSigmaInput->setText(QString::number(rangeSigma));
+            spatialSigmaInput->setText(QString::number(static_cast<int>(spatialSigma)));
+            rangeSigma = 0.05 * spatialSigma;
+            rangeSigmaInput->setText(QString::number(static_cast<int>(rangeSigma)));
         }
     }
 
@@ -835,9 +981,11 @@ private slots:
 
         We do so by have two passes. 
         First pass calculates pixel weights using non-local means then uses first-order 
-        regression to compute denoised value.
+        regression to compute denoised value. We use a zero order regression as testing results show that
+        it can have greater smoothing over large areas with difficulty preserving edges.
         Second pass uses variance of first pass as regression weights, doing the same
-        first-order regression to remove residual artefacts. 
+        first-order regression to remove residual artefacts. We use first order regression as large 
+        surfaces are smoothed and we just want to preserve edges.
 
         NLM = non-local means (pixel weight based on similarity rather than spatial closeness)
         */
@@ -846,16 +994,20 @@ private slots:
 
         // Pixel spatial and similarity sensitivity
         // spatialSigma = how much physical distance affects regression weights, could keep as image variance?
-        // rangeSigma = variance of pixel colour difference, low % of variance... this number needs finetuning
+        // rangeSigma = variance of pixel colour difference, low % of variance
 
         /// FIRST PASS
         std::cout << "Starting first pass with rangeSigma " << rangeSigma << ", spatialSigma " << spatialSigma << ", smoothing " << smoothing << " and kernel size " << patchRadius << std::endl;
-        denoise::nlmeansRegression(unfilteredPixelsWidth, unfilteredPixelsHeight, patchRadius, spatialSigma, rangeSigma, smoothing, 1, epsilon, unfilteredPixels, firstPassPixels);
+        denoise::zeroOrderRegression(unfilteredPixelsWidth, unfilteredPixelsHeight, 
+                                   patchRadius, static_cast<float>(spatialSigma), static_cast<float>(rangeSigma),
+                                   static_cast<float>(smoothing), 1, epsilon, unfilteredPixels, firstPassPixels);
 
         /// SECOND PASS
         spatialSigma = denoise::calculateColorVariance(firstPassPixels);
         std::cout << "Starting second pass with rangeSigma " << rangeSigma << ", spatialSigma " << spatialSigma << ", smoothing " << smoothing << " and kernel size " << patchRadius << std::endl;
-        denoise::nlmeansRegression(unfilteredPixelsWidth, unfilteredPixelsHeight, patchRadius, spatialSigma, rangeSigma, smoothing, 2, epsilon, firstPassPixels, secondPassPixels);
+        denoise::firstOrderRegression(unfilteredPixelsWidth, unfilteredPixelsHeight,
+                                   patchRadius, static_cast<float>(spatialSigma), static_cast<float>(rangeSigma),
+                                   static_cast<float>(smoothing), 2, epsilon, firstPassPixels, secondPassPixels);
 
         // Timekeeping
         std::chrono::high_resolution_clock::time_point endTime = std::chrono::high_resolution_clock::now();
@@ -864,9 +1016,9 @@ private slots:
         // Save final image
         std::string pathCopy = renderFileName;
         std::string suffix = "_denoised_k" + std::to_string(patchRadius) + 
-                             "_rS" + std::to_string(rangeSigma) + 
-                             "_sS" + std::to_string(spatialSigma) + 
-                             "_s" + std::to_string(smoothing);
+                             "_rS" + std::to_string(static_cast<int>(rangeSigma)) + 
+                             "_sS" + std::to_string(static_cast<int>(spatialSigma)) +
+                             "_s" + std::to_string(static_cast<int>(smoothing));
         size_t dotPos = pathCopy.find_last_of('.');
         pathCopy.insert(dotPos, suffix);
 
