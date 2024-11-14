@@ -43,12 +43,12 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 
 ![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
 
-## Directions for Use
-![raytracer_gui](https://github.com/user-attachments/assets/b900472f-18ca-4817-8d9c-d3862c1071e1)
+# Additional Features
+
+## Loadable Scenes and QT
+![gui](https://github.com/user-attachments/assets/e9cd9083-93b8-424e-b5cf-9b07d4a991e4)
 - Follow the prompts to load a json scene file, or choose from a small selection of scenes (e.g. Cornell Box, Material Lighting). 
 - Render time will vary significantly from image size and sample count for each pixel.
-- After the image finishes rendering, you can close the render window.
-- You will be prompted whether to save the output to an image, which will be saved in "./Outputs/".
 - A small list of sample json scenes have been provided in "./Scenes/", as well as a reference manual for all supported objects.
 
 An example of an editable json scene.
@@ -94,7 +94,20 @@ An example of an editable json scene.
 }
 ```
 
-## Additional Notes
+## Denoiser
+
+Using techinques from "Nonlinearly Weighted First-order Regression for Denoising Monte Carlo Renderings" at 'https://benedikt-bitterli.me/nfor/', I experimented with zero/first order non local means filtering to denoise. Using a similar 2 pass method of collaborative filtering, I use NL means to compute regression weights for a zero order regression (ZOR) pass, then a first order regression (FOR) pass based on strengths/weaknesses of both. The diagram below illustrates this:
+
+![display2](https://github.com/user-attachments/assets/610a4052-7726-4bd6-94b3-96f20d5a21e6)
+
+From left to right we have the original, ZOR, FOR, and MIX (a mixture of two passes). We sample small areas to demonstrate that zero order regression successfully denoises large flat surfaces yet fails to preserve edge crispness. FOR results in noisy edges if input isn't cleaned, but preserves edges if given enough distinction. Hence, we use ZOR to clean up preliminary noise, then FOR to preserve the remaining edges given new regression weights as the variance of the first pass. 
+
+An example with a larger render (LHS is raw, RHS is denoised):
+
+![book1denoisedcmp](https://github.com/user-attachments/assets/bd566631-069c-44f0-b1e0-d21e0da86443)
+
+## Optimisations
+
 I've found multiple ways that have been used to parallelize ray-tracing. The method I've used is to split the canvas into rows which are picked up by the host cores. It's naive, and has some issues.
 1. ~~There is a data race by trying to access the output pixel array. This causes some rows to stop rendering completely until others finish. This could potentially be fixed with parallel reduction, having each row chunk return a partial array of the full image. Once all threads finish, the final image could be rebuilt. This is a WIP.~~ Results below.
 2. It's still slow. Some methods of using active cells force any idle cells to complete and for the host to continue rendering continuously. Some scenes have empty areas which cause it to render much faster. It is counter-productive to let those cells sit idle.
