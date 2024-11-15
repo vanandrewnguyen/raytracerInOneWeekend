@@ -96,11 +96,11 @@ An example of an editable json scene.
 
 ## Denoiser
 
-Using techinques from "Nonlinearly Weighted First-order Regression for Denoising Monte Carlo Renderings" at 'https://benedikt-bitterli.me/nfor/', I experimented with zero/first order non local means filtering to denoise. Using a similar 2 pass method of collaborative filtering, I use NL means to compute regression weights for a zero order regression (ZOR) pass, then a first order regression (FOR) pass based on strengths/weaknesses of both. The diagram below illustrates this:
+Using techinques from "Nonlinearly Weighted First-order Regression for Denoising Monte Carlo Renderings" at 'https://benedikt-bitterli.me/nfor/', I experimented with zero and first order non local means filtering to denoise several test images. Using a similar two-pass method of collaborative filtering, I use non-local means to compute regression weights for a zero order regression (ZOR) pass, then a first order regression (FOR) pass based on strengths/weaknesses of both. The diagram below illustrates this:
 
 ![display2](https://github.com/user-attachments/assets/610a4052-7726-4bd6-94b3-96f20d5a21e6)
 
-From left to right we have the original, ZOR, FOR, and MIX (a mixture of two passes). We sample small areas to demonstrate that zero order regression successfully denoises large flat surfaces yet fails to preserve edge crispness. FOR results in noisy edges if input isn't cleaned, but preserves edges if given enough distinction. Hence, we use ZOR to clean up preliminary noise, then FOR to preserve the remaining edges given new regression weights as the variance of the first pass. 
+From left to right we have the original, ZOR, FOR, and MIX (a mixture of two passes). We sample small areas to demonstrate that ZOR successfully denoises large flat surfaces yet fails to preserve edge crispness. FOR results in noisy edges if input isn't cleaned, but preserves edges if given enough distinction. Hence, we use ZOR to clean up preliminary noise, then FOR to preserve the remaining edges given new regression weights as the variance of the first pass. We have several user parameters which are predicted through image variance, though we could perhaps study a better way to estimate this, possibly through multiple MSE checks.
 
 An example with a larger render (LHS is raw, RHS is denoised):
 
