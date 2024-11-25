@@ -96,16 +96,16 @@ Camera Scene::getCornellBoxScene() {
     worldList.append(std::make_shared<XYRect>(0, 555, 0, 555, 555, whiteMat));
 
     std::shared_ptr<Material> box1Mat = std::make_shared<MatLambertian>(vec3(1, 1, 1));
-    std::shared_ptr<Material> box2Mat = std::make_shared<MatLambertian>(vec3(0.33, 0.32, 0.36));
+    std::shared_ptr<Material> box2Mat = std::make_shared<MatMetal>(vec3(0.33, 0.32, 0.36), 0.01); // std::make_shared<MatLambertian>(vec3(0.33, 0.32, 0.36)); 
     std::shared_ptr<Hitable> box1 = std::make_shared<Box>(vec3(130, 0, 65), vec3(295, 165, 230), box1Mat);
     box1 = std::make_shared<RotateY>(box1, -15);
     std::shared_ptr<Hitable> box2 = std::make_shared<Box>(vec3(265, 0, 295), vec3(430, 330, 460), box2Mat);
-    box2 = std::make_shared<Translate>(box2, vec3(-80, 0, 50));
-    box2 = std::make_shared<RotateY>(box2, 18);
-    worldList.append(box1);
-    // worldList.append(box2);
-    // worldList.append(std::make_shared<ConstantVolume>(box1, 0.01, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
-    worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0.33, 0.32, 0.36))));
+    box2 = std::make_shared<Translate>(box2, vec3(-150, 0, 60));
+    box2 = std::make_shared<RotateY>(box2, 25);
+    // worldList.append(box1);
+    worldList.append(box2);
+    worldList.append(std::make_shared<ConstantVolume>(box1, 0.03, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
+    // worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0.33, 0.32, 0.36))));
 
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
                   float(imageWidth) / float(imageHeight), aperture,
