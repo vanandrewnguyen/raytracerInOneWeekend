@@ -195,7 +195,12 @@
     <ClInclude Include="Textures\texture.h" />
     <ClInclude Include="Transforms\rotate.h" />
     <ClInclude Include="Transforms\translate.h" />
+    <ClInclude Include="Utils\cosinePdf.h" />
+    <ClInclude Include="Utils\interval.h" />
+    <ClInclude Include="Utils\orthonormalBasis.h" />
+    <ClInclude Include="Utils\pdf.h" />
     <ClInclude Include="Utils\perlin.h" />
+    <ClInclude Include="Utils\spherePdf.h" />
     <ClInclude Include="Utils\utility.h" />
     <ClInclude Include="Utils\vec2.h" />
     <ClInclude Include="Utils\vec3.h" />

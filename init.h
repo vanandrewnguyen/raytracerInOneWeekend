@@ -64,5 +64,10 @@
 #include "Scene/scene.h"
 #include "Scene/sceneParser.h"
 
+// PDFs
+#include "Utils/spherePdf.h"
+#include "Utils/cosinePdf.h"
+
+
 #endif
 

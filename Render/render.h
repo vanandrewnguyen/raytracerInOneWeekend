@@ -25,7 +25,7 @@
 // Max depth is the maximum number of bounces a ray can have before destroying itself
 
 namespace render {
-    vec3 scene(const Ray& r, vec3& bgCol, HitableList world, int depth, int useSkyCol) {
+    vec3 scene(const Ray& r, vec3& bgCol, HitableList& world, int depth, int useSkyCol) {
         // Make new list of world items
         hitRecord rec;
         if (depth >= Utility::maxDepth) {
@@ -55,13 +55,16 @@ namespace render {
         // Else, do our recursive calls
         Ray scatteredRay;
         vec3 attenuation;
-        vec3 emitted = rec.matPtr->emitted(rec.u, rec.v, rec.pos);
+        vec3 emissionColour = rec.matPtr->emitted(rec.u, rec.v, rec.pos);
+
         // Push off the surface normal a little bit (no collision error)
         if (!(rec.matPtr->scatter(r, rec, attenuation, scatteredRay))) {
-            return emitted;
+            return emissionColour;
         }
 
-        return emitted + attenuation * scene(scatteredRay, bgCol, world, depth + 1, useSkyCol);
+        vec3 scatterColour = attenuation * scene(scatteredRay, bgCol, world, depth + 1, useSkyCol);
+        
+        return emissionColour + scatterColour;
 
         /*
         if (depth < MAXDEPTH && rec.matPtr->scatter(r, rec, attenuation, scatteredRay)) {

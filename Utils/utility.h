@@ -15,6 +15,59 @@ namespace Utility {
 	const float maxFloat = 999.0;
 	const int maxDepth = 50;
 
+	// Random generators and hashes
+	double randomDouble() {
+		return (double)rand() / (RAND_MAX + 1.0);
+	}
+
+	double randomDouble(double min, double max) {
+		return min + (max - min) * randomDouble();
+	}
+
+	int randomInt(int min, int max) {
+		int randNum = rand() % (max - min + 1) + min;
+		return randNum;
+	}
+
+	static vec3 randomToSphere(double radius, double disSquared) {
+		auto r1 = randomDouble();
+		auto r2 = randomDouble();
+		auto z = 1 + r2 * (std::sqrt(1 - radius * radius / disSquared) - 1);
+
+		auto phi = 2 * pi * r1;
+		auto x = std::cos(phi) * std::sqrt(1 - z * z);
+		auto y = std::sin(phi) * std::sqrt(1 - z * z);
+
+		return vec3(x, y, z);
+	}
+
+	float hash21(vec2 co) {
+		return std::fmod(std::sin(co.getX() * 12.9898 + co.getY() * 78.233) * 43758.5453, 1.0);
+	}
+
+	float hash31(vec3 p) {
+		vec3 fract = vec3(std::fmod(p.getX(), 1.0f), std::fmod(p.getY(), 1.0f), std::fmod(p.getZ(), 1.0f));
+		fract = fract * vec3(.1031, .11369, .13787);
+		float res = std::fmod(dot(fract, vec3(1.0f, 1.0f, 1.0f)), 19.19f);
+		fract += vec3(res, res, res);
+
+		float output = -1.0f + 2.0f * std::fmod((fract.getX() + fract.getY()) * fract.getZ(), 1.0f);
+
+		return output;
+	}
+
+	vec3 hash33(vec3 p3) {
+		vec3 p = p3 * vec3(0.1031, 0.11369, 0.13787);
+		p = p.fract();
+		float dotProd = dot(p, vec3(p.getY(), p.getX(), p.getZ()) + vec3(19.19, 19.19, 19.19));
+		p += vec3(dotProd, dotProd, dotProd);
+		return vec3(-1.0, -1.0, -1.0) + 2.0 * vec3(
+			std::fmod((p.getX() + p.getY()) * p.getZ(), 1.0),
+			std::fmod((p.getX() + p.getZ()) * p.getY(), 1.0),
+			std::fmod((p.getY() + p.getZ()) * p.getX(), 1.0)
+		);
+	}
+
 	// Math
 	double clamp(double x, double min, double max) {
 		if (x < min) return min;
@@ -66,6 +119,18 @@ namespace Utility {
 		return p3;
 	}
 
+	vec3 randomCosineDirection() {
+		auto r1 = randomDouble();
+		auto r2 = randomDouble();
+
+		auto phi = 2 * pi * r1;
+		auto x = std::cos(phi) * std::sqrt(r2);
+		auto y = std::sin(phi) * std::sqrt(r2);
+		auto z = std::sqrt(1 - r2);
+
+		return vec3(x, y, z);
+	}
+
 	// Conversion
 	float degToRad(float deg) {
 		return deg * (pi / 180);
@@ -73,47 +138,6 @@ namespace Utility {
 
 	float radToDeg(float rad) {
 		return rad * (180 / pi);
-	}
-
-	// Random generators and hashes
-	double randomDouble() {
-		return (double)rand() / (RAND_MAX + 1.0);
-	}
-
-	double randomDouble(double min, double max) {
-		return min + (max - min) * randomDouble();
-	}
-
-	int randomInt(int min, int max) {
-		int randNum = rand() % (max - min + 1) + min;
-		return randNum;
-	}
-
-	float hash21(vec2 co) {
-		return std::fmod(std::sin(co.getX() * 12.9898 + co.getY() * 78.233) * 43758.5453, 1.0);
-	}
-
-	float hash31(vec3 p) {
-		vec3 fract = vec3(std::fmod(p.getX(), 1.0f), std::fmod(p.getY(), 1.0f), std::fmod(p.getZ(), 1.0f));
-		fract = fract * vec3(.1031, .11369, .13787);
-		float res = std::fmod(dot(fract, vec3(1.0f, 1.0f, 1.0f)), 19.19f);
-		fract += vec3(res, res, res);
-
-		float output = -1.0f + 2.0f * std::fmod((fract.getX() + fract.getY()) * fract.getZ(), 1.0f);
-
-		return output;
-	}
-
-	vec3 hash33(vec3 p3) {
-		vec3 p = p3 * vec3(0.1031, 0.11369, 0.13787);
-		p = p.fract();
-		float dotProd = dot(p, vec3(p.getY(), p.getX(), p.getZ()) + vec3(19.19, 19.19, 19.19));
-		p += vec3(dotProd, dotProd, dotProd);
-		return vec3(-1.0, -1.0, -1.0) + 2.0 * vec3(
-			std::fmod((p.getX() + p.getY()) * p.getZ(), 1.0),
-			std::fmod((p.getX() + p.getZ()) * p.getY(), 1.0),
-			std::fmod((p.getY() + p.getZ()) * p.getX(), 1.0)
-		);
 	}
 
 	// Step

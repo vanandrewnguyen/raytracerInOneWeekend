@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "../Normals/normalBase.h"
+#include "../Utils/orthonormalBasis.h"
 
 class Material {
 public:

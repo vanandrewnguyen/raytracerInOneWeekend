@@ -9,7 +9,7 @@ class YZRect : public Hitable {
 public:
     std::shared_ptr<Material> matPtr;
     // k = y axis
-    float y0, y1, z0, z1, k;
+    float y0, y1, z0, z1, k, area;
 
 public:
     YZRect();
@@ -28,6 +28,7 @@ YZRect::YZRect(float _y0, float _y1, float _z0, float _z1, float _k, std::shared
     z1 = _z1;
     k = _k;
     matPtr = mat;
+    area = std::fabs(y0 - y1) * std::fabs(z0 - z1);
 }
 
 bool YZRect::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {

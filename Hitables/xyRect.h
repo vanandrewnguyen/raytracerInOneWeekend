@@ -4,12 +4,13 @@
 #include "hitable.h"
 #include "../Materials/material.h"
 #include "../Render/ray.h"
+#include "../Utils/interval.h"
 
 class XYRect : public Hitable {
 public:
     std::shared_ptr<Material> matPtr;
     // k = z axis
-	float x0, x1, y0, y1, k;
+	float x0, x1, y0, y1, k, area;
 
 public:
 	XYRect();
@@ -28,6 +29,7 @@ XYRect::XYRect(float _x0, float _x1, float _y0, float _y1, float _k, std::shared
 	y1 = _y1;
 	k = _k;
 	matPtr = mat;
+    area = std::fabs(x0 - x1) * std::fabs(y0 - y1);
 }
 
 bool XYRect::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
