@@ -18,6 +18,8 @@ public:
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
     virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
+    virtual double pdfValue(const vec3& o, const vec3& v) const override;
+    virtual vec3 random(const vec3& o) const override;
 };
 
 XYRect::XYRect() {}
@@ -60,6 +62,23 @@ bool XYRect::boundingBox(double _time0, double _time1, AABB& outputBox) const {
     // Bounding box needs non-zero width (give epsilon as small number)
     outputBox = AABB(vec3(x0, y0, k - epsilon), vec3(x1, y1, k + epsilon));
     return true;
+}
+
+double XYRect::pdfValue(const vec3& origin, const vec3& v) const {
+    hitRecord rec;
+    if (!this->hit(Ray(origin, v), 0.001, Utility::infinity, rec)) {
+        return 0;
+    }
+
+    double disSquared = rec.t * rec.t * v.lengthSquared();
+    double cosine = fabs(dot(v, rec.normal) / v.length());
+
+    return disSquared / (cosine * area);
+}
+
+vec3 XYRect::random(const vec3& origin) const {
+    auto random_point = vec3(Utility::randomDouble(x0, x1), k, Utility::randomDouble(y0, y1));
+    return random_point - origin;
 }
 
 #endif

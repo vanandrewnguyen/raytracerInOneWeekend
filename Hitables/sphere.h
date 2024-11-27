@@ -3,6 +3,7 @@
 
 #include "hitable.h"
 #include "../Utils/utility.h"
+#include "../Utils/orthonormalBasis.h"
 
 class Material;
 
@@ -25,6 +26,8 @@ public:
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
+	virtual double pdfValue(const vec3& origin, const vec3& direction) const override;
+	virtual vec3 random(const vec3& origin) const override;
 };
 
 Sphere::Sphere(float rad, vec3 origin, vec3 col, std::shared_ptr<Material> mat) {
@@ -93,6 +96,26 @@ bool Sphere::boundingBox(double _time0, double _time1, AABB& outputBox) const {
 	vec3 radVec = vec3(radius, radius, radius);
 	outputBox = AABB(center - radVec, center + radVec);
 	return true;
+}
+
+double Sphere::pdfValue(const vec3& origin, const vec3& direction) const {
+	hitRecord rec;
+	if (!this->hit(Ray(origin, direction), 0.001, Utility::infinity, rec))
+		return 0;
+
+	double cosThetaMax = sqrt(1 - radius * radius / (center - origin).lengthSquared());
+	double solidAngle = 2 * Utility::pi * (1 - cosThetaMax);
+
+	return  1 / solidAngle;
+}
+
+vec3 Sphere::random(const vec3& origin) const {
+	vec3 direction = center - origin;
+	auto disSquared = direction.lengthSquared();
+	onb uvw;
+	uvw.buildFromW(direction);
+	return uvw.local(Utility::randomToSphere(radius, disSquared));
+
 }
 
 #endif

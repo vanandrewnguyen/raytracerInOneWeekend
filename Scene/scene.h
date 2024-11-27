@@ -90,22 +90,24 @@ Camera Scene::getCornellBoxScene() {
 
     worldList.append(std::make_shared<YZRect>(0, 555, 0, 555, 555, greenMat));
     worldList.append(std::make_shared<YZRect>(0, 555, 0, 555, 0, redMat));
-    worldList.append(std::make_shared<XZRect>(213 - 96, 343 + 94, 227 - 64, 332 + 64, 554, lightMat));
+    worldList.append(std::make_shared<flipFace>(std::make_shared<XZRect>(213 - 96, 343 + 94, 227 - 64, 332 + 64, 554, lightMat)));
     worldList.append(std::make_shared<XZRect>(0, 555, 0, 555, 0, whiteMat));
     worldList.append(std::make_shared<XZRect>(0, 555, 0, 555, 555, whiteMat));
     worldList.append(std::make_shared<XYRect>(0, 555, 0, 555, 555, whiteMat));
 
     std::shared_ptr<Material> box1Mat = std::make_shared<MatLambertian>(vec3(1, 1, 1));
     std::shared_ptr<Material> box2Mat = std::make_shared<MatMetal>(vec3(0.33, 0.32, 0.36), 0.01); // std::make_shared<MatLambertian>(vec3(0.33, 0.32, 0.36)); 
-    std::shared_ptr<Hitable> box1 = std::make_shared<Box>(vec3(130, 0, 65), vec3(295, 165, 230), box1Mat);
+    std::shared_ptr<Hitable> box1 = std::make_shared<Box>(vec3(130, 0, 65), vec3(285, 165, 220), box1Mat);
     box1 = std::make_shared<RotateY>(box1, -15);
+    box1 = std::make_shared<Translate>(box1, vec3(0, 0, 30));
     std::shared_ptr<Hitable> box2 = std::make_shared<Box>(vec3(265, 0, 295), vec3(430, 330, 460), box2Mat);
-    box2 = std::make_shared<Translate>(box2, vec3(-150, 0, 60));
+    box2 = std::make_shared<Translate>(box2, vec3(-130, 0, 60));
     box2 = std::make_shared<RotateY>(box2, 25);
     // worldList.append(box1);
     worldList.append(box2);
     worldList.append(std::make_shared<ConstantVolume>(box1, 0.02, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
     // worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0.33, 0.32, 0.36))));
+    worldList.append(std::make_shared<Sphere>(60, vec3(300, 60, 90), vec3(0, 0, 0), std::make_shared<MatDielectric>(1.5)));
 
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
                   float(imageWidth) / float(imageHeight), aperture,

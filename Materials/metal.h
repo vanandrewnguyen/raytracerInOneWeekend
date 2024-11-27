@@ -12,14 +12,12 @@ public:
 		albedo = a;
 
 		// Closer to 0 = more reflective
-		reflectance = r;
-		if (reflectance > 1) {
-			reflectance = 1;
-		}
+		reflectance = std::min(r, 1.0f);
 	}
 
-	// Change our scattering
-	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scatteredRay) const {
+	virtual bool scatter(const Ray& rayIn, const hitRecord& rec, scatterRecord& srec) const {
+	// virtual bool scatter(const Ray& rayIn, const hitRecord& rec, vec3& attenuation, Ray& scatteredRay) const {
+		/*
 		// Scatter normal based on normal map
 		vec3 normal = rec.normal;
 		if (hasNormalMap) {
@@ -33,6 +31,17 @@ public:
 		scatteredRay = Ray(rec.pos, reflectedRay + (reflectance * randInUnitSphere()), rayIn.getTime());
 		attenuation = albedo;
 		return (dot(scatteredRay.getDirection(), normal) > 0);
+		*/
+		vec3 reflected = reflect(unitVector(rayIn.getDirection()), rec.normal);
+		reflected = unitVector(reflected) + (reflectance * randomInUnitDisk());
+
+		srec.specularRay = Ray(rec.pos, reflected, rayIn.getTime());
+		srec.attenuation = albedo;
+		srec.isSpecular = true;
+		srec.pdfPtr = nullptr;
+
+		return true;
+
 	}
 public:
 	vec3 albedo;

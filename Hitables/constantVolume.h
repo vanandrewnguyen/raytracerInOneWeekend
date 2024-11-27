@@ -63,6 +63,7 @@ bool ConstantVolume::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) c
 
 	// Normal's won't matter for a volume
 	rec.normal = vec3(1, 0, 0);
+	rec.frontFace = true;
 	rec.matPtr = phaseFunc;
 
 	return true;

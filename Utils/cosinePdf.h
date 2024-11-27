@@ -5,7 +5,9 @@
 
 class CosinePdf : public Pdf {
 public:
-    CosinePdf(const vec3& w) : uvw(w) {}
+    CosinePdf(const vec3& w) {
+        uvw.buildFromW(w);
+    }
 
     double value(const vec3& direction) const override {
         auto cosine_theta = dot(unitVector(direction), uvw.w());
@@ -13,10 +15,10 @@ public:
     }
 
     vec3 generate() const override {
-        return uvw.transform(Utility::randomCosineDirection());
+        return uvw.local(Utility::randomCosineDirection());
     }
 
 private:
-    Onb uvw;
+    onb uvw;
 };
 #endif

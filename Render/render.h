@@ -25,7 +25,7 @@
 // Max depth is the maximum number of bounces a ray can have before destroying itself
 
 namespace render {
-    vec3 scene(const Ray& r, vec3& bgCol, Hitable& world, int depth, int useSkyCol) {
+    vec3 scene(const Ray& r, vec3& bgCol, Hitable& world, Hitable& lights, int depth, int useSkyCol) {
         // Make new list of world items
         hitRecord rec;
         if (depth >= Utility::maxDepth) {
@@ -53,28 +53,32 @@ namespace render {
         }
 
         // Else, do our recursive calls
-        Ray scatteredRay;
-        vec3 attenuation;
-        vec3 emissionColour = rec.matPtr->emitted(rec.u, rec.v, rec.pos);
+        scatterRecord srec;
+        vec3 emissionColour = rec.matPtr->emitted(r, rec, rec.u, rec.v, rec.pos);
 
         // Push off the surface normal a little bit (no collision error)
-        if (!(rec.matPtr->scatter(r, rec, attenuation, scatteredRay))) {
+        if (!(rec.matPtr->scatter(r, rec, srec))) {
             return emissionColour;
         }
 
-        vec3 scatterColour = attenuation * scene(scatteredRay, bgCol, world, depth + 1, useSkyCol);
+        // If spec, no need to calculate diffuse 
+        if (srec.isSpecular) {
+            return srec.attenuation * scene(srec.specularRay, bgCol, world, lights, depth + 1, useSkyCol);
+        }
+
+        // Two PDFs, one for light shape and one for normal vector
+        std::shared_ptr<HitablePdf> lightPdf = std::make_shared<HitablePdf>(lights, rec.pos);
+        MixturePdf mixPdf(lightPdf, srec.pdfPtr);
+
+        Ray scatteredRay = Ray(rec.pos, mixPdf.generate(), r.getTime());
+        double pdfVal = mixPdf.value(scatteredRay.getDirection());
+
+        vec3 scatterColour = srec.attenuation * rec.matPtr->scatteringPdf(r, rec, scatteredRay) * scene(scatteredRay, bgCol, world, lights, depth + 1, useSkyCol) / pdfVal;
         
         return emissionColour + scatterColour;
-
-        /*
-        if (depth < MAXDEPTH && rec.matPtr->scatter(r, rec, attenuation, scatteredRay)) {
-            return attenuation * scene(scatteredRay, world, depth + 1);
-        } else {
-            return vec3(0, 0, 0);
-        }*/
     }
 
-    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable& world, int sampleCount, vec3& bgCol, int useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
+    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable& world, Hitable& lights, int sampleCount, vec3& bgCol, int useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
         // Set UV's
         // We can offset randomly to anti alias cheaply, moving the cam
         vec3 col(0, 0, 0);
@@ -85,18 +89,27 @@ namespace render {
             // Get sky colour
             Ray rayDir = cam.getRay(u, v);
             vec3 pos = rayDir.getPointParam(2.0);
-            col += scene(rayDir, bgCol, world, 0, useSkyCol);
+            col += scene(rayDir, bgCol, world, lights, 0, useSkyCol);
         }
-        // Divide by sample count
-        col /= float(sampleCount);
+        
+        float r = col.getX();
+        float g = col.getY();
+        float b = col.getZ();
 
-        // Colour gamma correction
-        col = vec3(sqrt(col.getX()), sqrt(col.getY()), sqrt(col.getZ()));
+        if (r != r) r = 0.0;
+        if (g != g) g = 0.0;
+        if (b != b) b = 0.0;
+
+        // Divide by sample count, colour gamma correction
+        auto scale = 1.0 / sampleCount;
+        r = sqrt(scale * r);
+        g = sqrt(scale * g);
+        b = sqrt(scale * b);
 
         // Normalize values
-        int ir = Utility::clamp(static_cast<int>(255.999 * col.getX()), 0, 255);
-        int ig = Utility::clamp(static_cast<int>(255.999 * col.getY()), 0, 255);
-        int ib = Utility::clamp(static_cast<int>(255.999 * col.getZ()), 0, 255);
+        int ir = static_cast<int>(256 * Utility::clamp(r, 0.0, 0.9999));
+        int ig = static_cast<int>(256 * Utility::clamp(g, 0.0, 0.9999));
+        int ib = static_cast<int>(256 * Utility::clamp(b, 0.0, 0.9999));
 
         // Write in real time
         if (x % imgWidth == 1) sdltemplate::loop();
@@ -109,7 +122,7 @@ namespace render {
         pixelData.emplace_back(ir, ig, ib);
     }
 
-    std::vector<std::tuple<int, int, int>> renderChunk(Scene& parser, Camera& cam, Hitable& worldList, int startRow, int endRow, std::mutex& mutex, bool debugPrint = false) {
+    std::vector<std::tuple<int, int, int>> renderChunk(Scene& parser, Camera& cam, Hitable& worldList, Hitable& lights, int startRow, int endRow, std::mutex& mutex, bool debugPrint = false) {
         // Return a partial array of the final image
         std::vector<std::tuple<int, int, int>> partialPixelData;
 
@@ -118,7 +131,7 @@ namespace render {
             for (int x = 0; x < parser.imageWidth; x++) {
                 // Output (remember your thread safety)
                 std::lock_guard<std::mutex> lock(mutex);
-                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, parser.sampleCount, parser.bgColour, parser.useSkyColour, partialPixelData);
+                writeColourToScreen(parser.imageWidth, parser.imageHeight, cam, x, y, worldList, lights, parser.sampleCount, parser.bgColour, parser.useSkyColour, partialPixelData);
 
                 if (debugPrint) {
                     std::cout << "Rendering pixel " << int(x + y) << std::endl;
@@ -129,7 +142,7 @@ namespace render {
         return partialPixelData;
     }
 
-    void renderScene(Scene& parser, Camera& cam, Hitable& worldList, std::vector<std::tuple<int, int, int>>& pixelData, std::mutex& mutex, bool useMultithread = true, bool debugPrint = false) {
+    void renderScene(Scene& parser, Camera& cam, Hitable& worldList, Hitable& lights, std::vector<std::tuple<int, int, int>>& pixelData, std::mutex& mutex, bool useMultithread = true, bool debugPrint = false) {
         srand((unsigned)time(NULL));
 
         // Establish SDL Window
@@ -139,7 +152,7 @@ namespace render {
         
         if (!useMultithread) {
             // Render the entire scene in a single loop (no threads)
-            pixelData = renderChunk(parser, cam, worldList, 0, parser.imageHeight, mutex, debugPrint);
+            pixelData = renderChunk(parser, cam, worldList, lights, 0, parser.imageHeight, mutex, debugPrint);
         } else {
             // Get available CPU cores (8)
             const int numThreads = std::thread::hardware_concurrency();
@@ -159,6 +172,7 @@ namespace render {
                     std::vector<std::tuple<int, int, int>> partialPixelData = renderChunk(std::ref(parser),
                         std::ref(cam),
                         std::ref(worldList),
+                        std::ref(lights),
                         startRow,
                         endRow,
                         mutex,
@@ -911,7 +925,11 @@ private slots:
         Scene scene = Scene();
         Camera cam = scene.generateSceneFromMapping(index, imageWidth, imageHeight, sampleCount);
         HitableList worldList = scene.worldList;
-        render::renderScene(scene, cam, worldList, pixelData, mutexLock, useMultithread);
+
+        // new lights setup
+        HitableList lights;
+        lights.append(std::make_shared<XZRect>(213 - 96, 343 + 94, 227 - 64, 332 + 64, 554, std::shared_ptr<Material>()));
+        render::renderScene(scene, cam, worldList, lights, pixelData, mutexLock, useMultithread);
 
         promptSaveImage();
     }
@@ -925,7 +943,7 @@ private slots:
         SceneParser parser = SceneParser();
         Camera cam = parser.generateScene(sceneName, true);
         HitableList worldList = parser.worldList;
-        render::renderScene(parser, cam, worldList, pixelData, mutexLock, useMultithread);
+        // render::renderScene(parser, cam, worldList, pixelData, mutexLock, useMultithread);
 
         promptSaveImage();
     }

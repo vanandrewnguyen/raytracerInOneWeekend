@@ -2,6 +2,7 @@
 #define HITABLELIST_H
 
 #include "hitable.h"
+#include "../Utils/utility.h"
 #include <memory>
 #include <vector>
 
@@ -18,6 +19,8 @@ public:
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
+	virtual double pdfValue(const vec3& o, const vec3& v) const override;
+	virtual vec3 random(const vec3& o) const override;
 };
 
 HitableList::HitableList() {}
@@ -71,6 +74,21 @@ bool HitableList::boundingBox(double _time0, double _time1, AABB& outputBox) con
 	}
 
 	return true;
+}
+
+double HitableList::pdfValue(const vec3& o, const vec3& v) const {
+	auto weight = 1.0 / thisList.size();
+	auto sum = 0.0;
+
+	for (const auto& object : thisList)
+		sum += weight * object->pdfValue(o, v);
+
+	return sum;
+}
+
+vec3 HitableList::random(const vec3& o) const {
+	auto int_size = static_cast<int>(thisList.size());
+	return thisList[Utility::randomInt(0, int_size - 1)]->random(o);
 }
 
 #endif

@@ -27,6 +27,7 @@
 #include "Hitables/movingSphere.h"
 #include "Hitables/box.h"
 #include "Hitables/constantVolume.h"
+#include "Hitables/flipFace.h"
 
 // Manipulators
 #include "Transforms/translate.h"
@@ -65,8 +66,11 @@
 #include "Scene/sceneParser.h"
 
 // PDFs
+#include "Utils/orthonormalBasis.h"
 #include "Utils/spherePdf.h"
 #include "Utils/cosinePdf.h"
+#include "Utils/hitablePdf.h"
+#include "Utils/mixturePdf.h"
 
 
 #endif

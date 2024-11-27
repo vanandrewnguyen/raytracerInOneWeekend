@@ -17,6 +17,8 @@ public:
 
     virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
     virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
+    virtual double pdfValue(const vec3& o, const vec3& v) const override;
+    virtual vec3 random(const vec3& o) const override;
 };
 
 YZRect::YZRect() {}
@@ -60,6 +62,23 @@ bool YZRect::boundingBox(double _time0, double _time1, AABB& outputBox) const {
     // Bounding box needs non-zero width (give epsilon as small number)
     outputBox = AABB(vec3(k - epsilon, y0, z0), vec3(k + epsilon, y1, z1));
     return true;
+}
+
+double YZRect::pdfValue(const vec3& origin, const vec3& v) const {
+    hitRecord rec;
+    if (!this->hit(Ray(origin, v), 0.001, Utility::infinity, rec)) {
+        return 0;
+    }
+
+    double disSquared = rec.t * rec.t * v.lengthSquared();
+    double cosine = fabs(dot(v, rec.normal) / v.length());
+
+    return disSquared / (cosine * area);
+}
+
+vec3 YZRect::random(const vec3& origin) const {
+    auto random_point = vec3(Utility::randomDouble(z0, z1), k, Utility::randomDouble(y0, y1));
+    return random_point - origin;
 }
 
 #endif

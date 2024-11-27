@@ -209,6 +209,15 @@
     <ClInclude Include="Utils\interval.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Hitables\flipFace.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\hitablePdf.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\mixturePdf.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">

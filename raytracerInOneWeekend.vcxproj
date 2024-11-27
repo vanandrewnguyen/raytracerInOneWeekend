@@ -157,6 +157,7 @@
     <ClInclude Include="Hitables\box.h" />
     <ClInclude Include="Hitables\bvhNode.h" />
     <ClInclude Include="Hitables\constantVolume.h" />
+    <ClInclude Include="Hitables\flipFace.h" />
     <ClInclude Include="Hitables\hitable.h" />
     <ClInclude Include="Hitables\hitableList.h" />
     <ClInclude Include="Hitables\movingSphere.h" />
@@ -196,7 +197,9 @@
     <ClInclude Include="Transforms\rotate.h" />
     <ClInclude Include="Transforms\translate.h" />
     <ClInclude Include="Utils\cosinePdf.h" />
+    <ClInclude Include="Utils\hitablePdf.h" />
     <ClInclude Include="Utils\interval.h" />
+    <ClInclude Include="Utils\mixturePdf.h" />
     <ClInclude Include="Utils\orthonormalBasis.h" />
     <ClInclude Include="Utils\pdf.h" />
     <ClInclude Include="Utils\perlin.h" />
