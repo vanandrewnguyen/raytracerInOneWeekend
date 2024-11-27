@@ -25,7 +25,7 @@
 // Max depth is the maximum number of bounces a ray can have before destroying itself
 
 namespace render {
-    vec3 scene(const Ray& r, vec3& bgCol, HitableList& world, int depth, int useSkyCol) {
+    vec3 scene(const Ray& r, vec3& bgCol, Hitable& world, int depth, int useSkyCol) {
         // Make new list of world items
         hitRecord rec;
         if (depth >= Utility::maxDepth) {
@@ -74,7 +74,7 @@ namespace render {
         }*/
     }
 
-    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, HitableList world, int sampleCount, vec3& bgCol, int useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
+    void writeColourToScreen(int imgWidth, int imgHeight, Camera& cam, int x, int y, Hitable& world, int sampleCount, vec3& bgCol, int useSkyCol, std::vector<std::tuple<int, int, int>>& pixelData) {
         // Set UV's
         // We can offset randomly to anti alias cheaply, moving the cam
         vec3 col(0, 0, 0);
@@ -109,7 +109,7 @@ namespace render {
         pixelData.emplace_back(ir, ig, ib);
     }
 
-    std::vector<std::tuple<int, int, int>> renderChunk(Scene& parser, Camera& cam, HitableList& worldList, int startRow, int endRow, std::mutex& mutex, bool debugPrint = false) {
+    std::vector<std::tuple<int, int, int>> renderChunk(Scene& parser, Camera& cam, Hitable& worldList, int startRow, int endRow, std::mutex& mutex, bool debugPrint = false) {
         // Return a partial array of the final image
         std::vector<std::tuple<int, int, int>> partialPixelData;
 
@@ -129,7 +129,7 @@ namespace render {
         return partialPixelData;
     }
 
-    void renderScene(Scene& parser, Camera& cam, HitableList& worldList, std::vector<std::tuple<int, int, int>>& pixelData, std::mutex& mutex, bool useMultithread = true, bool debugPrint = false) {
+    void renderScene(Scene& parser, Camera& cam, Hitable& worldList, std::vector<std::tuple<int, int, int>>& pixelData, std::mutex& mutex, bool useMultithread = true, bool debugPrint = false) {
         srand((unsigned)time(NULL));
 
         // Establish SDL Window

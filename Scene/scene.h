@@ -104,7 +104,7 @@ Camera Scene::getCornellBoxScene() {
     box2 = std::make_shared<RotateY>(box2, 25);
     // worldList.append(box1);
     worldList.append(box2);
-    worldList.append(std::make_shared<ConstantVolume>(box1, 0.03, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
+    worldList.append(std::make_shared<ConstantVolume>(box1, 0.02, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
     // worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0.33, 0.32, 0.36))));
 
     return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
