@@ -1,5 +1,5 @@
 # raytracerInOneWeekend
-I'm writing a custom ray-tracer based on Peter Shirley's Raytracing in One Weekend textbook series.
+I'm writing a custom ray-tracer based on Peter Shirley's Raytracing in One Weekend (2020 Dec 1 v3.2.2) textbook series.
 
 I'm adding a few new features of my own to supplement my own computer graphics study.
 
