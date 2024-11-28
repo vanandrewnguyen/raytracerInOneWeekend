@@ -12,7 +12,8 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 - [x] Sky options; fake scattering gradients
 - [x] Basic Normal Mapping
 - [x] Multi-threading
-- [ ] Denoising extension
+- [x] Importance Sampling
+- [x] Denoising extension
 - [ ] Checkpointing extension
 - [ ] Ray-triangle intersections
 - [ ] Model loading
@@ -34,14 +35,6 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 
 **Constant Normal Map + Simple Rough Normal Map (~30 Samples)**
 ![normalMapBasic](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/086d85e1-0605-4c9e-807f-c53733cda58f)
-
-**Basic diffuse lighting. (~100 samples)**
-
-![noise2](https://user-images.githubusercontent.com/53636492/189015814-a0b92e84-e3c3-4351-9985-f6e0b03e6e54.PNG)
-
-**The classic cornell box. (~50 samples)**
-
-![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
 
 # Additional Features
 
@@ -126,6 +119,21 @@ Before | 29.591 | 34.593 | 34.412 | 33.584 | 33.045
 After | 33.640 | 30.201 | 29.505 | 30.590 | 30.984
 
 ![image](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/8d001a63-23ac-4aff-8a88-97be2a8c2ce8)
+
+
+## Importance Sampling
+
+Following Peter Shirley's textbook series, I implemented importance sampling. You can see clear distinctions between outputs below, render computation is faster and requires lower sample count.
+
+**Diffuse lighting (old/new) (~100 samples)**
+
+![noise2](https://user-images.githubusercontent.com/53636492/189015814-a0b92e84-e3c3-4351-9985-f6e0b03e6e54.PNG)
+![lighting](https://github.com/user-attachments/assets/c5471155-1b46-484e-8657-f880dcc347f1)
+
+**The classic cornell box. (~50 samples)**
+
+![cornell box](https://user-images.githubusercontent.com/53636492/189475961-15cef27e-1a86-47ac-8dcf-fe8152b86ac1.PNG)
+![cornellBoxPDF](https://github.com/user-attachments/assets/74d02d50-bb97-49cf-a072-91f5c7ab14ad)
 
 ## Library Dependancies
 - SDL2
