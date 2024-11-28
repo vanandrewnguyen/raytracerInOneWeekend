@@ -24,7 +24,7 @@
 // Const
 // Max depth is the maximum number of bounces a ray can have before destroying itself
 
-namespace render {
+namespace render {    
     vec3 scene(const Ray& r, vec3& bgCol, Hitable& world, Hitable& lights, int depth, int useSkyCol) {
         // Make new list of world items
         hitRecord rec;
@@ -923,13 +923,11 @@ private slots:
         }
 
         Scene scene = Scene();
-        Camera cam = scene.generateSceneFromMapping(index, imageWidth, imageHeight, sampleCount);
+        std::pair<std::shared_ptr<Camera>, HitableList> render = scene.generateSceneFromMapping(index, imageWidth, imageHeight, sampleCount);
         HitableList worldList = scene.worldList;
-
-        // new lights setup
-        HitableList lights;
-        lights.append(std::make_shared<XZRect>(213 - 96, 343 + 94, 227 - 64, 332 + 64, 554, std::shared_ptr<Material>()));
-        render::renderScene(scene, cam, worldList, lights, pixelData, mutexLock, useMultithread);
+        Camera& cam = *render.first;
+        HitableList lightsList = render.second;
+        render::renderScene(scene, cam, worldList, lightsList, pixelData, mutexLock, useMultithread);
 
         promptSaveImage();
     }
@@ -941,9 +939,11 @@ private slots:
             << ", samples: " << sampleCount << std::endl;
 
         SceneParser parser = SceneParser();
-        Camera cam = parser.generateScene(sceneName, true);
+        std::pair<std::shared_ptr<Camera>, HitableList> render = parser.generateScene(sceneName, true);
         HitableList worldList = parser.worldList;
-        // render::renderScene(parser, cam, worldList, pixelData, mutexLock, useMultithread);
+        Camera& cam = *render.first;
+        HitableList lightsList = render.second;
+        render::renderScene(parser, cam, worldList, lightsList, pixelData, mutexLock, useMultithread);
 
         promptSaveImage();
     }

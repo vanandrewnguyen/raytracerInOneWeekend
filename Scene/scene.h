@@ -14,15 +14,16 @@ public:
           vec3 _bgColour, int _useSkyColour);
 
     // Hard-coded scenes
-    Camera getCornellBoxScene();
-    Camera getBook1Scene();
-    Camera getBook2Scene();
-    Camera getTextureMaterialShowcase();
-    Camera getDebugScene();
-    Camera generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
+    std::pair<std::shared_ptr<Camera>, HitableList> getCornellBoxScene();
+    std::pair<std::shared_ptr<Camera>, HitableList> getBook1Scene();
+    std::pair<std::shared_ptr<Camera>, HitableList> getBook2Scene();
+    std::pair<std::shared_ptr<Camera>, HitableList> getTextureMaterialShowcase();
+    std::pair<std::shared_ptr<Camera>, HitableList> getDebugScene();
+    std::pair<std::shared_ptr<Camera>, HitableList> generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
 
 public:
 	HitableList worldList;
+    HitableList lightsList;
     int imageWidth, imageHeight, sampleCount;
     vec3 lookFrom, lookAt, bgColour;
     float viewFOV, aperture, focusDist, timeStart, timeEnd;
@@ -55,7 +56,7 @@ Scene::Scene(int _imageWidth, int _imageHeight, int _sampleCount,
     timeEnd = time1;
 }
 
-Camera Scene::generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount) {
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount) {
     imageWidth = _imageWidth;
     imageHeight = _imageHeight;
     sampleCount = _sampleCount;
@@ -70,12 +71,12 @@ Camera Scene::generateSceneFromMapping(int index, int _imageWidth, int _imageHei
 }
 
 // Get scene identical of the Cornell Box layout
-Camera Scene::getCornellBoxScene() {
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getCornellBoxScene() {
     // Set proper camera values
     lookFrom = vec3(278, 278, -1800);
     lookAt = vec3(278, 278, 0);
     bgColour = vec3(0, 0, 0);
-    useSkyColour = 1; // 0
+    useSkyColour = 1;
     viewFOV = 20;
     aperture = 40.0;
     focusDist = (lookFrom - lookAt).length();
@@ -90,6 +91,7 @@ Camera Scene::getCornellBoxScene() {
 
     worldList.append(std::make_shared<YZRect>(0, 555, 0, 555, 555, greenMat));
     worldList.append(std::make_shared<YZRect>(0, 555, 0, 555, 0, redMat));
+
     worldList.append(std::make_shared<flipFace>(std::make_shared<XZRect>(213 - 96, 343 + 94, 227 - 64, 332 + 64, 554, lightMat)));
     worldList.append(std::make_shared<XZRect>(0, 555, 0, 555, 0, whiteMat));
     worldList.append(std::make_shared<XZRect>(0, 555, 0, 555, 555, whiteMat));
@@ -109,13 +111,17 @@ Camera Scene::getCornellBoxScene() {
     // worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0.33, 0.32, 0.36))));
     worldList.append(std::make_shared<Sphere>(60, vec3(300, 60, 90), vec3(0, 0, 0), std::make_shared<MatDielectric>(1.5)));
 
-    return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
-                  float(imageWidth) / float(imageHeight), aperture,
-                  focusDist, timeStart, timeEnd);
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+                                                           float(imageWidth) / float(imageHeight), aperture,
+                                                           focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<XZRect>(213 - 96, 343 + 94, 227 - 64, 332 + 64, 554, std::shared_ptr<Material>()));
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
 }
 
 // Get identical scene from RayTracingInOneWeekend Book 1 final image
-Camera Scene::getBook1Scene() {
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getBook1Scene() {
     // Set proper camera values
     lookFrom = vec3(13, 2, 3);
     lookAt = vec3(0, 0, 0);
@@ -157,13 +163,17 @@ Camera Scene::getBook1Scene() {
     worldList.append(std::make_shared<Sphere>(1, vec3(-4, 1, 0), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.4, 0.2, 0.1))));
     worldList.append(std::make_shared<Sphere>(1, vec3(4, 1, 0), vec3(0, 0, 0), std::make_shared<MatMetal>(vec3(0.7, 0.6, 0.5), 0.1)));
 
-    return Camera(lookFrom, lookAt, vec3(0,1,0), viewFOV, 
-                  float(imageWidth) / float(imageHeight), aperture, 
-                  focusDist, timeStart, timeEnd);
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<Sphere>(100, vec3(0, 400, 0), vec3(1, 0, 0), std::shared_ptr<Material>())); // fake sun
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
 }
 
 // Get identical scene from RayTracingInOneWeekend Book 2 final image
-Camera Scene::getBook2Scene() {
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getBook2Scene() {
     // Set proper camera values
     lookFrom = vec3(478, 278, -600);
     lookAt = vec3(0, 100, 0);
@@ -210,13 +220,18 @@ Camera Scene::getBook2Scene() {
     worldList.append(std::make_shared<Sphere>(30, vec3(-160, 130, 0), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0.9, 0.8, 0.9), std::make_shared<TexPerlin>(0.04, 4, vec3(0, 0, 0), vec3(0.7, 0.6, 0.5)))));
     worldList.append(std::make_shared<ConstantVolume>(std::make_shared<Sphere>(30, vec3(160, 130, 0), vec3(0, 0, 0), std::make_shared<MatDielectric>(1.5)), 0.01, std::make_shared<TexSolidColour>(0.8, 0.3, 0.3)));
 
-    return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
-           float(imageWidth) / float(imageHeight), aperture,
-           focusDist, timeStart, timeEnd);
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<XZRect>(123, 423, 147, 412, 554, std::shared_ptr<Material>()));
+    lightsList.append(std::make_shared<Sphere>(80, vec3(60, 280, 0), vec3(1, 0, 0), std::shared_ptr<Material>()));
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
 }
 
 // Get a scene with all available textures and materials
-Camera Scene::getTextureMaterialShowcase() {
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcase() {
     lookFrom = vec3(12, 1.6, -6);
     lookAt = vec3(-4, -0.1, 0);
     bgColour = vec3(1, 1, 1);
@@ -255,13 +270,18 @@ Camera Scene::getTextureMaterialShowcase() {
 
     // worldList.append(std::make_shared<YZRect>(0.15, 1.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
 
-    return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
         float(imageWidth) / float(imageHeight), aperture,
         focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -3), vec3(0, 0, 0), std::shared_ptr<Material>()));
+    lightsList.append(std::make_shared<Sphere>(100, vec3(0, 400, 0), vec3(1, 0, 0), std::shared_ptr<Material>())); // fake sun
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
 }
 
 // Get super basic scene with one sphere
-Camera Scene::getDebugScene() {
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
     lookFrom = vec3(12, 1.5, -6);
     lookAt = vec3(-2, -0.4, 0);
     bgColour = vec3(1, 1, 1);
@@ -275,7 +295,7 @@ Camera Scene::getDebugScene() {
     std::shared_ptr<raytrace::Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
     std::shared_ptr<raytrace::Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
     std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
-    std::shared_ptr<TexImage> texturePlain = std::make_shared<TexImage>("checkerboard.jpg"); // std::make_shared<TexSolidColour>(vec3(0.8, 0.3, 0.3));
+    std::shared_ptr<TexImage> texturePlain = std::make_shared<TexImage>("checkerboard.jpg");
 
     std::shared_ptr<NormalBase> constantNormal = std::make_shared<Constant>();
     std::shared_ptr<NormalBase> roughNormal = std::make_shared<Rough>();
@@ -294,9 +314,13 @@ Camera Scene::getDebugScene() {
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matDiffuseChecker));
     // worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
 
-    return Camera(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
         float(imageWidth) / float(imageHeight), aperture,
         focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<Sphere>(100, vec3(0, 400, 0), vec3(1, 0, 0), std::shared_ptr<Material>())); // fake sun
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
 }
 
 

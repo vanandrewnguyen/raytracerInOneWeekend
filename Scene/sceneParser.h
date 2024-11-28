@@ -17,8 +17,8 @@ public:
 	SceneParser();
 
 	std::string removeComments(const std::string& input);
-	Camera generateScene(std::string& pathname, bool debugPrint = false);
-	Camera createCamera(Json::Value& root, std::string rootName, bool debugPrint = false);
+	std::pair<std::shared_ptr<Camera>, HitableList> generateScene(std::string& pathname, bool debugPrint = false);
+	std::pair<std::shared_ptr<Camera>, HitableList> createCamera(Json::Value& root, std::string rootName, bool debugPrint = false);
 	void parseSettings(Json::Value& root, std::string rootName, bool debugPrint = false);
 
 	std::string jsonToString(const Json::Value& json);
@@ -50,7 +50,7 @@ std::string SceneParser::removeComments(const std::string& input) {
 	return result;
 }
 
-Camera SceneParser::createCamera(Json::Value& root, std::string rootName, bool debugPrint) {
+std::pair<std::shared_ptr<Camera>, HitableList> SceneParser::createCamera(Json::Value& root, std::string rootName, bool debugPrint) {
 	// Create camera object
 	const Json::Value& camera = root[rootName];
 
@@ -78,7 +78,9 @@ Camera SceneParser::createCamera(Json::Value& root, std::string rootName, bool d
 	float timeStart = camera["TimeStart"].asFloat();
 	float timeEnd = camera["TimeEnd"].asFloat();
 
-	return Camera(lookFromVec, lookAtVec, upVectorVec, viewFOV, float(imageWidth) / float(imageHeight), aperture, focusDist, timeStart, timeEnd);
+	std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFromVec, lookAtVec, upVectorVec, viewFOV, float(imageWidth) / float(imageHeight), aperture, focusDist, timeStart, timeEnd);
+	std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+	return render;
 }
 
 void SceneParser::parseSettings(Json::Value& root, std::string rootName, bool debugPrint) {
@@ -95,7 +97,7 @@ void SceneParser::parseSettings(Json::Value& root, std::string rootName, bool de
 	useSkyColour = (settings["UseOutdoorLighting"].asInt());
 }
 
-Camera SceneParser::generateScene(std::string& pathname, bool debugPrint) {	
+std::pair<std::shared_ptr<Camera>, HitableList> SceneParser::generateScene(std::string& pathname, bool debugPrint) {
 	// Parse file and cleanup
 	std::string path = "Scene/" + pathname;
 	std::ifstream file(path);
@@ -165,12 +167,16 @@ void SceneParser::parseSphere(const std::string objectType, const Json::Value& o
 
 		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
 		std::shared_ptr<Hitable> hit = std::make_shared<Sphere>(radius.asFloat(), vec3(originX, originY, originZ), vec3(colourX, colourY, colourZ), mat);
-		
+		worldList.append(hit);
+		if (materialType == "DiffuseLight") {
+			std::shared_ptr<Hitable> light = std::make_shared<Sphere>(radius.asFloat(), vec3(originX, originY, originZ), vec3(colourX, colourY, colourZ), std::shared_ptr<Material>());
+			lightsList.append(light);
+		}
+
 		if (debugPrint) {
 			std::cout << "Added!" << std::endl;
 		}
 
-		worldList.append(hit);
 		return;
 	}
 }
@@ -211,12 +217,24 @@ void SceneParser::parseMovingSphere(const std::string objectType, const Json::Va
 																	  rad, 
 																	  vec3(albedoR, albedoG, albedoB),
 																	  mat);
+		worldList.append(hit);
+		
+		if (materialType == "DiffuseLight") {
+			std::shared_ptr<Hitable> light = std::make_shared<MovingSphere>(vec3(pX1, pY1, pZ1),
+				vec3(pX2, pY2, pZ2),
+				time1,
+				time2,
+				rad,
+				vec3(albedoR, albedoG, albedoB),
+				std::shared_ptr<Material>());
+			lightsList.append(light);
+		}
 
 		if (debugPrint) {
 			std::cout << "Added!" << std::endl;
 		}
 
-		worldList.append(hit);
+		
 		return;
 	}
 }
@@ -243,12 +261,16 @@ void SceneParser::parseBox(const std::string objectType, const Json::Value& obje
 
 		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
 		std::shared_ptr<Hitable> hit = std::make_shared<Box>(vec3(pX1, pY1, pZ1), vec3(pX2, pY2, pZ2), mat);
-
+		worldList.append(hit);
+		
+		if (materialType == "DiffuseLight") {
+			std::shared_ptr<Hitable> light = std::make_shared<Box>(vec3(pX1, pY1, pZ1), vec3(pX2, pY2, pZ2), std::shared_ptr<Material>());
+			lightsList.append(light);
+		}
+		
 		if (debugPrint) {
 			std::cout << "Added!" << std::endl;
 		}
-
-		worldList.append(hit);
 		return;
 	}
 }
@@ -270,12 +292,16 @@ void SceneParser::parseXYRect(const std::string objectType, const Json::Value& o
 
 		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
 		std::shared_ptr<Hitable> hit = std::make_shared<XYRect>(_x0, _x1, _y0, _y1, k, mat);
+		worldList.append(hit);
+
+		if (materialType == "DiffuseLight") {
+			std::shared_ptr<Hitable> light = std::make_shared<XYRect>(_x0, _x1, _y0, _y1, k, std::shared_ptr<Material>());
+			lightsList.append(light);
+		}
 
 		if (debugPrint) {
 			std::cout << "Added!" << std::endl;
 		}
-
-		worldList.append(hit);
 		return;
 	}
 }
@@ -297,12 +323,16 @@ void SceneParser::parseYZRect(const std::string objectType, const Json::Value& o
 
 		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
 		std::shared_ptr<Hitable> hit = std::make_shared<YZRect>(_y0, _y1, _z0, _z1, k, mat);
+		worldList.append(hit);
+		
+		if (materialType == "DiffuseLight") {
+			std::shared_ptr<Hitable> light = std::make_shared<YZRect>(_y0, _y1, _z0, _z1, k, std::shared_ptr<Material>());
+			lightsList.append(light);
+		}
 
 		if (debugPrint) {
 			std::cout << "Added!" << std::endl;
 		}
-
-		worldList.append(hit);
 		return;
 	}
 }
@@ -324,12 +354,16 @@ void SceneParser::parseXZRect(const std::string objectType, const Json::Value& o
 
 		std::shared_ptr<Material> mat = createMaterial(materialType, materialData, debugPrint);
 		std::shared_ptr<Hitable> hit = std::make_shared<XZRect>(_x0, _x1, _z0, _z1, k, mat);
+		worldList.append(hit);
+
+		if (materialType == "DiffuseLight") {
+			std::shared_ptr<Hitable> light = std::make_shared<XZRect>(_x0, _x1, _z0, _z1, k, std::shared_ptr<Material>());
+			lightsList.append(light);
+		}
 
 		if (debugPrint) {
 			std::cout << "Added!" << std::endl;
 		}
-
-		worldList.append(hit);
 		return;
 	}
 }

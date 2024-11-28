@@ -3,18 +3,18 @@
 {
     "Camera": {
         "LookFrom": [6.0, 2.0, 4.0],
-		"LookAt": [0.0, 0.0, 3.0],
+		"LookAt": [0.0, 0.0, -1.0],
 		"UpVector": [0.0, 1.0, 0.0],
-		"ViewFOV": 30.0,
+		"ViewFOV": 20.0,
 		"Aperture": 0.1,
 		"FocusDist": -100.0,
 		"TimeStart": 0.0,
 		"TimeEnd": 1.0,
 	},
 	"Settings": {
-		"ImageWidth": 1000,
-		"ImageHeight": 500,
-		"SampleCount": 150,
+		"ImageWidth": 200,
+		"ImageHeight": 100,
+		"SampleCount": 100,
 		"BackgroundColour": [0.0, 0.0, 0.0],
 		"UseOutdoorLighting": 0,
     }, 
@@ -23,7 +23,7 @@
 			"Type": "Sphere",
 			"Data": {
                 "Radius": 0.55,
-		        "Origin": [0.0, 0.0, 3.5],
+		        "Origin": [0.0, 0.0, -1.0],
 		        "Colour": [0.0, 0.0, 0.0],
                 "Material": {
                     "Lambertian": {
@@ -41,30 +41,11 @@
             },
 		},
 		{
-			"Type": "XYRect",
-			"Data": {
-                "x0": -3.0,
-				"x1": 1.0, 
-				"y0": -0.2,
-				"y1": 0.5,
-				"Axis": 1.0,
-				"Material": {
-					"DiffuseLight": {
-			            "Texture": {
-			                "TexSolidColour": {
-								"Albedo": [4.0, 4.0, 4.0],
-							}
-			            }
-		            },
-				},
-            },
-		},
-		{
 			"Type": "Sphere",
 			"Data": {
-                "Radius": 0.15,
-		        "Origin": [0.0, 5.0, 3.5],
-		        "Colour": [1.0, 1.0, 1.0],
+                "Radius": 0.4,
+		        "Origin": [-0.4, 1.1, 0.6],
+		        "Colour": [0.0, 0.0, 0.0],
                 "Material": {
                     "DiffuseLight": {
 			            "Texture": {
@@ -74,6 +55,25 @@
 			            }
 		            },
                 },
+            },
+		},
+		{
+			"Type": "XYRect",
+			"Data": {
+                "x0": 0.15,
+				"x1": 1.0, 
+				"y0": -0.2,
+				"y1": 0.5,
+				"Axis": -1.5,
+				"Material": {
+					"DiffuseLight": {
+			            "Texture": {
+			                "TexSolidColour": {
+								"Albedo": [4.0, 4.0, 4.0],
+							}
+			            }
+		            },
+				},
             },
 		},
 		{

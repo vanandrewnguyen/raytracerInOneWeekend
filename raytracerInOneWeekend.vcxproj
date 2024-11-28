@@ -216,6 +216,7 @@
   <ItemGroup>
     <Text Include="Scene\reference.txt" />
     <Text Include="Scene\sceneLighting.txt" />
+    <Text Include="Scene\sceneLightingOld.txt" />
     <Text Include="Scene\sceneSingleSphere.txt" />
     <Text Include="Scene\sceneThreeSpheres.txt" />
   </ItemGroup>

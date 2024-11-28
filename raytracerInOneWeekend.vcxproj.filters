@@ -243,6 +243,9 @@
     <Text Include="Scene\sceneLighting.txt">
       <Filter>Source Files\Scene</Filter>
     </Text>
+    <Text Include="Scene\sceneLightingOld.txt">
+      <Filter>Source Files\Scene</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md">

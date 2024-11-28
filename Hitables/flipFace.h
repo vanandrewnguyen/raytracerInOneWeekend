@@ -9,8 +9,9 @@ public:
 
     virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override {
 
-        if (!ptr->hit(r, tMin, tMax, rec))
+        if (!ptr->hit(r, tMin, tMax, rec)) {
             return false;
+        }
 
         rec.frontFace = !rec.frontFace;
         return true;
