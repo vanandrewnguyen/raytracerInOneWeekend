@@ -24,6 +24,8 @@ public:
 
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
+	virtual double pdfValue(const vec3& origin, const vec3& direction) const override;
+	virtual vec3 random(const vec3& origin) const override;
 };
 
 MovingSphere::MovingSphere(vec3 origin, vec3 target, double _time0, double _time1, float rad, vec3 col, std::shared_ptr<Material> mat) {
@@ -86,6 +88,27 @@ bool MovingSphere::boundingBox(double _time0, double _time1, AABB& outputBox) co
 	AABB box1(getCenter(_time1) - radVec, getCenter(_time1) + radVec);
 	outputBox = AABB::surroundingBox(box0, box1);
 	return true;
+}
+
+double MovingSphere::pdfValue(const vec3& origin, const vec3& direction) const {
+	hitRecord rec;
+	if (!this->hit(Ray(origin, direction), 0.001, Utility::infinity, rec))
+		return 0;
+
+	double distanceSquared = (rec.pos - origin).lengthSquared();
+	double cosThetaMax = sqrt(1 - radius * radius / distanceSquared);
+	double solidAngle = 2 * Utility::pi * (1 - cosThetaMax);
+
+	return  1 / solidAngle;
+}
+
+vec3 MovingSphere::random(const vec3& origin) const {
+	vec3 direction = getCenter(Utility::randomDouble(time0, time1)) - origin;
+	auto disSquared = direction.lengthSquared();
+	onb uvw;
+	uvw.buildFromW(direction);
+	return uvw.local(Utility::randomToSphere(radius, disSquared));
+
 }
 
 #endif
