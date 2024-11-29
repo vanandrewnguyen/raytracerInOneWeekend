@@ -32,7 +32,16 @@ public:
 		attenuation = albedo;
 		return (dot(scatteredRay.getDirection(), normal) > 0);
 		*/
-		vec3 reflected = reflect(unitVector(rayIn.getDirection()), rec.normal);
+
+		// Calculate the perturbed normal if a normal map is present
+		vec3 normal = rec.normal;
+		if (hasNormalMap) {
+			std::shared_ptr<NormalBase> nmap = normalMap;
+			vec3 perturbation = nmap->computeNormalShift(normal, rec.u, rec.v);
+			normal = unitVector(nmap->shiftNormal(normal, perturbation));
+		}
+
+		vec3 reflected = reflect(unitVector(rayIn.getDirection()), normal);
 		reflected = unitVector(reflected) + (reflectance * randomInUnitDisk());
 
 		srec.specularRay = Ray(rec.pos, reflected, rayIn.getTime());

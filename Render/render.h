@@ -89,12 +89,22 @@ namespace render {
             // Get sky colour
             Ray rayDir = cam.getRay(u, v);
             vec3 pos = rayDir.getPointParam(2.0);
-            col += scene(rayDir, bgCol, world, lights, 0, useSkyCol);
+            vec3 sampleCol = scene(rayDir, bgCol, world, lights, 0, useSkyCol);
+
+            double r = sampleCol.getX();
+            double g = sampleCol.getY();
+            double b = sampleCol.getZ();
+
+            if (r != r) r = 0.0;
+            if (g != g) g = 0.0;
+            if (b != b) b = 0.0;
+
+            col += vec3(r, g, b);
         }
         
-        float r = col.getX();
-        float g = col.getY();
-        float b = col.getZ();
+        double r = col.getX();
+        double g = col.getY();
+        double b = col.getZ();
 
         if (r != r) r = 0.0;
         if (g != g) g = 0.0;
@@ -315,9 +325,9 @@ namespace denoise {
         // Compute mean color values
         float rSum = 0.0f, gSum = 0.0f, bSum = 0.0f;
         for (const auto& col : patch) {
-            rSum += static_cast<float>(std::get<0>(col));
-            gSum += static_cast<float>(std::get<1>(col));
-            bSum += static_cast<float>(std::get<2>(col));
+            rSum += static_cast<double>(std::get<0>(col));
+            gSum += static_cast<double>(std::get<1>(col));
+            bSum += static_cast<double>(std::get<2>(col));
         }
 
         float rMean = rSum / patchSize;

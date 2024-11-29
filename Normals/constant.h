@@ -22,7 +22,7 @@ Constant::~Constant() {
 }
 
 vec3 Constant::computeNormalShift(const vec3& normal, float u, float v) {
-	return normal;
+	return vec3(0, 0, 0);
 }
 
 #endif

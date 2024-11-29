@@ -105,9 +105,9 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getCornellBoxScene() {
     std::shared_ptr<Hitable> box2 = std::make_shared<Box>(vec3(265, 0, 295), vec3(430, 330, 460), box2Mat);
     box2 = std::make_shared<Translate>(box2, vec3(-130, 0, 60));
     box2 = std::make_shared<RotateY>(box2, 25);
-    // worldList.append(box1);
+    worldList.append(box1);
     worldList.append(box2);
-    worldList.append(std::make_shared<ConstantVolume>(box1, 0.02, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
+    // worldList.append(std::make_shared<ConstantVolume>(box1, 0.02, std::make_shared<TexSolidColour>(vec3(1, 1, 1))));
     // worldList.append(std::make_shared<ConstantVolume>(box2, 0.01, std::make_shared<TexSolidColour>(vec3(0.33, 0.32, 0.36))));
     worldList.append(std::make_shared<Sphere>(60, vec3(300, 60, 90), vec3(0, 0, 0), std::make_shared<MatDielectric>(1.5)));
 
@@ -282,11 +282,13 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcas
 
 // Get super basic scene with one sphere
 std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
-    lookFrom = vec3(12, 1.5, -6);
-    lookAt = vec3(-2, -0.4, 0);
+    // lookFrom = vec3(12, 1.5, -5);
+    // lookAt = vec3(-2, -0.4, 0);
+    lookFrom = vec3(1, 1, -8);
+    lookAt = vec3(1, 1, 0);
     bgColour = vec3(1, 1, 1);
     useSkyColour = 1;
-    viewFOV = 20;
+    viewFOV = 30;
     aperture = 0.1;
     focusDist = (lookFrom - lookAt).length();
     timeStart = 0;
@@ -295,22 +297,48 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
     std::shared_ptr<raytrace::Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
     std::shared_ptr<raytrace::Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
     std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
-    std::shared_ptr<TexImage> texturePlain = std::make_shared<TexImage>("checkerboard.jpg");
+    std::shared_ptr<TexImage> textureImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<TexImage> textureImageNormalMap = std::make_shared<TexImage>("earthmapNormalMap.jpg"); 
 
     std::shared_ptr<NormalBase> constantNormal = std::make_shared<Constant>();
     std::shared_ptr<NormalBase> roughNormal = std::make_shared<Rough>();
+    roughNormal->setAmp(0.2f);
+    std::shared_ptr<NormalTexture> imageNormal = std::make_shared<NormalTexture>();
+    imageNormal->assignTexture(textureImageNormalMap);
     std::shared_ptr<NormalTexture> textureNormal = std::make_shared<NormalTexture>();
-    textureNormal->assignTexture(texturePlain);
+    textureNormal->assignTexture(textureChecker);
+
 
     std::shared_ptr<Material> matDiffuseWorley = std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureWorley1);
     std::shared_ptr<Material> matDiffuseChecker = std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker);
-    std::shared_ptr<Material> matMetal = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.1);
-    matMetal->assignNormalMap(constantNormal);
-    std::shared_ptr<Material> matMetal2 = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.1);
-    matMetal->assignNormalMap(roughNormal);
+    std::shared_ptr<Material> matMetal1 = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.0);
+    matMetal1->assignNormalMap(constantNormal);
+    std::shared_ptr<Material> matMetal2 = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.0);
+    matMetal2->assignNormalMap(roughNormal);
+    std::shared_ptr<Material> matMetal3 = std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.0);
+    matMetal3->assignNormalMap(imageNormal);
+    std::shared_ptr<Material> matGlass1 = std::make_shared<MatDielectric>(1.5);
+    matGlass1->assignNormalMap(constantNormal);
+    std::shared_ptr<Material> matGlass2 = std::make_shared<MatDielectric>(1.5);
+    matGlass2->assignNormalMap(roughNormal);
+    std::shared_ptr<Material> matGlass3 = std::make_shared<MatDielectric>(1.5);
+    matGlass3->assignNormalMap(imageNormal);
+    std::shared_ptr<Material> matLam1 = std::make_shared<MatLambertian>(vec3(1.0, 1.0, 1.0), textureImage);
+    matLam1->assignNormalMap(constantNormal);
+    std::shared_ptr<Material> matLam2 = std::make_shared<MatLambertian>(vec3(1.0, 1.0, 1.0), textureImage);
+    matLam2->assignNormalMap(roughNormal);
+    std::shared_ptr<Material> matLam3 = std::make_shared<MatLambertian>(vec3(1.0, 1.0, 1.0), textureImage);
+    matLam3->assignNormalMap(imageNormal);
 
-    worldList.append(std::make_shared<Sphere>(0.55, vec3(0, 0, -1), vec3(0, 0, 0), matMetal));
-    worldList.append(std::make_shared<Sphere>(0.55, vec3(2, 0, -1), vec3(0, 0, 0), matMetal2));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 0, -1), vec3(0, 0, 0), matMetal1));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(1, 0, -1), vec3(0, 0, 0), matMetal2));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(2, 0, -1), vec3(0, 0, 0), matMetal3));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -1), vec3(0, 0, 0), matGlass1));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(1, 1, -1), vec3(0, 0, 0), matGlass2));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(2, 1, -1), vec3(0, 0, 0), matGlass3));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 2, -1), vec3(0, 0, 0), matLam1));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(1, 2, -1), vec3(0, 0, 0), matLam2));
+    worldList.append(std::make_shared<Sphere>(0.5, vec3(2, 2, -1), vec3(0, 0, 0), matLam3));
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matDiffuseChecker));
     // worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
 

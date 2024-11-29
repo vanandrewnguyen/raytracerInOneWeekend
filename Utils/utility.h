@@ -194,8 +194,8 @@ namespace Utility {
 		vec3 rd = unitVector(r.getDirection());
 		vec3 sunDir = vec3(-2, -0.4, 0) / (vec3(-2, -0.4, 0).length());
 		
-		float yd = std::min(rd.getY(), 0.0f);
-		rd.setY(std::max(rd.getY(), 0.0f));
+		float yd = std::min(rd.getY(), 0.0);
+		rd.setY(std::max(rd.getY(), 0.0));
 
 		vec3 col(0, 0, 0);
 
@@ -204,8 +204,8 @@ namespace Utility {
 
 		col = Utility::colourRamp(col * 1.2f, vec3(0.3,  0.3, 0.3), 1.0f - std::exp(yd * 100.0f)); // Fog
 
-		col += vec3(1.0f, 0.8f, 0.55f) * pow(std::max(dot(rd, sunDir), 0.0f), 15.0f) * 0.6f; // Sun
-		float flare = pow(std::max(dot(rd, sunDir), 0.0f), 150.0f) * 0.15f;
+		col += vec3(1.0f, 0.8f, 0.55f) * pow(std::max(dot(rd, sunDir), 0.0), 15.0f) * 0.6f; // Sun
+		float flare = pow(std::max(dot(rd, sunDir), 0.0), 150.0f) * 0.15f;
 		col += vec3(flare, flare, flare);
 
 		return col;

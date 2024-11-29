@@ -59,6 +59,7 @@ public:
 
 		return true;
 		*/
+
 		srec.isSpecular = true;
 		srec.pdfPtr = nullptr;
 		srec.attenuation = vec3(1.0, 1.0, 1.0);
@@ -69,7 +70,7 @@ public:
 		if (hasNormalMap) {
 			std::shared_ptr<NormalBase> nmap = normalMap;
 			vec3 perturbation = nmap->computeNormalShift(normal, rec.u, rec.v);
-			normal = nmap->shiftNormal(normal, perturbation);
+			normal = unitVector(nmap->shiftNormal(normal, perturbation));
 		}
 
 		vec3 outwardNormal;

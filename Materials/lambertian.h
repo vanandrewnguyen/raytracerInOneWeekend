@@ -52,9 +52,18 @@ public:
 		albedo = albedoPtr->getColourVal(rec.u, rec.v, rec.pos);
 		pdf = dot(uvw.w(), scatteredRay.getDirection()) / Utility::pi;
 		*/
+
+		// Calculate the perturbed normal if a normal map is present
+		vec3 normal = rec.normal;
+		if (hasNormalMap) {
+			std::shared_ptr<NormalBase> nmap = normalMap;
+			vec3 perturbation = nmap->computeNormalShift(normal, rec.u, rec.v);
+			normal = unitVector(nmap->shiftNormal(normal, perturbation));
+		}
+
 		srec.isSpecular = false;
 		srec.attenuation = albedoPtr->getColourVal(rec.u, rec.v, rec.pos);
-		srec.pdfPtr = std::make_shared<CosinePdf>(rec.normal);
+		srec.pdfPtr = std::make_shared<CosinePdf>(normal);
 		return true;
 	}
 
