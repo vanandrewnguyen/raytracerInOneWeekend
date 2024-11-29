@@ -97,7 +97,7 @@ From left to right we have the original, ZOR, FOR, and MIX (a mixture of two pas
 
 An example with a larger render (LHS is raw, RHS is denoised):
 
-![book1denoisedcmp](https://github.com/user-attachments/assets/bd566631-069c-44f0-b1e0-d21e0da86443)
+![denoisedCornellCmp](https://github.com/user-attachments/assets/85c0f756-75e4-453d-8cfa-b5f22cc4ffc7)
 
 ## Optimisations
 
