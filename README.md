@@ -1,23 +1,22 @@
 # raytracerInOneWeekend
 I'm writing a custom ray-tracer based on Peter Shirley's Raytracing in One Weekend (2020 Dec 1 v3.2.2) textbook series.
 
-I'm adding a few new features of my own to supplement my own computer graphics study.
+I'm adding a few features of my own to supplement my own computer graphics study.
 
 ## Feature List
 - [x] Acceleration Structures (BVH)
 - [x] Extended Textures (Worley, Perlin)
 - [x] Volumetric Rendering
 - [x] Loadable JSON Scenes
-- [x] Scene Selection and File Output GUI using Qt
+- [x] User Friendly GUI (Qt)
 - [x] Sky options; fake scattering gradients
 - [x] Basic Normal Mapping
-- [x] Multi-threading
+- [x] Multithreading optimisations
 - [x] Importance Sampling
 - [x] Denoising extension
+- [x] Ray-triangle intersections
+- [x] .obj Model loading
 - [ ] Checkpointing extension
-- [ ] Ray-triangle intersections
-- [ ] Model loading
-
 
 ## Sample Outputs
 **Final scene with subsurface scattering, constant volumetric mediums, caustics, boxes. (~500 samples)**
@@ -140,3 +139,4 @@ Following Peter Shirley's textbook series, I implemented importance sampling. Yo
 - Jsoncpp
 - stb_image
 - Qt 6.8.0
+- tinyobjloader
