@@ -33,8 +33,8 @@ I'm adding a few new features of my own to supplement my own computer graphics s
 
 ![checker2 (2)](https://user-images.githubusercontent.com/53636492/189015882-25888ada-3437-4f5e-b545-652d299769a9.PNG)
 
-**Constant Normal Map + Simple Rough Normal Map (~30 Samples)**
-![normalMapBasic](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/086d85e1-0605-4c9e-807f-c53733cda58f)
+**Normal Maps on Lambertian/Glass/Metal; Image/Rough/Smooth (~150 Samples)**
+![normals could be wrong 3](https://github.com/user-attachments/assets/371142d1-268c-47bf-b1f8-df02bcdc0f96)
 
 # Additional Features
 
@@ -97,7 +97,7 @@ From left to right we have the original, ZOR, FOR, and MIX (a mixture of two pas
 
 An example with a larger render (LHS is raw, RHS is denoised):
 
-![book1denoisedcmp](https://github.com/user-attachments/assets/bd566631-069c-44f0-b1e0-d21e0da86443)
+![denoisedCornellCmp](https://github.com/user-attachments/assets/85c0f756-75e4-453d-8cfa-b5f22cc4ffc7)
 
 ## Optimisations
 
