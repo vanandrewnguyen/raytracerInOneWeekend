@@ -29,6 +29,7 @@
 #include "Hitables/constantVolume.h"
 #include "Hitables/flipFace.h"
 #include "Hitables/triangle.h"
+#include "Hitables/model.h"
 
 // Manipulators
 #include "Transforms/translate.h"

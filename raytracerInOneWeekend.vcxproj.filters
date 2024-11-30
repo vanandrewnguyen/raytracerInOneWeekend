@@ -221,6 +221,9 @@
     <ClInclude Include="Hitables\triangle.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
+    <ClInclude Include="Hitables\model.h">
+      <Filter>Source Files\Hitables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
@@ -230,6 +233,12 @@
       <Filter>Source Files\Assets</Filter>
     </Image>
     <Image Include="Assets\checkerboard.jpg">
+      <Filter>Source Files\Assets</Filter>
+    </Image>
+    <Image Include="Assets\checkerboardNormalMap.jpg">
+      <Filter>Source Files\Assets</Filter>
+    </Image>
+    <Image Include="Assets\earthmapNormalMap.jpg">
       <Filter>Source Files\Assets</Filter>
     </Image>
   </ItemGroup>

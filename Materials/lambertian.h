@@ -2,6 +2,7 @@
 #define LAMBERTIAN_H
 
 #include "material.h"
+#include "../Textures/texSolidColour.h"
 #include "../Utils/cosinePdf.h"
 
 

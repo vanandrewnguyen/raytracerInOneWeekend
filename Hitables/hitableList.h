@@ -8,7 +8,7 @@
 
 class HitableList : public Hitable {
 public:
-	std::vector<std::shared_ptr<Hitable>> thisList;
+	std::vector<std::shared_ptr<Hitable>> objectsList;
 
 public:
 	HitableList();
@@ -26,15 +26,15 @@ public:
 HitableList::HitableList() {}
 
 HitableList::HitableList(std::vector<std::shared_ptr<Hitable>>& list) {
-	thisList = list;
+	objectsList = list;
 }
 
 void HitableList::append(std::shared_ptr<Hitable> hitObject) {
-	thisList.push_back(hitObject);
+	objectsList.push_back(hitObject);
 }
 
 std::vector<std::shared_ptr<Hitable>>& HitableList::getList() {
-	return thisList;
+	return objectsList;
 }
 
 bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {
@@ -46,7 +46,7 @@ bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) cons
 
 	// Loop through every hitable item in the scene, and return the closests distance 
 	// We don't care about things behind objects
-	for (const std::shared_ptr<Hitable>& hitObject : thisList) {
+	for (const std::shared_ptr<Hitable>& hitObject : objectsList) {
 		if (hitObject->hit(r, tMin, closestDis, tempRec)) {
 			hitAny = true;
 			closestDis = tempRec.t;
@@ -58,14 +58,14 @@ bool HitableList::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) cons
 }
 
 bool HitableList::boundingBox(double _time0, double _time1, AABB& outputBox) const {
-	if (thisList.size() == 0) {
+	if (objectsList.size() == 0) {
 		return false;
 	}
 
 	AABB tempBox;
 	bool firstBox = true;
 
-	for (const std::shared_ptr<Hitable>& hitObject : thisList) {
+	for (const std::shared_ptr<Hitable>& hitObject : objectsList) {
 		if (!(hitObject->boundingBox(_time0, _time1, tempBox))) {
 			return false;
 		}
@@ -77,18 +77,18 @@ bool HitableList::boundingBox(double _time0, double _time1, AABB& outputBox) con
 }
 
 double HitableList::pdfValue(const vec3& o, const vec3& v) const {
-	auto weight = 1.0 / thisList.size();
+	auto weight = 1.0 / objectsList.size();
 	auto sum = 0.0;
 
-	for (const auto& object : thisList)
+	for (const auto& object : objectsList)
 		sum += weight * object->pdfValue(o, v);
 
 	return sum;
 }
 
 vec3 HitableList::random(const vec3& o) const {
-	auto int_size = static_cast<int>(thisList.size());
-	return thisList[Utility::randomInt(0, int_size - 1)]->random(o);
+	auto int_size = static_cast<int>(objectsList.size());
+	return objectsList[Utility::randomInt(0, int_size - 1)]->random(o);
 }
 
 #endif

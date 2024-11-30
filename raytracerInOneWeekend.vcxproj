@@ -160,6 +160,7 @@
     <ClInclude Include="Hitables\flipFace.h" />
     <ClInclude Include="Hitables\hitable.h" />
     <ClInclude Include="Hitables\hitableList.h" />
+    <ClInclude Include="Hitables\model.h" />
     <ClInclude Include="Hitables\movingSphere.h" />
     <ClInclude Include="Hitables\sphere.h" />
     <ClInclude Include="Hitables\triangle.h" />
@@ -211,7 +212,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\checkerboard.jpg" />
+    <Image Include="Assets\checkerboardNormalMap.jpg" />
     <Image Include="Assets\earthmap.jpg" />
+    <Image Include="Assets\earthmapNormalMap.jpg" />
     <Image Include="Assets\texBrickWall.jpg" />
   </ItemGroup>
   <ItemGroup>
