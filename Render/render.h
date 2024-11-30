@@ -639,13 +639,12 @@ public:
     QRadioButton* multiThreadedButton;
 
     // Todo: move this into a utility file or data file
-    static inline std::map<int, std::string> sceneMapping = {
-        {1, "Cornell Box"},
-        {2, "Infinite Spheres on Checkerboard"},
-        {3, "Spheres and Cubes in Shadow"},
-        {4, "Material/Texture Showcase"},
-        {5, "Debug Scene"}
-    };
+    static inline std::map<int, std::string> sceneMapping = { {1, std::string("Cornell Box")},
+                                                              {2, std::string("Infinite Spheres on Checkerboard")},
+                                                              {3, std::string("Spheres and Cubes in Shadow")},
+                                                              {4, std::string("Material/Texture Showcase")},
+                                                              {5, std::string("Normal Map Test")},
+                                                              {6, std::string("Debug Scene")} };
 
 public:
     MainWindow(QWidget* parent = nullptr) : QMainWindow(parent) {

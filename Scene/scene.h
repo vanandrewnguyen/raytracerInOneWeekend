@@ -18,6 +18,7 @@ public:
     std::pair<std::shared_ptr<Camera>, HitableList> getBook1Scene();
     std::pair<std::shared_ptr<Camera>, HitableList> getBook2Scene();
     std::pair<std::shared_ptr<Camera>, HitableList> getTextureMaterialShowcase();
+    std::pair<std::shared_ptr<Camera>, HitableList> getNormalMapTest();
     std::pair<std::shared_ptr<Camera>, HitableList> getDebugScene();
     std::pair<std::shared_ptr<Camera>, HitableList> generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
 
@@ -33,7 +34,8 @@ public:
                                                               {2, std::string("Infinite Spheres on Checkerboard")},
                                                               {3, std::string("Spheres and Cubes in Shadow")},
                                                               {4, std::string("Material/Texture Showcase")},
-                                                              {5, std::string("Debug Scene")} };
+                                                              {5, std::string("Normal Map Test")},
+                                                              {6, std::string("Debug Scene")} };
 };
 
 Scene::Scene() {}
@@ -65,7 +67,8 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::generateSceneFromMapping(
     if (index == 2) return getBook1Scene();
     if (index == 3) return getBook2Scene();
     if (index == 4) return getTextureMaterialShowcase();
-    if (index == 5) return getDebugScene();
+    if (index == 5) return getNormalMapTest();
+    if (index == 6) return getDebugScene();
 
     return getCornellBoxScene();
 }
@@ -280,8 +283,8 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcas
     return render;
 }
 
-// Get super basic scene with one sphere
-std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
+// Get scene with normal map test
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getNormalMapTest() {
     // lookFrom = vec3(12, 1.5, -5);
     // lookAt = vec3(-2, -0.4, 0);
     lookFrom = vec3(1, 1, -8);
@@ -341,6 +344,34 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
     worldList.append(std::make_shared<Sphere>(0.5, vec3(2, 2, -1), vec3(0, 0, 0), matLam3));
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matDiffuseChecker));
     // worldList.append(std::make_shared<YZRect>(0.15, 2.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
+
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<Sphere>(100, vec3(0, 400, 0), vec3(1, 0, 0), std::shared_ptr<Material>())); // fake sun
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
+}
+
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
+    lookFrom = vec3(1, 4, -8);
+    lookAt = vec3(1, 1, 0);
+    bgColour = vec3(1, 1, 1);
+    useSkyColour = 1;
+    viewFOV = 30;
+    aperture = 0.1;
+    focusDist = (lookFrom - lookAt).length();
+    timeStart = 0;
+    timeEnd = 1;
+
+    std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+
+    std::shared_ptr<Material> matTriangle = std::make_shared<MatLambertian>(vec3(1.0, 0.0, 0.0));
+    std::shared_ptr<Material> matFloor = std::make_shared<MatLambertian>(vec3(1.0, 1.0, 1.0), textureChecker);
+    worldList.append(std::make_shared<Triangle>(vec3(0,0.1,0), vec3(1,0.1,0), vec3(0,0.1,1), matTriangle));
+
+    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matFloor));
 
     // Merge objects and lights
     std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,

@@ -28,6 +28,7 @@
 #include "Hitables/box.h"
 #include "Hitables/constantVolume.h"
 #include "Hitables/flipFace.h"
+#include "Hitables/triangle.h"
 
 // Manipulators
 #include "Transforms/translate.h"
