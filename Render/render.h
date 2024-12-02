@@ -137,6 +137,7 @@ namespace render {
         std::vector<std::tuple<int, int, int>> partialPixelData;
 
         // Render portion of the image
+        // std::cout << "Rendering from row " << startRow << " to " << endRow << std::endl;
         for (int y = endRow - 1; y >= startRow; y--) {
             for (int x = 0; x < parser.imageWidth; x++) {
                 // Output (remember your thread safety)
@@ -147,6 +148,7 @@ namespace render {
                     std::cout << "Rendering pixel " << int(x + y) << std::endl;
                 }
             }
+            // std::cout << "Finished row " << y << std::endl;
         }
 
         return partialPixelData;

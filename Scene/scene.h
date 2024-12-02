@@ -368,7 +368,7 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getDebugScene() {
     std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
 
     std::shared_ptr<Material> matTriangle = std::make_shared<MatLambertian>(vec3(0.9, 0.9, 0.9));
-    std::shared_ptr<Material> matTeapot = std::make_shared<MatMetal>(vec3(0.85, 0.8, 0.9), 0.1);
+    std::shared_ptr<Material> matTeapot = std::make_shared<MatMetal>(vec3(0.85, 0.8, 0.9), 0.2);
     std::shared_ptr<Material> matFloor = std::make_shared<MatLambertian>(vec3(1.0, 1.0, 1.0), textureChecker);
     worldList.append(std::make_shared<Model>("teapot.obj", matTeapot));
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matFloor));
