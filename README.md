@@ -35,6 +35,10 @@ I'm adding a few features of my own to supplement my own computer graphics study
 **Normal Maps on Lambertian/Glass/Metal; Image/Rough/Smooth (~150 Samples)**
 ![normals could be wrong 3](https://github.com/user-attachments/assets/371142d1-268c-47bf-b1f8-df02bcdc0f96)
 
+**Utah Teapot Model (~50 Samples, 5hrs)**
+
+![teapot](https://github.com/user-attachments/assets/9aa3e8fe-e6af-47cb-ba40-3bd2e2bc8774)
+
 # Additional Features
 
 ## Loadable Scenes and QT
