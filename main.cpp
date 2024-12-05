@@ -4,7 +4,6 @@
 
 // Qt Lib
 #include <QtWidgets/QApplication>
-#include "Qt/gui.h"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);

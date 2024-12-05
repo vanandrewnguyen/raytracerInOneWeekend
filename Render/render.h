@@ -4,7 +4,6 @@
 #include "../init.h"
 
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QWidget>
