@@ -121,14 +121,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;C:\Qt\6.8.0\msvc2022_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\jsoncpp\include;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\include;C:\Qt\6.8.1\msvc2022_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Qt\6.8.0\msvc2022_64\lib;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Qt\6.8.1\msvc2022_64\lib;C:\Users\andre\Desktop\Uni\Computer Science\Learning C++\raytracerInOneWeekend\Libraries\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;Qt6Core.lib;Qt6Gui.lib;Qt6Widgets.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
