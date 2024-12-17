@@ -4,16 +4,21 @@ I'm writing a custom ray-tracer based on Peter Shirley's Raytracing in One Weeke
 I'm adding a few features of my own to supplement my own computer graphics study.
 
 ## Feature List
+### Optimisations
 - [x] Acceleration Structures (BVH)
+- [x] Multithreading
+- [x] Importance Sampling
+### Textures and Surfaces
 - [x] Extended Textures (Worley, Perlin)
 - [x] Volumetric Rendering
+- [x] Basic Normal Mapping
+- [x] Sky options; fake scattering gradients
+- [ ] Anisotropic surfaces
+- [ ] Subsurface scattering
+### Feature Extensions
+- [x] Denoising extension
 - [x] Loadable JSON Scenes
 - [x] User Friendly GUI (Qt)
-- [x] Sky options; fake scattering gradients
-- [x] Basic Normal Mapping
-- [x] Multithreading optimisations
-- [x] Importance Sampling
-- [x] Denoising extension
 - [x] Ray-triangle intersections
 - [x] .obj Model loading
 - [ ] Checkpointing extension
