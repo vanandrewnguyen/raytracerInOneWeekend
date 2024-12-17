@@ -56,6 +56,7 @@
 #include "Materials/dielectric.h"
 #include "Materials/diffuseLight.h"
 #include "Materials/isotropic.h"
+#include "Materials/subsurface.h"
 
 // Normals
 #include "Normals/normalBase.h"

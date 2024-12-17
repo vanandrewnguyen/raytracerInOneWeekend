@@ -153,6 +153,10 @@ inline vec3 cross(const vec3 & v1, const vec3 & v2) {
 		v1.e[0] * v2.e[1] - v1.e[1] * v2[0]);
 }
 
+inline vec3 mix(const vec3& a, const vec3& b, double t) {
+	return a * vec3((1.0f - t), (1.0f - t), (1.0f - t)) + b * vec3(t, t, t);
+}
+
 // Get unit vector
 inline vec3 unitVector(vec3 v) {
 	return v / v.length();

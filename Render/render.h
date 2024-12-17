@@ -645,7 +645,8 @@ public:
                                                               {3, std::string("Spheres and Cubes in Shadow")},
                                                               {4, std::string("Material/Texture Showcase")},
                                                               {5, std::string("Normal Map Test")},
-                                                              {6, std::string("Debug Scene")} };
+                                                              {6, std::string("Subsurface Scattering Test")},
+                                                              {7, std::string("Debug Scene")} };
 
 public:
     MainWindow(QWidget* parent = nullptr) : QMainWindow(parent) {

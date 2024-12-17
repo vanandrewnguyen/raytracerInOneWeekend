@@ -176,6 +176,7 @@
     <ClInclude Include="Materials\lambertian.h" />
     <ClInclude Include="Materials\material.h" />
     <ClInclude Include="Materials\metal.h" />
+    <ClInclude Include="Materials\subsurface.h" />
     <ClInclude Include="Normals\normalBase.h" />
     <ClInclude Include="Normals\constant.h" />
     <ClInclude Include="Normals\normalTexture.h" />

@@ -224,6 +224,9 @@
     <ClInclude Include="Hitables\model.h">
       <Filter>Source Files\Hitables</Filter>
     </ClInclude>
+    <ClInclude Include="Materials\subsurface.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">
