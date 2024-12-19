@@ -14,6 +14,7 @@ public:
 
 public:
 	ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<raytrace::Texture> tex);
+	ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<Material> phase);
 	virtual bool hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const override;
 	virtual bool boundingBox(double _time0, double _time1, AABB& outputBox) const override;
 };
@@ -22,6 +23,12 @@ ConstantVolume::ConstantVolume(std::shared_ptr<Hitable> hit, double density, std
 	boundary = hit;
 	negInverseDensity = -1/density;
 	phaseFunc = std::make_shared<Isotropic>(tex);
+}
+
+ConstantVolume::ConstantVolume(std::shared_ptr<Hitable> hit, double density, std::shared_ptr<Material> phase) {
+	boundary = hit;
+	negInverseDensity = -1 / density;
+	phaseFunc = phase;
 }
 
 bool ConstantVolume::hit(const Ray& r, float tMin, float tMax, hitRecord& rec) const {

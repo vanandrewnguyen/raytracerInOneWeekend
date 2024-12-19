@@ -646,7 +646,9 @@ public:
                                                               {4, std::string("Material/Texture Showcase")},
                                                               {5, std::string("Normal Map Test")},
                                                               {6, std::string("Subsurface Scattering Test")},
-                                                              {7, std::string("Debug Scene")} };
+                                                              {7, std::string("Volumetric Test")},
+                                                              {8, std::string("Teapot Test")},
+                                                              {9, std::string("Debug Scene")} };
 
 public:
     MainWindow(QWidget* parent = nullptr) : QMainWindow(parent) {

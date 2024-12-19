@@ -20,6 +20,8 @@ public:
     std::pair<std::shared_ptr<Camera>, HitableList> getTextureMaterialShowcase();
     std::pair<std::shared_ptr<Camera>, HitableList> getNormalMapTest();
     std::pair<std::shared_ptr<Camera>, HitableList> getSubsurfaceTest();
+    std::pair<std::shared_ptr<Camera>, HitableList> getTeapotTest();
+    std::pair<std::shared_ptr<Camera>, HitableList> getFurTest();
     std::pair<std::shared_ptr<Camera>, HitableList> getDebugScene();
     std::pair<std::shared_ptr<Camera>, HitableList> generateSceneFromMapping(int index, int _imageWidth, int _imageHeight, int _sampleCount);
 
@@ -37,7 +39,9 @@ public:
                                                               {4, std::string("Material/Texture Showcase")},
                                                               {5, std::string("Normal Map Test")},
                                                               {6, std::string("Subsurface Scattering Test")},
-                                                              {7, std::string("Debug Scene")} };
+                                                              {7, std::string("Volumetric Test")},
+                                                              {8, std::string("Teapot Test")},
+                                                              {9, std::string("Debug Scene")} };
 };
 
 Scene::Scene() {}
@@ -71,7 +75,9 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::generateSceneFromMapping(
     if (index == 4) return getTextureMaterialShowcase();
     if (index == 5) return getNormalMapTest();
     if (index == 6) return getSubsurfaceTest();
-    if (index == 7) return getDebugScene();
+    if (index == 7) return getFurTest();
+    if (index == 8) return getTeapotTest();
+    if (index == 9) return getDebugScene();
 
     return getCornellBoxScene();
 }
@@ -248,6 +254,18 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcas
     timeStart = 0;
     timeEnd = 1;
 
+    // Textures
+    // Checker, Image, Noise, Perlin, Worley (5)
+    // Materials
+    // Anisotropic, isotropic volumes, metal, dielectric, subsurface, lambertian, diffuselight (7)
+    // Normal maps
+    // Rough, texture (2)
+    // 14 = 7 on each row
+
+    std::shared_ptr<raytrace::Texture> texImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<raytrace::Texture> texWorley = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
+
+    /*
     std::shared_ptr<raytrace::Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
     std::shared_ptr<raytrace::Texture> textureWorley1 = std::make_shared<TexWorley>(8.0, vec3(0.1,0,0.2), vec3(1,1,1));
     std::shared_ptr<raytrace::Texture> textureWorley2 = std::make_shared<TexWorley>(4.0, vec3(1, 1, 1), vec3(0.2, 0.3, 0));
@@ -273,8 +291,7 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcas
     worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -2), vec3(0, 0, 0), std::make_shared<Isotropic>(textureMarble2)));
     worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -3), vec3(0, 0, 0), std::make_shared<DiffuseLight>(std::make_shared<TexSolidColour>(vec3(4.5, 4.1, 4)))));
     worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 1, -4), vec3(0, 0, 0), std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.8)));
-
-    // worldList.append(std::make_shared<YZRect>(0.15, 1.0, -0.4, 0.8, -1.5, std::make_shared<MatLambertian>(vec3(1, 0, 0), textureWorley2)));
+    */
 
     // Merge objects and lights
     std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
@@ -395,6 +412,72 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getSubsurfaceTest() {
     worldList.append(std::make_shared<Sphere>(0.5, vec3(0, 2, -1), vec3(0, 0, 0), sssMarbleMaterial));
 
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matDiffuseChecker));
+
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<Sphere>(100, vec3(0, 400, 0), vec3(1, 0, 0), std::shared_ptr<Material>())); // fake sun
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
+}
+
+// Get scene with fur test
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getFurTest() {
+    // lookFrom = vec3(12, 1.5, -5);
+    // lookAt = vec3(-2, -0.4, 0);
+    lookFrom = vec3(1, 1, -8);
+    lookAt = vec3(1, 1, 0);
+    bgColour = vec3(1, 1, 1);
+    useSkyColour = 1;
+    viewFOV = 30;
+    aperture = 0.1;
+    focusDist = (lookFrom - lookAt).length();
+    timeStart = 0;
+    timeEnd = 1;
+
+    std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+    std::shared_ptr<raytrace::Texture> textureSolid = std::make_shared<TexSolidColour>(vec3(0.5, 0.5, 0.5));
+    std::shared_ptr<Material> matChecker = std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), textureChecker);
+    std::shared_ptr<Material> matSolid = std::make_shared<MatLambertian>(textureSolid);
+    
+    std::shared_ptr<Hitable> sphere1 = std::make_shared<Sphere>(0.5, vec3(2, 0, -1), vec3(0, 0, 0), matSolid);
+    std::shared_ptr<Hitable> sphere2 = std::make_shared<Sphere>(0.5, vec3(1, 0, -1), vec3(0, 0, 0), matSolid);
+    std::shared_ptr<Hitable> sphere3 = std::make_shared<Sphere>(0.5, vec3(0, 0, -1), vec3(0, 0, 0), matSolid);
+    worldList.append(std::make_shared<ConstantVolume>(sphere3, 2.0, std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5))));
+    worldList.append(std::make_shared<ConstantVolume>(sphere2, 2.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(4.0, 0.1))));
+    worldList.append(std::make_shared<ConstantVolume>(sphere1, 2.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(6.0, 0.2))));
+
+    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matChecker));
+
+    // Merge objects and lights
+    std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,
+        float(imageWidth) / float(imageHeight), aperture,
+        focusDist, timeStart, timeEnd);
+    lightsList.append(std::make_shared<Sphere>(100, vec3(0, 400, 0), vec3(1, 0, 0), std::shared_ptr<Material>()));
+    std::pair<std::shared_ptr<Camera>, HitableList> render = std::make_pair(cam, lightsList);
+    return render;
+}
+
+// Render model built out of triangles
+std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTeapotTest() {
+    lookFrom = vec3(12, 4, -8);
+    lookAt = vec3(1, 1, 0);
+    bgColour = vec3(1, 1, 1);
+    useSkyColour = 1;
+    viewFOV = 30;
+    aperture = 0.1;
+    focusDist = (lookFrom - lookAt).length();
+    timeStart = 0;
+    timeEnd = 1;
+
+    std::shared_ptr<raytrace::Texture> textureChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+
+    std::shared_ptr<Material> matTriangle = std::make_shared<MatLambertian>(vec3(0.9, 0.9, 0.9));
+    std::shared_ptr<Material> matTeapot = std::make_shared<MatMetal>(vec3(0.85, 0.8, 0.9), 0.2);
+    std::shared_ptr<Material> matFloor = std::make_shared<MatLambertian>(vec3(1.0, 1.0, 1.0), textureChecker);
+    worldList.append(std::make_shared<Model>("teapot.obj", matTeapot));
+    worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matFloor));
 
     // Merge objects and lights
     std::shared_ptr<Camera> cam = std::make_shared<Camera>(lookFrom, lookAt, vec3(0, 1, 0), viewFOV,

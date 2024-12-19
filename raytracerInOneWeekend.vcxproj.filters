@@ -227,6 +227,9 @@
     <ClInclude Include="Materials\subsurface.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Materials\anisotropic.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\earthmap.jpg">

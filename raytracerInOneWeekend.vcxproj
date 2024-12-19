@@ -170,6 +170,7 @@
     <ClInclude Include="init.h" />
     <ClInclude Include="Libraries\jsoncpp\dist\json\json-forwards.h" />
     <ClInclude Include="Libraries\jsoncpp\dist\json\json.h" />
+    <ClInclude Include="Materials\anisotropic.h" />
     <ClInclude Include="Materials\dielectric.h" />
     <ClInclude Include="Materials\diffuseLight.h" />
     <ClInclude Include="Materials\isotropic.h" />
