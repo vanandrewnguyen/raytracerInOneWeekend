@@ -13,8 +13,8 @@ I'm adding a few features of my own to supplement my own computer graphics study
 - [x] Volumetric Rendering
 - [x] Basic Normal Mapping
 - [x] Sky options; fake scattering gradients
+- [x] Subsurface scattering (random walk)
 - [ ] Anisotropic surfaces
-- [ ] Subsurface scattering
 ### Feature Extensions
 - [x] Denoising extension
 - [x] Loadable JSON Scenes
@@ -28,17 +28,20 @@ I'm adding a few features of my own to supplement my own computer graphics study
 
 ![book2](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/39f55032-0a6c-491b-82b5-6aaa99274ad7)
 
-**Material Showcase (~100 samples)**
-(Isotropic, Perlin Noise, Worley Noise, Dielectrics, Metallics, Image Textures)
-
-![materialShowcase](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/19a6ffcd-127a-49f2-8f16-d189ed8ffea3)
-
 **Randomly generated spheres with defocus blur. (~100 samples)**
 
 ![checker2 (2)](https://user-images.githubusercontent.com/53636492/189015882-25888ada-3437-4f5e-b545-652d299769a9.PNG)
 
 **Normal Maps on Lambertian/Glass/Metal; Image/Rough/Smooth (~150 Samples)**
 ![normals could be wrong 3](https://github.com/user-attachments/assets/371142d1-268c-47bf-b1f8-df02bcdc0f96)
+
+**Subsurface Scattering (Lambertian LHS, SSS RHS) for Marble, Wax, Skin (~500 Samples)**
+![correctSSS](https://github.com/user-attachments/assets/a4c03ba7-f83c-484f-a6d9-8e77d7439038)
+
+**Material Showcase (~100 samples)**
+(Isotropic, Perlin Noise, Worley Noise, Dielectrics, Metallics, Image Textures)
+
+![materialShowcase](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/19a6ffcd-127a-49f2-8f16-d189ed8ffea3)
 
 **Utah Teapot Model (~50 Samples, 5hrs)**
 
