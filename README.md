@@ -28,6 +28,11 @@ I'm adding a few features of my own to supplement my own computer graphics study
 
 ![book2](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/39f55032-0a6c-491b-82b5-6aaa99274ad7)
 
+**Material Showcase (~100 samples)**
+(left-to-right-top-to-bottom: Isotropic + Anisotropic Volumes, Glass, Glass with rough normals, Glass with image normals, Metal, Image Texture, Noise Textures, Subsurface, Diffuse light, Lambertian)
+
+![materialShowcaseNew](https://github.com/user-attachments/assets/58a4f513-c658-4f61-8184-b43c097fb93f)
+
 **Randomly generated spheres with defocus blur. (~100 samples)**
 
 ![checker2 (2)](https://user-images.githubusercontent.com/53636492/189015882-25888ada-3437-4f5e-b545-652d299769a9.PNG)
@@ -37,11 +42,6 @@ I'm adding a few features of my own to supplement my own computer graphics study
 
 **Subsurface Scattering (Lambertian LHS, SSS RHS) for Marble, Wax, Skin (~500 Samples)**
 ![correctSSS](https://github.com/user-attachments/assets/a4c03ba7-f83c-484f-a6d9-8e77d7439038)
-
-**Material Showcase (~100 samples)**
-(Isotropic, Perlin Noise, Worley Noise, Dielectrics, Metallics, Image Textures)
-
-![materialShowcase](https://github.com/vanandrewnguyen/raytracerInOneWeekend/assets/53636492/19a6ffcd-127a-49f2-8f16-d189ed8ffea3)
 
 **Utah Teapot Model (~50 Samples, 5hrs)**
 
