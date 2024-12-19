@@ -245,10 +245,10 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getBook2Scene() {
 // Get a scene with all available textures and materials
 std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcase() {
     lookFrom = vec3(12, 1.6, -6);
-    lookAt = vec3(-4, -0.1, 0);
+    lookAt = vec3(-2, 0.3, 0);
     bgColour = vec3(1, 1, 1);
     useSkyColour = 2;
-    viewFOV = 20;
+    viewFOV = 15;
     aperture = 0.1;
     focusDist = (lookFrom - lookAt).length();
     timeStart = 0;
@@ -262,8 +262,62 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getTextureMaterialShowcas
     // Rough, texture (2)
     // 14 = 7 on each row
 
+    std::shared_ptr<raytrace::Texture> texChecker = std::make_shared<TexChecker>(vec3(0.8, 0.3, 0.3), vec3(1.0, 1.0, 1.0), 10.0);
+    std::shared_ptr<raytrace::Texture> texSolid = std::make_shared<TexSolidColour>(vec3(1, 1, 1));
     std::shared_ptr<raytrace::Texture> texImage = std::make_shared<TexImage>("earthmap.jpg");
+    std::shared_ptr<TexImage> texImageNormalMap = std::make_shared<TexImage>("earthmapNormalMap.jpg");
     std::shared_ptr<raytrace::Texture> texWorley = std::make_shared<TexWorley>(8.0, vec3(0.1, 0, 0.2), vec3(1, 1, 1));
+    std::shared_ptr<raytrace::Texture> texPerlin = std::make_shared<TexPerlin>(4.0, 2, vec3(0.94, 0.95, 0.98), vec3(0.27, 0.27, 0.43));
+
+    std::shared_ptr<NormalBase> constantNormal = std::make_shared<Constant>();
+    std::shared_ptr<NormalBase> roughNormal = std::make_shared<Rough>();
+    roughNormal->setAmp(0.2f);
+    std::shared_ptr<NormalTexture> imageNormal = std::make_shared<NormalTexture>();
+    imageNormal->assignTexture(texImageNormalMap);
+
+    std::shared_ptr<Material> matSolid = std::make_shared<MatLambertian>(texSolid);
+    std::shared_ptr<Material> skinMaterial = std::make_shared<MatLambertian>(std::make_shared<TexSolidColour>(vec3(0.76, 0.48, 0.34)));
+    std::shared_ptr<Material> sssSkinMaterial = std::make_shared<SubsurfaceMaterial>(std::make_shared<TexSolidColour>(vec3(0.76, 0.48, 0.34)), 1.0f, 0.03f, 40, 0.001f);
+    std::shared_ptr<Material> matGlass1 = std::make_shared<MatDielectric>(1.33);
+    matGlass1->assignNormalMap(constantNormal);
+    std::shared_ptr<Material> matGlass2 = std::make_shared<MatDielectric>(1.33);
+    matGlass2->assignNormalMap(roughNormal);
+    std::shared_ptr<Material> matGlass3 = std::make_shared<MatDielectric>(1.33);
+    matGlass3->assignNormalMap(imageNormal);
+
+    // Floor
+    std::shared_ptr<Hitable> floorSphere = std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), std::make_shared<MatLambertian>(vec3(0.8, 0.3, 0.3), texChecker));
+    worldList.append(floorSphere);
+
+    // Spheres
+    std::shared_ptr<Hitable> imageSphere    = std::make_shared<Sphere>(0.5, vec3(0, 0, 2), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), texImage));
+    std::shared_ptr<Hitable> worleySphere   = std::make_shared<Sphere>(0.5, vec3(0, 0, 1), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), texWorley));
+    std::shared_ptr<Hitable> perlinSphere   = std::make_shared<Sphere>(0.5, vec3(0, 0, 0), vec3(0, 0, 0), std::make_shared<MatLambertian>(vec3(0, 0, 0), texPerlin));
+    std::shared_ptr<Hitable> sssSphere      = std::make_shared<Sphere>(0.5, vec3(0, 0, -1), vec3(0, 0, 0), sssSkinMaterial);
+    std::shared_ptr<Hitable> lightSphere    = std::make_shared<Sphere>(0.5, vec3(0, 0, -2), vec3(0, 0, 0), std::make_shared<DiffuseLight>(std::make_shared<TexSolidColour>(vec3(4.5, 4.1, 4))));
+    std::shared_ptr<Hitable> lambertianS    = std::make_shared<Sphere>(0.5, vec3(0, 0, -3), vec3(0, 0, 0), skinMaterial);
+
+    std::shared_ptr<Hitable> constantVolumeBounds      = std::make_shared<Sphere>(0.5, vec3(0, 1, 2), vec3(0, 0, 0), matSolid);
+    std::shared_ptr<Hitable> heterogeneousVolumeBounds = std::make_shared<Sphere>(0.5, vec3(0, 1, 1), vec3(0, 0, 0), matSolid);
+    std::shared_ptr<Hitable> isotropicSphere           = std::make_shared<ConstantVolume>(constantVolumeBounds, 3.0, std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)));
+    std::shared_ptr<Hitable> anisotropicSphere = std::make_shared<ConstantVolume>(heterogeneousVolumeBounds, 3.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(4.0, 0.1)));
+    std::shared_ptr<Hitable> glassSphere1              = std::make_shared<Sphere>(0.5, vec3(0, 1, 0), vec3(0, 0, 0), matGlass1);
+    std::shared_ptr<Hitable> glassSphere2              = std::make_shared<Sphere>(0.5, vec3(0, 1, -1), vec3(0, 0, 0), matGlass2);
+    std::shared_ptr<Hitable> glassSphere3              = std::make_shared<Sphere>(0.5, vec3(0, 1, -2), vec3(0, 0, 0), matGlass3);
+    std::shared_ptr<Hitable> metalSphere               = std::make_shared<Sphere>(0.5, vec3(0, 1, -3), vec3(0, 0, 0), std::make_shared<MatMetal>(vec3(1.0, 0.8, 0.9), 0.1));
+    
+    worldList.append(imageSphere);
+    worldList.append(worleySphere);
+    worldList.append(perlinSphere);
+    worldList.append(sssSphere);
+    worldList.append(lightSphere);
+    worldList.append(lambertianS);
+    worldList.append(metalSphere);
+    worldList.append(isotropicSphere);
+    worldList.append(anisotropicSphere);
+    worldList.append(glassSphere1);
+    worldList.append(glassSphere2);
+    worldList.append(glassSphere3);
 
     /*
     std::shared_ptr<raytrace::Texture> textureImage = std::make_shared<TexImage>("earthmap.jpg");
@@ -444,9 +498,9 @@ std::pair<std::shared_ptr<Camera>, HitableList> Scene::getFurTest() {
     std::shared_ptr<Hitable> sphere1 = std::make_shared<Sphere>(0.5, vec3(2, 0, -1), vec3(0, 0, 0), matSolid);
     std::shared_ptr<Hitable> sphere2 = std::make_shared<Sphere>(0.5, vec3(1, 0, -1), vec3(0, 0, 0), matSolid);
     std::shared_ptr<Hitable> sphere3 = std::make_shared<Sphere>(0.5, vec3(0, 0, -1), vec3(0, 0, 0), matSolid);
-    worldList.append(std::make_shared<ConstantVolume>(sphere3, 2.0, std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5))));
-    worldList.append(std::make_shared<ConstantVolume>(sphere2, 2.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(4.0, 0.1))));
-    worldList.append(std::make_shared<ConstantVolume>(sphere1, 2.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(6.0, 0.2))));
+    worldList.append(std::make_shared<ConstantVolume>(sphere3, 3.0, std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5))));
+    worldList.append(std::make_shared<ConstantVolume>(sphere2, 3.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(4.0, 0.1))));
+    worldList.append(std::make_shared<ConstantVolume>(sphere1, 3.0, std::make_shared<Anisotropic>(std::make_shared<TexSolidColour>(vec3(1.0, 0.5, 0.5)), std::make_shared<PerlinDensityField>(6.0, 0.2))));
 
     worldList.append(std::make_shared<Sphere>(100.0, vec3(0, -100.5, -1), vec3(0, 1, 0), matChecker));
 
